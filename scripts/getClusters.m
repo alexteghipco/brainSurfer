@@ -1,4 +1,6 @@
 function [clusters, clusterLen] = getClusters(inDataVertices, allFaces)
+% This script will create a cell array where each cell contains the vertices of a cluster in your overlay. It requires passing in the vertices of your thresholded overlay (inDataVertices), and all faces in your underlay ('allFaces'). It will also produce a vector of clsuter lengths ('clustLen').
+% Alex Teghipco // alex.teghipco@uci.edu // 11/28/18
 
 % make copy of vertices
 dataVert = inDataVertices;
