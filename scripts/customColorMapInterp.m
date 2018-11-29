@@ -1,4 +1,6 @@
 function [colorMapInterp] = customColorMapInterp(colorMap,colorBins)
+% This script will create a customized colormap by interpolating between colors provided in colorMap using the number of bins provided by colorBins.
+% Alex Teghipco // alex.teghipco@uci.edu // 11/28/18
 
 betweenNum = round(colorBins/(size(colorMap,1) - 1));
 for beti = 1:(size(colorMap,1)-1)
