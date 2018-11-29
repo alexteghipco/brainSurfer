@@ -5,6 +5,11 @@ Report bugs to alex.teghipco@uci.edu!
 # TL;DR
 brainSurfer is a toolbox for visualizing and thresholding surface space data, or for projecting volume space data in MNI_152 2mm space onto fsaverage surface space. 
 
+# Getting started
+Plop all of these files in any directory you want and add them to your path in matlab (with subdirectories; eg using genpath(addpath(''))). Edit stuff at your own peril! Type 'brainSurfer' into matlab to display GUI. Use plotUnderlay and plotOverlay to write your own scripts. Hover over buttons in the GUI to understand what they do.
+
+# FAQ
+*Help! I can't seem to import data from volume space and I keep getting errors whenever I try!*
 If you need to convert data from MNI_152_2mm space to fsaverage space, you will need to install one additional repository. brainSurfer uses a novel fusion registration method available here (https://github.com/ThomasYeoLab/CBIG) for transforming between these two spaces. In my experience, the results are superior to other available methods. To learn more about how this approach works, see Ngo et al's under review paper, "Accurate Nonlinear Mapping between MNI Volumetric and FreeSurfer Surface Coordinate Systems". 
 *Note1* This CBIG repository assumes you have freesurfer installed and makes use of some bash scripting through matlab. 
 *Note2* To get it to work properly on my end, I had to write some additional (but simple) scripts included in brainSurfer. 
@@ -12,9 +17,6 @@ If you need to convert data from MNI_152_2mm space to fsaverage space, you will 
 *Note4* ONLY the importing feature of neurosynth relies on this repository.
 
 Finally, if you need to convert between various spaces in volume space (i.e., importing requires data to be in MNI_152_2mm space), our niftiManip repository can help with that so go and check it out. 
-
-# Getting started
-Plop all of these files in any directory you want and add them to your path in matlab (with subdirectories; eg using genpath(addpath(''))). Edit stuff at your own peril! Type 'brainSurfer' into matlab to display GUI. Use plotUnderlay and plotOverlay to write your own scripts. Hover over buttons in the GUI to understand what they do.
 
 # Features
 *File support*
