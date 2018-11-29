@@ -1,5 +1,6 @@
 # brainSurfer 
-Report bugs to alex.teghipco@uci.edu!
+Report all bugs to alex.teghipco@uci.edu!
+
 *NOTE* This software is in beta, I built it to do stuff for me, so I'm not sure that it will necessarily work for you. It is *ONLY* for experimental use. 
 
 # TL;DR
