@@ -3,7 +3,13 @@ Report bugs to alex.teghipco@uci.edu!
 *NOTE* This software is in beta. It is *ONLY* for experimental use.
 
 # TL;DR
-brainSurfer is a MATLAB toolbox for visualizing, thresholding, and manipulating surface space data. It can also project volume space data in MNI_152_2mm space onto fsaverage surface space using a variety of different approaches. It has lots of different functionalities, which you can read about in the features section (e.g., contours of statistical maps, using opacity on particular subsets of data, creating 3D colormaps, etc). Just hover over buttons/input boxes to get some help with what they do. 
+-brainSurfer is a MATLAB toolbox for visualizing, thresholding, and manipulating surface space data. 
+
+-It can also project volume space data in MNI_152_2mm space onto fsaverage surface space using a variety of different approaches. 
+
+-brainSurfer has lots of different functionalities, which you can read about in the features section. My personal favorites include its ability to turn clusters into contours, to create 3D colormaps and plot 3D overlays, and the ability to  modulate the transparency of a subset of data within an overlay, or to use a completely different overlay to modulate the transparency of an overlay. 
+
+-Just hover over buttons/input boxes to get some help with what they do. 
 
 # Getting started
 Plop all of these files in any directory you want and add them to your path in matlab (with subdirectories; eg using genpath(addpath(''))). Edit stuff at your own peril! Type 'brainSurfer' into matlab to display GUI. Use plotUnderlay and plotOverlay to write your own scripts. Hover over buttons in the GUI to understand what they do. *Note that importing data from volume space requires the installation of an additional repository and the updating of a single line in a brainSurfer script (see first FAQ)* 
