@@ -13,7 +13,7 @@ Report bugs to alex.teghipco@uci.edu!
 
 # Getting started
 1) Plop all of these files in any directory you want and add them to your path in matlab (include the subdirectories; e.g. using genpath(addpath(''))). Edit stuff at your own peril! 
-2) Type 'brainSurfer' into matlab to display GUI. Most functionality is contained within the plotUnderlay and plotOverlay functions so you can use them to write your own scripts. 
+2) Type 'brainSurfer' into matlab to display the main GUI. Most functionality is contained within the plotUnderlay.m and plotOverlay.m functions in the ./scripts directory so you can use them to write your own scripts without using the GUI. 
 
 - *Note that importing data from volume space requires the installation of an additional repository and the updating of a single line in a brainSurfer script (see first FAQ)* 
 
