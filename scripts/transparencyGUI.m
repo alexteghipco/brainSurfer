@@ -1,27 +1,6 @@
 function varargout = transparencyGUI(varargin)
-% TRANSPARENCYGUI MATLAB code for transparencyGUI.fig
-%      TRANSPARENCYGUI, by itself, creates a new TRANSPARENCYGUI or raises the existing
-%      singleton*.
-%
-%      H = TRANSPARENCYGUI returns the handle to a new TRANSPARENCYGUI or the handle to
-%      the existing singleton*.
-%
-%      TRANSPARENCYGUI('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in TRANSPARENCYGUI.M with the given input arguments.
-%
-%      TRANSPARENCYGUI('Property','Value',...) creates a new TRANSPARENCYGUI or raises the
-%      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before transparencyGUI_OpeningFcn gets called.  An
-%      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to transparencyGUI_OpeningFcn via varargin.
-%
-%      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
-%      instance to run (singleton)".
-%
-% See also: GUIDE, GUIDATA, GUIHANDLES
-
-% Edit the above text to modify the response to help transparencyGUI
-
+% GUI for modulating transparency of a subset of data
+% Alex Teghipco // alex.teghipco@uci.edu // 11/28/18
 % Last Modified by GUIDE v2.5 10-Nov-2018 21:41:28
 
 % Begin initialization code - DO NOT EDIT
