@@ -19,35 +19,35 @@ If you need to convert data from MNI_152_2mm space to fsaverage space, you will 
 Finally, if you need to convert between various spaces in volume space (i.e., importing requires data to be in MNI_152_2mm space), our niftiManip repository can help with that so go and check it out. 
 
 # Features
-*File support*
+*Support for native brains*
 - Use either fsaverage brains that come with the toolbox, or render your own surface space .surf files. Then overlay data that fits the dimensions of your files (in .nii format). 
 
-*Multiple overlays*
+*Overlay multiple maps at once*
 - Once you have loaded multiple files into the GUI, you can overlay them on top of each other (why can't you do this freeview/BrainNet?!)
 - Overlays can be moved up and down like layers in photoshop to determine which map ends up on the bottom (why are you so clunky at this surfice/neuroelf?!)
 
-*Import unthresholded NIFTI MNI files*
+*Import unthresholded NIFTI maps from MNI volume space*
 - Moving from MNI space to fsaverage surface space is tricky. A new, more accurate method is implemented using scripts released by Ngo et al (under review). See TL;DR for more info.
 
-*Import NIFTI MNI ROIs*
+*Import ROIs from NIFTI MNI volume space*
 - Because we are downsampling when we move from MNI space to surface space, transforming ROIs is tricky. Whole integers become decimals that may represent overlaps between multiple different clusters. To circumvent this, we can write the cluster most associated with the subset of voxels that map onto a particular vertex, into that vertex. This leaves us with integers and confidence maps (if a cluster wins by a lot, we are more confident that vertex should be represented by that cluster). 
 
-*Import NIFTI files with smoothing for thresholded maps*
+*Import thresholded NIFTI maps from MNI volume space*
 - Transforming a thresholded map of continuous values in MNI space to surface space is also tricky for largely the same reason. The border of that map will bleed further into vertices that are very weakly associated with voxels above threshold. However, it is unclear what threshold can be used in surface space to clean this up. One solution is to project, seperately, the thresholded voxels in volume space onto surface space and to do the same for unthresholded voxels (i.e., empty zeros in the map). Vertices that are more strongly associated with the unthresholded voxels than thresholded voxels are excluded from the surface space overlay. You can also smooth the border of the unthresholded values after transformation to ensure that all transformed vertices are more strongly associated with thresholded voxels than with unthresholded voxels. 
 
 *Detachable renderings*
 - a new surface space rendering can be opened and manipulated simply by selecting a new surface. This detaches the old rendering from brainSurfer so you won't be able to make any other changes to those specific patches. However, all settings in brainSurfer (including loaded files) are saved and can be applied to the new surface rendering. 
 
-*Overlay workspace*
+*A workspace for overlays*
 - An overlay workspace allows for quick duplication, reloading deleting and saving of overlays (why can't you do this BrainNet, Surfice, Freeview, Neuroelf, etc!)
 
-*Seperate value-based and p-value thresholding*
+*Apply value-based and p-value thresholds*
 - a p-value map can be loaded and associated with the current overlay. Two different thresholds can then be applied. (why can't you do this or let me p-value threshold BrainNet, Surfice, Freeview, Neuroelf, etc!)
 
-*Cluster-size thresholding*
+*Apply cluster thresholds*
 - You can remove clusters less than a certain size from the overlay. For instance, you can get a clusterform threshold using monte-carlo style simulations of your data (see brainvoyager for nice implementation, future versions of brainSurfer will do this too)
 
-*Seperate-thresholding of positive and negative values*
+*Threshold negative and positive values seperately*
 - Come on freesurfer, why does a threshold of 3.5 have to remove all values between -3.5 and 3.5.
 
 *Adjustable limits*
@@ -71,13 +71,13 @@ Finally, if you need to convert between various spaces in volume space (i.e., im
 *Native masking of overlays*
 - Another simple operation that should be standard in visualization software!
 
-*Outline your overlay or ROI*
+*Transform overlays into contour maps*
 - Draws contours around clusters in your overlay. Neat if you want to clearly delineate different maps while unimpeding a view of the anatomy underlying those maps!
 
-*Grow/shrink overlay*
+*Grow/shrink overlays*
 - Grow or shrink your overlay by a selected size (in vertices). Any new vertices will assume the mean value of their cluster!
 
-*More cluster information*
+*Get extensive information about clusters*
 - Are you tired of being unable to retrieve information about a cluster? Now you can do it with one click. This GUI will give you all the stats you could want about a cluster in your currently selected overlay. It will also let you edit the colors of clusters individually. Where else can you do that?!
 
 *Robust smoothing options*
