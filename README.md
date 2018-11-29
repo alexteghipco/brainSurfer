@@ -12,7 +12,9 @@ Report bugs to alex.teghipco@uci.edu!
 - Just hover over buttons/input boxes to get some help with what they do. 
 
 # Getting started
-Plop all of these files in any directory you want and add them to your path in matlab (with subdirectories; eg using genpath(addpath(''))). Edit stuff at your own peril! Type 'brainSurfer' into matlab to display GUI. Use plotUnderlay and plotOverlay to write your own scripts. Hover over buttons in the GUI to understand what they do. *Note that importing data from volume space requires the installation of an additional repository and the updating of a single line in a brainSurfer script (see first FAQ)* 
+- Plop all of these files in any directory you want and add them to your path in matlab (include the subdirectories; e.g. using genpath(addpath(''))). Edit stuff at your own peril! 
+- Type 'brainSurfer' into matlab to display GUI. Most functionality is contained within the plotUnderlay and plotOverlay functions so you can use them to write your own scripts. 
+- *Note that importing data from volume space requires the installation of an additional repository and the updating of a single line in a brainSurfer script (see first FAQ)* 
 
 # FAQ
 *Help! I can't seem to import data from volume space and I keep getting errors whenever I try!*
