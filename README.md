@@ -11,12 +11,26 @@ Plop all of these files in any directory you want and add them to your path in m
 # FAQ
 *Help! I can't seem to import data from volume space and I keep getting errors whenever I try!*
 If you need to convert data from MNI_152_2mm space to fsaverage space, you will need to install one additional repository. brainSurfer uses a novel fusion registration method available here (https://github.com/ThomasYeoLab/CBIG) for transforming between these two spaces. In my experience, the results are superior to other available methods. To learn more about how this approach works, see Ngo et al's under review paper, "Accurate Nonlinear Mapping between MNI Volumetric and FreeSurfer Surface Coordinate Systems". 
+
 *Note1* This CBIG repository assumes you have freesurfer installed and makes use of some bash scripting through matlab. 
+
 *Note2* To get it to work properly on my end, I had to write some additional (but simple) scripts included in brainSurfer. 
+
 *Note3* The approaches for importing thresholded NIFTI maps and ROI NIFTI maps are not related to this transformation method, but do use this transformation method.
+
 *Note4* ONLY the importing feature of neurosynth relies on this repository.
 
-Finally, if you need to convert between various spaces in volume space (i.e., importing requires data to be in MNI_152_2mm space), our niftiManip repository can help with that so go and check it out. 
+*Help! My data is in a different mm space but it should be convertible!*
+If you need to convert between various spaces in volume space (i.e., importing requires data to be in MNI_152_2mm space), our niftiManip repository can help with that so go and check it out. 
+
+*Help! I don't have any data!*
+Check out some of the example maps that I used for testing in ./testingMaps
+
+*What are the weird jpegs in the main folder?*
+Sorry, needed them for buttons 
+
+*What's in the ./brains folder?*
+LH and RH inflated FSAVERAGE files and their corresponding curvature files. This is what brainSurfer automatically loads when you choose one of these options from the surface selection menu.
 
 # Features
 *Support for native brains*
@@ -95,6 +109,9 @@ Finally, if you need to convert between various spaces in volume space (i.e., im
 *Control sucli/gyri properties*
 - Change sulci-gyri boundaries
 - Change the colors of sulci and gyri to anything you want
+
+*3D colormaps*
+- Only available via scripting. Allows for the construction of a colormap that is based on a colorcube of any size. Maps your overlay data directly onto this colorcube.
 
 # Workflow
 1) Surface
