@@ -1,7 +1,7 @@
 # brainSurfer 
 Report all bugs to alex.teghipco@uci.edu!
 
-*NOTE* This software is in beta, I built it to do stuff for me, so I'm not sure that it will necessarily work for you. It is *ONLY* for experimental use. 
+*NOTE* This software is in beta, I built it to do stuff for me, so I'm not sure that it will necessarily work for you. It is *ONLY* for experimental use and comes with no guarantee of any kind.
 
 # TL;DR
 - brainSurfer is a MATLAB toolbox for visualizing, thresholding, and manipulating surface space data. 
