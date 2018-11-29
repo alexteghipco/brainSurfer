@@ -1,27 +1,6 @@
 function varargout = maskGUI(varargin)
-% MASKGUI MATLAB code for maskGUI.fig
-%      MASKGUI, by itself, creates a new MASKGUI or raises the existing
-%      singleton*.
-%
-%      H = MASKGUI returns the handle to a new MASKGUI or the handle to
-%      the existing singleton*.
-%
-%      MASKGUI('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in MASKGUI.M with the given input arguments.
-%
-%      MASKGUI('Property','Value',...) creates a new MASKGUI or raises the
-%      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before maskGUI_OpeningFcn gets called.  An
-%      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to maskGUI_OpeningFcn via varargin.
-%
-%      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
-%      instance to run (singleton)".
-%
-% See also: GUIDE, GUIDATA, GUIHANDLES
-
-% Edit the above text to modify the response to help maskGUI
-
+% GUI for masking an overlay with another overlay
+% Alex Teghipco // alex.teghipco@uci.edu // 11/28/18
 % Last Modified by GUIDE v2.5 08-Nov-2018 21:00:05
 
 % Begin initialization code - DO NOT EDIT
