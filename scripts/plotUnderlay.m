@@ -4,7 +4,10 @@ function [varargout] = plotUnderlay(varargin)
 % [underlay, brain] = plotUnderlay(vert1, face1, curv1, vert2, face2, curv2, sulciC, gyriC, lights)
 % [underlay, brain] = plotUnderlay(vert1, face1, curv1, vert2, face2, curv2, [0.4 0.4 0.4], [0.8 0.8 0.8], 'off')
 % [underlay, brain, brainFig] = plotUnderlay(vert1, face1, curv1, vert2, face2, curv2, [0.4 0.4 0.4], [0.8 0.8 0.8], 'off')
-
+%
+% This script will plot an underlay based on some vertices, faces, and sulci/gyri patterns that you pass.
+%
+% Alex Teghipco // alex.teghipco@uci.edu // 11/28/18
 % Default settings:
 vert2 = [];
 face2 = [];
