@@ -3,9 +3,15 @@ Report bugs to alex.teghipco@uci.edu!
 *NOTE* This software is in beta. It is *ONLY* for experimental use.
 
 # TL;DR
-brainSurfer is a toolbox for visualizing surface space data, or for projecting volume space data in MNI_152 2mm space onto fsaverage surface space. 
+brainSurfer is a toolbox for visualizing and thresholding surface space data, or for projecting volume space data in MNI_152 2mm space onto fsaverage surface space. 
 
-If you need to convert from native space to MNI space, or between MNI spaces in different mm sizes, please use the scripts provided in the niftiManip repository to prepare your data. Importing also requires downloading scripts for a new, more accurate transformation method between MNI_152_2mm space and fsaverage space. This method is available on github by Ngo et al (under review). Look up Accurate Nonlinear Mapping between MNI Volumetric and FreeSurfer Surface Coordinate Systems to find the github link.
+If you need to convert data from MNI_152_2mm space to fsaverage space, you will need to install one additional repository. brainSurfer uses a novel fusion registration method available here (https://github.com/ThomasYeoLab/CBIG) for transforming between these two spaces. In my experience, the results are superior to other available methods. To learn more about how this approach works, see Ngo et al's under review paper, "Accurate Nonlinear Mapping between MNI Volumetric and FreeSurfer Surface Coordinate Systems". 
+*Note1* This CBIG repository assumes you have freesurfer installed and makes use of some bash scripting through matlab. 
+*Note2* To get it to work properly on my end, I had to write some additional (but simple) scripts included in brainSurfer. 
+*Note3* The approaches for importing thresholded NIFTI maps and ROI NIFTI maps are not related to this transformation method, but do use this transformation method.
+*Note4* ONLY the importing feature of neurosynth relies on this repository.
+
+Finally, if you need to convert between various spaces in volume space (i.e., importing requires data to be in MNI_152_2mm space), our niftiManip repository can help with that so go and check it out. 
 
 # Getting started
 Plop all of these files in any directory you want and add them to your path in matlab (with subdirectories; eg using genpath(addpath(''))). Edit stuff at your own peril! Type 'brainSurfer' into matlab to display GUI. Use plotUnderlay and plotOverlay to write your own scripts. Hover over buttons in the GUI to understand what they do.
