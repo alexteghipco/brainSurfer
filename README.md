@@ -26,7 +26,7 @@ If you need to convert data from MNI_152_2mm space to fsaverage space, you will 
 
 *Note2 --- To get it to work properly on my end, I had to write some additional (but simple) scripts included in brainSurfer. In order to have these scripts work properly, you need to update convertMNI2FS with the directory in which you've placed the CBIG repository. Navigate to ./scripts and open up convertMNI2FS.m. Now look at line 4, which should start with, "CBIGDir=". Replace "'/Users/ateghipc/MATLAB-Drive/Published/projectFSAVERAGE" with the directory in which "final_warps_FS5.3" lives.*   
 
-*Note3 --- The approaches for importing thresholded NIFTI maps and ROI NIFTI maps are not related to this transformation method, but do rely on this transformation method.*
+*Note3 --- The approaches for importing thresholded NIFTI maps and ROI NIFTI maps do not rely on this particular transformation method, but it is currently the only way to transform data in brainSurfer.*
 
 *Note4 --- ONLY the importing feature of neurosynth relies on this repository.*
 
