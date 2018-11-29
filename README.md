@@ -5,9 +5,9 @@ Report bugs to alex.teghipco@uci.edu!
 # TL;DR
 - brainSurfer is a MATLAB toolbox for visualizing, thresholding, and manipulating surface space data. 
 
-- It can also project volume space data in MNI_152_2mm space onto fsaverage surface space using a variety of different approaches. 
+- It can project volume space data in MNI_152_2mm space onto fsaverage surface space using a variety of different approaches. 
 
-- brainSurfer has lots of different functionalities, which you can read about in the features section. My personal favorites include its ability to turn clusters into contours, to create 3D colormaps and plot 3D overlays, and the ability to  modulate the transparency of a subset of data within an overlay, or to use a completely different overlay to modulate the transparency of an overlay. 
+- brainSurfer gives you as much control as possible (for me to implement anyway) over the way that your data is presented. It has lots of different functionalities, which you can read about in the features section. My personal favorites include its ability to turn clusters into contours, to create 3D colormaps and plot 3D overlays, as well as the ability to modulate the transparency of a subset of data within an overlay, or to use a completely different overlay to modulate the transparency of an overlay. It also some nifty features for manipulating and getting cluster-level data.
 
 - Just hover over buttons/input boxes to get some help with what they do. 
 
