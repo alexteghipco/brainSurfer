@@ -3,7 +3,7 @@ Report bugs to alex.teghipco@uci.edu!
 *NOTE* This software is in beta. It is *ONLY* for experimental use.
 
 # TL;DR
-brainSurfer is a toolbox for visualizing and thresholding surface space data, or for projecting volume space data in MNI_152 2mm space onto fsaverage surface space. 
+brainSurfer is a toolbox for visualizing and thresholding surface space data, and for projecting volume space data in MNI_152 2mm space onto fsaverage surface space. 
 
 # Getting started
 Plop all of these files in any directory you want and add them to your path in matlab (with subdirectories; eg using genpath(addpath(''))). Edit stuff at your own peril! Type 'brainSurfer' into matlab to display GUI. Use plotUnderlay and plotOverlay to write your own scripts. Hover over buttons in the GUI to understand what they do.
