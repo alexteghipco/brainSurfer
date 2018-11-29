@@ -19,15 +19,16 @@ Report bugs to alex.teghipco@uci.edu!
 
 # FAQ
 1) *Help! I can't seem to import data from volume space and I keep getting errors whenever I try!*
-- If you need to convert data from MNI_152_2mm space to fsaverage space, you will need to install one additional repository. brainSurfer uses a novel fusion registration method available here (https://github.com/ThomasYeoLab/CBIG) for transforming between these two spaces. In my experience, the results are superior to other available methods. To learn more about how this approach works, see Ngo et al's under review paper, "Accurate Nonlinear Mapping between MNI Volumetric and FreeSurfer Surface Coordinate Systems". 
 
-*Note1 This CBIG repository assumes you have freesurfer installed and makes use of some bash scripting through matlab. 
+If you need to convert data from MNI_152_2mm space to fsaverage space, you will need to install one additional repository. brainSurfer uses a novel fusion registration method available here (https://github.com/ThomasYeoLab/CBIG) for transforming between these two spaces. In my experience, the results are superior to other available methods. To learn more about how this approach works, see Ngo et al's under review paper, "Accurate Nonlinear Mapping between MNI Volumetric and FreeSurfer Surface Coordinate Systems". 
 
-*Note2 To get it to work properly on my end, I had to write some additional (but simple) scripts included in brainSurfer. In order to have these scripts work properly, you need to update convertMNI2FS with the directory in which you've placed the CBIG repository. Navigate to ./scripts and open up convertMNI2FS.m. Now look at line 4, which should start with, "CBIGDir=". Replace "'/Users/ateghipc/MATLAB-Drive/Published/projectFSAVERAGE" with the directory in which "final_warps_FS5.3" lives.   
+*Note1 This CBIG repository assumes you have freesurfer installed and makes use of some bash scripting through matlab.* 
 
-*Note3 The approaches for importing thresholded NIFTI maps and ROI NIFTI maps are not related to this transformation method, but do rely on this transformation method.
+*Note2 To get it to work properly on my end, I had to write some additional (but simple) scripts included in brainSurfer. In order to have these scripts work properly, you need to update convertMNI2FS with the directory in which you've placed the CBIG repository. Navigate to ./scripts and open up convertMNI2FS.m. Now look at line 4, which should start with, "CBIGDir=". Replace "'/Users/ateghipc/MATLAB-Drive/Published/projectFSAVERAGE" with the directory in which "final_warps_FS5.3" lives.*   
 
-*Note4 ONLY the importing feature of neurosynth relies on this repository.
+*Note3 The approaches for importing thresholded NIFTI maps and ROI NIFTI maps are not related to this transformation method, but do rely on this transformation method.*
+
+*Note4 ONLY the importing feature of neurosynth relies on this repository.*
 
 2) *Help! My data is in a different mm space but it should be convertible!*
 - If you need to convert between various spaces in volume space (i.e., importing requires data to be in MNI_152_2mm space), our niftiManip repository can help with that so go and check it out. 
