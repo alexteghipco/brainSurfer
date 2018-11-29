@@ -31,19 +31,24 @@ If you need to convert data from MNI_152_2mm space to fsaverage space, you will 
 *Note4 --- ONLY the importing feature of neurosynth relies on this repository.*
 
 2) *Help! My data is in a different mm space but it should be convertible!*
-If you need to convert between various spaces in volume space (i.e., importing requires data to be in MNI_152_2mm space), our niftiManip repository can help with that so go and check it out. 
+
+If you need to convert between various spaces in volume space (i.e., importing requires data to be in MNI_152_2mm space), our niftiManip repository can help with that.
 
 3) *Help! I don't have any data!*
+
 Check out some of the example maps that I used for testing in ./testingMaps
 
-4) *What are the weird jpegs in the main folder?*
-Sorry, needed them for buttons 
+4) *What are the weird jpegs in the main folder and can I get rid of them?*
+
+Sorry, needed them for buttons in the GUI. If you get rid of them, you won't be able to move overlays around.
 
 5) *What's in the ./brains folder?*
-LH and RH inflated FSAVERAGE files and their corresponding curvature files. This is what brainSurfer automatically loads when you choose one of these options from the surface selection menu.
+
+LH and RH inflated fsaverage files and their corresponding curvature files (identical to what comes stock with freesurfer). This is what brainSurfer automatically loads when you choose left/right or left and right fsaverage hemispheres in the surface selection menu.
 
 6) *I made my own colormap with brainSurfer. Where is it?*
-Colormaps are saved in ./colormaps directory. Any colormap in that directory will automatically be loaded by brainSurfer. You can find it in the colormap selection menu. Sometimes MATLAB needs to be restarted for the automatic loading to work. 
+
+Colormaps are saved in the ./colormaps directory. Any colormap in that directory will automatically be loaded by brainSurfer. You can find it in the colormap selection menu. Sometimes MATLAB needs to be restarted for the automatic loading to work. 
 
 # Features
 *Support for native brains*
@@ -149,41 +154,30 @@ Colormaps are saved in ./colormaps directory. Any colormap in that directory wil
 - First, choose an underlay to load. There are some presets. You can choose 1 or both hemispheres. Load your own surface file as long as it's a freesurfer compatible surface file (sorry brainvoyagers:( check out the niftiManip repository to convert your TAL files to MNI space).
 - Then, edit the properties of the underlay as you see fit, changing sulci/gyri colors and thresholds.
 - Now load or import an overlay. If your file name does not contain reference to a hemisphere (i.e., left, right, lh, rh) then the script will ask you which hemisphere to project your overlay onto. For more information on import options, see features and FAQ above. Both loaded and imported files must be in NIFTI format.
+
 2) Select an overlay to patch
 - By default, 'No overlay' is selected. Each time you click on an overlay you have loaded, its settings are pulled up and it is repatched (e.g., overlayed). Settings are usually saved unless you are smoothing. In that case, the 'save' button should be used to fix the state of the overlay. If you ever need to undo some setting and you can't seem to remember which change will restore your overlay to its pristine state, just click 'reload'. Note, reload is incapable of undoing smoothing. If you want to make a copy of an overlay, click 'duplicate'. If you want to delete an overlay, click 'delete'. If you want to save an overlay with its current thresholds applied, click 'save'. 
+
 3) Threshold the patched overlay 
 - Threshold your overlay using a value-based threshold (corresponding to whatever unit/measurement your data represents) or load a p-value map for this specific overlay/data and use a p-value based threshold. If you want, you could go crazy and apply both thresholds. The last threshold allows you to exclude clusters smaller than some size in the current overlay.
+
 4) Adjustments
 - See list of features above and poke around the GUI. These are all pretty intuitive. 
 
 # Future features
 - clusterform threshold testing with TFCE or some other method depending on the kind of data you load
 
-# Guis
+# List of GUIs and their functions
 1) brainSurfer.fig ----> Primary UI. Facillitates all thresholding and loading of underlays and overlays
 2) clusterGUI.fig ----> Facilitates editing of individual clusters in a loaded overlay. Plots mean of data within clusters and allows for changing of colors for each cluster.
 3) lightingGUI.fig ----> Facilitates rendering properties of both the underlay and overlay. Allows for adding of cameras and storage of preset 'scenes' that include sets of cameras and diffusivity/reflectance properties for the patches (i.e., overlay/underlay). 
 4) maskGUI.fig ----> Facilitates the masking of one image that has been loaded, by some other image that is loaded. 
 5) transparencyGUI.fig ----> Facilitates thresholding of a subset of data to which a linear gradient of opacity is applied. Controls some other opacity settings. 
 
-# Auxillary scripts
-Some auxillary functions are redistributed from some other toolboxes (chiefly freesurfer's matlab toolbox). They are redistributed in the ./scripts folder along with functions that are original. 
+# List of auxillary scripts and their functions
+Some auxillary scripts are redistributed from other toolboxes (chiefly freesurfer's matlab toolbox). Most of the functionality in brainSurfer comes from plotUnderlay.m and plotOverlay.m, which are original scripts. 
 
-Here is a list of redistributed scripts and why they are needed (see the comments in the scripts themselves for individual authors)
-
-1) cbar.m ----> brainSurfer allows you to use opacity as a dimension of data representation (much like freeview but with much more customizability). It's nice to have a colorbar that can vary in opacity to match the overlay. This is useful either if you are modulating the opacity for only a subset of the data (i.e., using a 2nd threshold) or if you change the opacity across all the data (why don't any of the other brain rendering software I've ever used already do this?!). Internal colorbar in matlab cannot vary opacity data in these ways.
-2) fread3.m ----> this script is distributed with freesurfer and is used to read 3 byte integers from NIFTI files for constructing overlays
-3) load_nifti.m ----> this script is distributed with freesurfer and is used to read header and volume information. Overlay data mapping onto each vertex of some surface space is often (and can be) stored as a NIFTI file.
-4) read_surf.m ----> this script is distributed with freesurfer and is used to read .surf files that contain information about a surface space brain (e.g., vertices, neighbors, header info)
-5) read_curv.m ----> this script is distributed with freesurfer and is used to read .curv files that contain information about the sulci and gyri of a surface space brain (e.g., a single value at each vertex of the surface space)
-6) uipickfiles.m ----> this is a nice GUI for file selection
-7) distinguishable_colors.m ----> another script for generating some perceptually distinct colormaps -- ideally geared towards ROI maps because each subsequent color is optimally different than the last generating clear boundaries between values on the colorbar.
-8) scripts in ./scripts/MatPlotLib ----> this is a nice collection of colormaps ported from matplotlib. 
-9) scripts in ./scripts/cbrewer ----> this is a nice collection of colormaps that are perceptually distinct (e.g., controlled for luminance)
-10) save_nfti.m -----> this script is distributed with freesurfer and is used to save a surface space overlay as an .nii file
-
-Here is a list of original scripts and why they are needed
-
+Here is a full list of auxillery scripts that were written for brainSurfer and an explanation of how they are used
 1) clusterGUI.m ----> controls the functions of clusterGUI.fig
 2) colorcubes.m ----> constructs a 3D colormap 
 3) getClusterBoundary.m ----> finds the vertices that form a boundary around a series of clusters. Used for outlining clusters, ROIs, or maps. Boundary is found by looking for vertices that have no neighbors with vertices for which there is data
@@ -200,3 +194,15 @@ Here is a list of original scripts and why they are needed
 14) convertMNI2FSwithMask.m ----> conversion method for volume space maps that are thresholded (see FAQ and features section)
 15) convertROI4FS.m ----> conversion method for volume space maps that contain ROI(s) (see FAQ and features section)
 16) plot3dOverlay.m ----> plots an fsaverage underlay, and a 3D overlay ontop of it using a colorcube generated with colorcubes.
+
+Here is a full list of auxillery scripts that are redistributed with brainSurfer and an explanation of how they are used
+1) cbar.m ----> brainSurfer allows you to use opacity as a dimension of data representation (much like freeview but with much more customizability). It's nice to have a colorbar that can vary in opacity to match the overlay. This is useful either if you are modulating the opacity for only a subset of the data (i.e., using a 2nd threshold) or if you change the opacity across all the data (why don't any of the other brain rendering software I've ever used already do this?!). Internal colorbar in matlab cannot vary opacity data in these ways.
+2) fread3.m ----> this script is distributed with freesurfer and is used to read 3 byte integers from NIFTI files for constructing overlays
+3) load_nifti.m ----> this script is distributed with freesurfer and is used to read header and volume information. Overlay data mapping onto each vertex of some surface space is often (and can be) stored as a NIFTI file.
+4) read_surf.m ----> this script is distributed with freesurfer and is used to read .surf files that contain information about a surface space brain (e.g., vertices, neighbors, header info)
+5) read_curv.m ----> this script is distributed with freesurfer and is used to read .curv files that contain information about the sulci and gyri of a surface space brain (e.g., a single value at each vertex of the surface space)
+6) uipickfiles.m ----> this is a nice GUI for file selection
+7) distinguishable_colors.m ----> another script for generating some perceptually distinct colormaps -- ideally geared towards ROI maps because each subsequent color is optimally different than the last, thereby generating clear boundaries between values on the colorbar.
+8) scripts in ./scripts/MatPlotLib ----> this is a nice collection of colormaps ported from matplotlib. 
+9) scripts in ./scripts/cbrewer ----> this is a nice collection of colormaps that are perceptually distinct (e.g., controlled for luminance)
+10) save_nfti.m -----> this script is distributed with freesurfer and is used to save a surface space overlay as an .nii file
