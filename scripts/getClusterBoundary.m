@@ -1,44 +1,6 @@
 function [clusters] = getClusterBoundary(clusters, allFaces)
-
-% loop over all clusters
-% for clusteri = 1:length(clusters)
-%     % We want to make a copy of our original faces because we will
-%     % be looking for vertices in our cluster w/at least one
-%     % neighbor outside cluster
-%     facesTmp = allFaces;
-%     % save cluster
-%     clusterTmp = clusters{clusteri};
-%     % loop over all vertices
-%     for verti = 1:length(clusterTmp)
-%         faceX = ismember(facesTmp(:,1),clusterTmp(verti));
-%         faceY = ismember(facesTmp(:,2),clusterTmp(verti));
-%         faceZ = ismember(facesTmp(:,3),clusterTmp(verti));
-%         faceXYZ = faceX+faceY+faceZ;
-%         faceXYZIdx = find(faceXYZ ~= 0);
-%         
-%         % neighborhood for vertex
-%         area = unique(facesTmp(faceXYZIdx,:));
-%         
-%         % find the number of neighbors that are not within cluster
-%         [C,ia] = setdiff(area,clusterTmp);
-%         
-%         % if there are neighbors for the vertex not in cluster mark
-%         % this cluster as part of the border
-%         if length(C) >= 1 % 1 is the number of neighbors for vertex that are not in cluster
-%             border(verti) = 1;
-%         else
-%             border(verti) = 0;
-%         end
-%     end
-%     % find all vertices that are not border
-%     notBorder = find(border == 0);
-%     
-%     % remove them from the list of vertices within cluster
-%     clusters{clusteri}(notBorder) = [];
-%     clear border
-% end
-
-%% Alternative script
+% This script will determine all vertices that are at the bounadry of clusters provided in 'clusters'. 'clusters' is a cell array with vertices. Additionally a matrix of all faces in your underlay must be passed in allFaces.
+% Alex Teghipco // alex.teghipco@uci.edu // 11/28/18
 vertList = unique(allFaces);
 
 for clusteri = 1:length(clusters)
