@@ -31,19 +31,19 @@ If you need to convert data from MNI_152_2mm space to fsaverage space, you will 
 *Note4 --- ONLY the importing feature of neurosynth relies on this repository.*
 
 2) *Help! My data is in a different mm space but it should be convertible!*
-- If you need to convert between various spaces in volume space (i.e., importing requires data to be in MNI_152_2mm space), our niftiManip repository can help with that so go and check it out. 
+If you need to convert between various spaces in volume space (i.e., importing requires data to be in MNI_152_2mm space), our niftiManip repository can help with that so go and check it out. 
 
 3) *Help! I don't have any data!*
-- Check out some of the example maps that I used for testing in ./testingMaps
+Check out some of the example maps that I used for testing in ./testingMaps
 
 4) *What are the weird jpegs in the main folder?*
-- Sorry, needed them for buttons 
+Sorry, needed them for buttons 
 
 5) *What's in the ./brains folder?*
-- LH and RH inflated FSAVERAGE files and their corresponding curvature files. This is what brainSurfer automatically loads when you choose one of these options from the surface selection menu.
+LH and RH inflated FSAVERAGE files and their corresponding curvature files. This is what brainSurfer automatically loads when you choose one of these options from the surface selection menu.
 
 6) *I made my own colormap with brainSurfer. Where is it?*
-- Colormaps are saved in ./colormaps directory. Any colormap in that directory will automatically be loaded by brainSurfer. You can find it in the colormap selection menu. Sometimes MATLAB needs to be restarted for the automatic loading to work. 
+Colormaps are saved in ./colormaps directory. Any colormap in that directory will automatically be loaded by brainSurfer. You can find it in the colormap selection menu. Sometimes MATLAB needs to be restarted for the automatic loading to work. 
 
 # Features
 *Support for native brains*
