@@ -1,14 +1,16 @@
 # brainSurfer 
-Report all bugs to alex.teghipco@uci.edu!
+Report all bugs to Alex Teghipco @ alex.teghipco@uci.edu!
 
-*NOTE* This software is in beta, I built it to do stuff for me, so I'm not sure that it will necessarily work for you. It is *ONLY* for experimental use and comes with no guarantee of any kind.
+*NOTE* This software is in beta. I built it to display some brains for me, so I'm not sure that it will do what you want it to do, or that it will work on your particular setup. It is *ONLY* for experimental use and comes with no guarantee of any kind.
 
 # TL;DR
 - brainSurfer is a MATLAB toolbox for visualizing, thresholding, and manipulating surface space data. 
 
-- It can project volume space data in MNI_152_2mm space onto fsaverage surface space using a variety of different approaches. 
-
 - brainSurfer gives you as much control as I would want in the way that my data is presented. It has lots of different functionalities, which you can read about in the features section. My personal favorites include its ability to turn clusters into contours, to create 3D colormaps and plot 3D overlays, as well as the ability to modulate the transparency of a subset of data within an overlay, or to use a completely different overlay to modulate the transparency of an overlay. It also some nifty features for manipulating and getting cluster-level data.
+
+- It can project volume space data in 2mm MNI volume space onto an fsaverage surface using a registration fusion approach documentated in: Wu J, Ngo GH, Greve DN, Li J, He T, Fischl B, Eickhoff SB, Yeo BTT. Accurate nonlinear mapping between MNI volumetric and FreeSurfer surface coordinate systems, Human Brain Mapping 39:3793–3808, 2018. Code for this procedure is redistributed with brainSurfer but can be found here: https://github.com/ThomasYeoLab/CBIG. 
+
+*Note brainSurfer also uses a few different methods for trying to preserve boundaries in thresholded volume space maps that are transformed into surface space. You may or may not agree with these approaches, so check the documentation before relying on them.*
 
 - Just hover over buttons/input boxes to get some help with what they do. 
 
@@ -16,43 +18,29 @@ Report all bugs to alex.teghipco@uci.edu!
 1) Plop all of these files in any directory you want and add them to your path in matlab (include the subdirectories; e.g. using genpath(addpath(''))). Edit stuff at your own peril! 
 2) Type 'brainSurfer' into matlab to display the main GUI. Most functionality is contained within the plotUnderlay.m and plotOverlay.m functions in the ./scripts directory so you can use them to write your own scripts without using the GUI. 
 
-- *Note that importing data from volume space requires the installation of an additional repository and the updating of a single line in a brainSurfer script (see first FAQ)* 
-
 # FAQ
-1) *Help! I can't seem to import data from volume space and I keep getting errors whenever I try!*
-
-If you need to convert data from MNI_152_2mm space to fsaverage space, you will need to install one additional repository. brainSurfer uses a novel fusion registration method available here (https://github.com/ThomasYeoLab/CBIG) for transforming between these two spaces. In my experience, the results are superior to other available methods. To learn more about how this approach works, see Ngo et al's under review paper, "Accurate Nonlinear Mapping between MNI Volumetric and FreeSurfer Surface Coordinate Systems". 
-
-*Note1 --- This CBIG repository assumes you have freesurfer installed and makes use of some bash scripting through matlab.* 
-
-*Note2 --- To get it to work properly on my end, I had to write some additional (but simple) scripts included in brainSurfer. In order to have these scripts work properly, you need to update convertMNI2FS with the directory in which you've placed the CBIG repository. Navigate to ./scripts and open up convertMNI2FS.m. Now look at line 4, which should start with, "CBIGDir=". Replace "'/Users/ateghipc/MATLAB-Drive/Published/projectFSAVERAGE" with the directory in which "final_warps_FS5.3" lives.*   
-
-*Note3 --- The approaches for importing thresholded NIFTI maps and ROI NIFTI maps do not rely on this particular transformation method, but it is currently the only way to transform data in brainSurfer.*
-
-*Note4 --- ONLY the importing feature of neurosynth relies on this repository.*
-
-2) *Help! My data is in a different mm space but it should be convertible!*
+1) *Help! My data is in a different mm space but it should be convertible!*
 
 If you need to convert between various spaces in volume space (i.e., importing requires data to be in MNI_152_2mm space), our niftiManip repository can help with that.
 
-3) *Help! I don't have any data!*
+2) *Help! I don't have any data!*
 
-Check out some of the example maps that I used for testing in ./testingMaps
+Check out some of the example maps that I used for testing brainSurfer in ./testingMaps
 
-4) *What are the weird jpegs in the main folder and can I get rid of them?*
+3) *What are the weird jpegs in the main folder and can I get rid of them?*
 
-Sorry, needed them for buttons in the GUI. If you get rid of them, you won't be able to move overlays around.
+Sorry, needed them for buttons in the GUI. If you get rid of them, you may not be able to move overlays around.
 
-5) *What's in the ./brains folder?*
+4) *What's in the ./brains folder?*
 
 LH and RH inflated fsaverage files and their corresponding curvature files (identical to what comes stock with freesurfer). This is what brainSurfer automatically loads when you choose left/right or left and right fsaverage hemispheres in the surface selection menu.
 
-6) *I made my own colormap with brainSurfer. Where is it?*
+5) *I made my own colormap with brainSurfer. Where is it?*
 
 Colormaps are saved in the ./colormaps directory. Any colormap in that directory will automatically be loaded by brainSurfer. You can find it in the colormap selection menu. Sometimes MATLAB needs to be restarted for the automatic loading to work. 
 
 # Features
-*Support for native brains*
+*Support for native space*
 - Use either fsaverage brains that come with the toolbox, or render your own surface files. Then, overlay any data that fits the dimensions of your files (in .nii format). *see 'select a surface'*
 
 *Overlay multiple maps at once*
@@ -64,31 +52,31 @@ Colormaps are saved in the ./colormaps directory. Any colormap in that directory
 - left hemisphere and right hemisphere loading is not handled by seperate buttons, load them all in at once! (looking at you freeview) *see load button*
 
 *Import unthresholded NIFTI maps from MNI volume space*
-- Moving from MNI space to fsaverage surface space is tricky. A new, more accurate method is implemented using scripts released by Ngo et al (under review). See TL;DR and FAQ for more info. *see import button and select 'unthresholded map'*
+- Moving from MNI space to fsaverage surface space is tricky. A new, more accurate method is implemented using scripts released by Ngo et al (see TL;DR for references). *see import button and select 'unthresholded map'*
 
 *Import ROIs from NIFTI MNI volume space*
-- Because we are downsampling when we move from MNI space to surface space, transforming ROIs is tricky. Whole integers become decimals that may represent overlaps between various different combinations of clusters. To circumvent this, we can write the cluster most associated with the subset of voxels that map onto a particular vertex, into that specific vertex. This leaves us with a map of whole integers representing our ROIs, as well as confidence maps that capture how strongly a cluster is associated with a particular vertex (if a cluster wins by a lot, then we are much more confident that that vertex should be assigned to that particular cluster). *see import button and select 'ROIs map'*
+- Because we are downsampling when we move from MNI space to surface space, transforming ROIs is tricky. Whole integers become decimals that may represent overlaps between various different combinations of volume space clusters. Obviously, it would be best to create ROIs from stastical maps *in* surface space. However, that is not always possible. In that case, we can get at the problem by transforming every ROI seperately, and then comparing how well each of them maps onto a given vertex in surface space. Every whole integer in your input volume space file is treated as a seperate map, binarized (i.e., all values are changed to 1) and then transformed. The cluster with the highest value for a given vertex is then associated with that vertex. We can also get confidence maps for every vertex. If a single cluster wins at a particular vertex by a large amount, then we are much more confident that that vertex should be assigned to that particular cluster). *see import button and select 'ROIs map'*
 
 *Import thresholded NIFTI maps from MNI volume space*
-- Transforming a thresholded map of continuous values in MNI space to surface space is also tricky for largely the same reason-- the border of that map will bleed further into vertices that are very weakly associated with voxels above threshold. However, it is unclear what threshold can be used in surface space to restrict this expansion of the border. One solution is to project, seperately, the thresholded voxels in volume space onto surface space and to do the same for unthresholded voxels (i.e., empty zeros in the map). Vertices that are more strongly associated with the unthresholded voxels than thresholded voxels can then be excluded from the surface space overlay. You can also smooth the border of the unthresholded values after transformation to ensure that all transformed vertices are more strongly associated with thresholded voxels than with unthresholded voxels. *see import button and select 'thresholded map'*
+- Transforming a thresholded map of continuous values in volume space to surface space is also tricky for largely the same reason-- the border of that map will bleed further into vertices that are very weakly associated with voxels above threshold. As a result, some vertices will have values very far below whatever threshold was used to generate the map in volume space. One approach is to transform an unthresholded map and apply a threshold in surface space. If this is not possible, a solution is to treat the thresholded and unthresholded values in your volume space map as two seperate maps, transform both of them into surface space, and remove vertices from the thresholded map that have stronger mappings onto the transformed unthresholded map (much like the ROI approach above). You can also smooth the border of the unthresholded values after transformation to grow or shrink the thresholded map as it appears in surface space (the effect is usually subtle unless you overdo it)*see import button and select 'thresholded map'*
 
 *Detachable renderings*
-- A new surface space rendering can be opened and manipulated simply by selecting a new surface. This detaches the old rendering from brainSurfer. This means you won't be able to make any other changes to those old renderings. However, all settings in brainSurfer (including loaded files) are saved, and can be applied to the new surface rendering. *re-select a surface*
+- A new surface space rendering can be opened and manipulated simply by selecting a new surface in the selection menu. This detaches the old rendering from brainSurfer, meaning that you won't be able to make any other changes to those old renderings. However, all settings in brainSurfer (including loaded files) are saved, and can be applied to the new surface rendering. *re-select a surface*
 
 *A workspace for overlays*
-- An overlay workspace allows for quick duplication, reloading, deleting, and saving of overlays (why can't you do this BrainNet, Surfice, Freeview, Neuroelf, etc!) *see buttons below list of overlays in the 'select an overlay' menu*
+- A dedicated overlay workspace allows for quick duplication, reloading, deleting, and saving of overlays (why can't you do this BrainNet, Surfice, Freeview, Neuroelf, etc!) *see buttons below list of overlays in the 'select an overlay' menu*
 
 *Apply value-based and p-value thresholds*
-- A p-value map can be loaded and associated with the current overlay. Two different thresholds can then be applied. (why can't you do this or let me p-value threshold BrainNet, Surfice, Freeview, Neuroelf, etc!) *see threshold overlay menu*
+- A p-value map can be loaded and associated with the current overlay. Two different thresholds can then be applied. (why can't you do this or let me p-value threshold BrainNet, Surfice, Freeview, Neuroelf, etc!). *see threshold overlay menu*
 
 *Apply cluster thresholds*
-- You can remove clusters less than a certain size from the overlay. For instance, you can get a clusterform threshold using monte-carlo style simulations of your data (see brainvoyager for nice implementation, future versions of brainSurfer will do this too) *see threshold overlay menu*
+- You can remove clusters less than a certain size from the overlay. For instance, you can get a clusterform threshold using monte-carlo style simulations of your data (see brainvoyager for nice implementation of this approach and comprehensive documentation, future versions of brainSurfer will do this too) *see threshold overlay menu*
 
 *Threshold negative and positive values seperately*
 - Come on freesurfer, why does a threshold of 3.5 have to remove all values between -3.5 and 3.5? *see threshold overlay menu*
 
 *Adjustable limits*
-- The min and max values in my overlay should be adjustable! (good job, AFNI!) *see the two text boxes in the limits subsection of adjustments menu*
+- The min and max values of my overlay should be adjustable independent of the thresholds I set! (good job, AFNI!) *see the two text boxes in the limits subsection of adjustments menu*
 
 *Adjustable colorbar spacing*
 - Why should my colorbar be evenly spaced? If it has 2 primary colors, I should be able to force the middle of my colorbar to map onto zero, that way negative values are 1 color, and positive values are the 2nd color (why on earth is this not an option already?!) *see limits subsection of adjustments menu and select 'color spacing' options*
@@ -137,7 +125,7 @@ Colormaps are saved in the ./colormaps directory. Any colormap in that directory
 *Use data from a different overlay to modulate transparency*
 - You can also change the opacity of vertices in your currently selected overlay, based on data from a different overlay. For example, lets say we've used our ROI transformation method from MNI volume space to surface space. This also generated some confidence maps. We can i) load in our surface space ROI maps, ii) select them as our current overlay, iii) load our confidence maps in the transparency modulation menu, and iv) use the values in the confidence map to change the opacity of our the ROIs in our current overlay so that vertices we are really confident belong to a specific ROI are more opaque. *click the 'load alternate data' button to do this*
 
-*Clusterize an overlay*
+*'Clusterize' an overlay*
 - convert an overlay into a file of ROIs with the 'Make ROIs' button. Each cluster is assigned an integer value between 1 and the number of clusters in the overlay. *click the 'make ROIs' button to do this*
 
 *Control rendering properties*
@@ -167,6 +155,9 @@ Colormaps are saved in the ./colormaps directory. Any colormap in that directory
 
 # Future features
 - clusterform threshold testing with TFCE or some other method depending on the kind of data you load
+- you will be able to indicate the kind of statistical map you have loaded into brainSurfer. brainSurfer will then automatically generate p-values for each vertex so that you always have the option of choosing a p-value threshold. Loading your own p-value maps will still be an option. For instance, you might have permutation based p-values or TFCE p-values that brainSurfer will never be able to generate.
+- support for converting between certain distributions-- p to t, r to fisher transformed r, z to t, etc. 
+- support for quick arithmetic of loaded overlays-- multiply, add, subtract, divive, t-test groups of files you've loaded in
 
 # List of GUIs and their functions
 1) brainSurfer.fig ----> Primary UI. Facillitates all thresholding and loading of underlays and overlays
@@ -207,3 +198,4 @@ Here is a full list of auxillery scripts that are redistributed with brainSurfer
 8) scripts in ./scripts/MatPlotLib ----> this is a nice collection of colormaps ported from matplotlib. 
 9) scripts in ./scripts/cbrewer ----> this is a nice collection of colormaps that are perceptually distinct (e.g., controlled for luminance)
 10) save_nfti.m -----> this script is distributed with freesurfer and is used to save a surface space overlay as an .nii file
+11) Wu2017RegistrationFusion -----> this is the toolbox that we use to transform volume space data into surface space (see TL;DR for references and links)
