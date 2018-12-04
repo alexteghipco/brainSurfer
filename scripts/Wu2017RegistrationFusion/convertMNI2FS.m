@@ -3,6 +3,11 @@ function [outFiles] = convertMNI2FS(inFile,outFolder)
 % outFolder is where you want to put the transformed output files (in fsaverage space)
 %
 % Written by Alex Teghipco
+if ispc == 1
+    slash = '\';
+else
+    slash = '/';
+end
 
 toolboxPath = which('convertMNI2FS.m');
 [toolboxPath, ~] = fileparts(toolboxPath);
@@ -15,13 +20,13 @@ if isempty(outFolder) == 1
 end
 
 input = MRIread(inFile);
-[lh_proj_data, rh_proj_data] = CBIG_RF_projectVol2fsaverage(inFile,'linear',[toolboxPath '/final_warps_FS5.3/lh.' defaultWarp],['/Users/ateghipc/MATLAB-Drive/Published/projectFSAVERAGE/final_warps_FS5.3/rh.' defaultWarp]); 
+[lh_proj_data, rh_proj_data] = CBIG_RF_projectVol2fsaverage(inFile,'linear',[toolboxPath slash 'final_warps_FS5.3' slash 'lh.' defaultWarp],[toolboxPath slash 'final_warps_FS5.3' slash 'rh.' defaultWarp]); 
 input.vol = permute(lh_proj_data, [4 2 3 1]);  
-MRIwrite(input,[outFolder '/lh.MNI_' inFileName '_RF_ANTs_MNI152_orig_to_fsaverage.nii.gz']);                                          
+MRIwrite(input,[outFolder slash 'lh.MNI_' inFileName '_RF_ANTs_MNI152_orig_to_fsaverage.nii.gz']);                                          
 input.vol = permute(rh_proj_data, [4 2 3 1]);                                          
-MRIwrite(input,[outFolder '/rh.MNI_' inFileName '_RF_ANTs_MNI152_orig_to_fsaverage.nii.gz']);
+MRIwrite(input,[outFolder slash 'rh.MNI_' inFileName '_RF_ANTs_MNI152_orig_to_fsaverage.nii.gz']);
 
-outFiles{1} = [outFolder '/lh.MNI_' inFileName '_RF_ANTs_MNI152_orig_to_fsaverage.nii.gz'];
-outFiles{2} = [outFolder '/rh.MNI_' inFileName '_RF_ANTs_MNI152_orig_to_fsaverage.nii.gz'];
+outFiles{1} = [outFolder slash 'lh.MNI_' inFileName '_RF_ANTs_MNI152_orig_to_fsaverage.nii.gz'];
+outFiles{2} = [outFolder slash 'rh.MNI_' inFileName '_RF_ANTs_MNI152_orig_to_fsaverage.nii.gz'];
 
 end
