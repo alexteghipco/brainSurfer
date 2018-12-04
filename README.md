@@ -1,7 +1,7 @@
 # brainSurfer 
 Report all bugs to Alex Teghipco @ alex.teghipco@uci.edu!
 
-*NOTE* This software is in beta. I built it to display some brains for me, so I'm not sure that it will do what you want it to do, or that it will work on your particular setup. It is *ONLY* for experimental use and comes with no guarantee of any kind.
+*NOTE* This software is in beta. I built it to display some brains for me, so I'm not sure that it will do what you want it to do, or that it will work on your particular setup. It is *ONLY* for experimental use and comes with no guarantee of any kind. It should work with both windows and linux OSs, but has only been tested on mac OS. brainSurfer was built on MATLAB's R2017a release so your mileage may vary on older versions of MATLAB.
 
 # TL;DR
 - brainSurfer is a MATLAB toolbox for visualizing, thresholding, and manipulating surface space data. 
