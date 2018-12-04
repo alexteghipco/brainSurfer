@@ -42,14 +42,23 @@ guidata(hObject, handles);
 %     plot(rand(5));
 % end
 
+% get OS
+if ispc == 0
+    handles.paths.slash = '/';
+else
+    handles.paths.slash = '\';
+end
+
 % Setup paths for files we need
 guiPath = which(mfilename);
 [guiPath, ~] = fileparts(guiPath);
+
+
 %hObject.UserData.paths.brainPath = [guiPath '/brains'];
 %hObject.UserData.paths.scriptPath = [guiPath '/scripts'];
-handles.paths.brainPath = [guiPath '/brains'];
-handles.paths.scriptPath = [guiPath '/scripts'];
-handles.paths.colormapsPath = [guiPath '/colormaps'];
+handles.paths.brainPath = [guiPath handles.paths.slash 'brains'];
+handles.paths.scriptPath = [guiPath handles.paths.slash 'scripts'];
+handles.paths.colormapsPath = [guiPath handles.paths.slash 'colormaps'];
 
 if exist(handles.paths.scriptPath,'dir') ~= 7
     error('It looks like the directory of scripts this gui draws on is missing (should be in ./scripts)')
@@ -61,7 +70,7 @@ end
 handles.defaultOptions = struct('colormap',2,'overlayThresholdNeg',0,'overlayThresholdPos',0,'limitMin',[],'limitMax',[],'opacity',1,'colormapSpacing','even','colorBins',1000, 'clusterThresh',0,'binarize',0,'inclZero','true','outline','false','smoothSteps',0,'smoothArea',1,'smoothThreshold','above','customColor',[],'binarizeClusters','false','pThresh',0,'pVals',[],'transparencyLimits',[],'transparencyThresholds',[],'transparencyData',[],'transparencyPThresh',[],'invertColor','false','invertOpacity','false','growROI',0,'smoothType','neighbors');
 
 % Load in colormaps
-colormapDir = dir([handles.paths.colormapsPath '/*.mat']);
+colormapDir = dir([handles.paths.colormapsPath handles.paths.slash '*.mat']);
 colormaps = {colormapDir.name};
 for colori = 1:length(colormaps)
     colormaps{colori} = colormaps{colori}(1:end-4);
@@ -576,11 +585,11 @@ if handles.overlaySelection.Value ~= 1
     
     % load in the original overlay file for your selection. Try .gz if it
     % fails because load_nifti automatically gunzips
-    if exist([handles.brainMap.Path{handles.overlaySelection.Value - 1} '/' handles.brainMap.Name{handles.overlaySelection.Value - 1}],'file') ~= 0
-        template = load_nifti([handles.brainMap.Path{handles.overlaySelection.Value - 1} '/' handles.brainMap.Name{handles.overlaySelection.Value - 1}]);
+    if exist([handles.brainMap.Path{handles.overlaySelection.Value - 1} handles.paths.slash handles.brainMap.Name{handles.overlaySelection.Value - 1}],'file') ~= 0
+        template = load_nifti([handles.brainMap.Path{handles.overlaySelection.Value - 1} handles.paths.slash handles.brainMap.Name{handles.overlaySelection.Value - 1}]);
     else
         try
-            template = load_nifti([handles.brainMap.Path{handles.overlaySelection.Value - 1} '/' handles.brainMap.Name{handles.overlaySelection.Value - 1} '.gz']);
+            template = load_nifti([handles.brainMap.Path{handles.overlaySelection.Value - 1} handles.paths.slash handles.brainMap.Name{handles.overlaySelection.Value - 1} '.gz']);
         catch
             error('Could not load your original file...check to make sure you have not moved it')
         end
@@ -788,23 +797,23 @@ handles = guidata(hObject);
 
 % if you selected both hemispheres:
 if hObject.Value == 2
-    [vert1,face1] = read_surf([handles.paths.brainPath '/lh.inflated']);
-    [vert2,face2] = read_surf([handles.paths.brainPath '/rh.inflated']);
-    curv1 = read_curv([handles.paths.brainPath '/lh.curv']);
-    curv2 = read_curv([handles.paths.brainPath '/rh.curv']);
+    [vert1,face1] = read_surf([handles.paths.brainPath handles.paths.slash 'lh.inflated']);
+    [vert2,face2] = read_surf([handles.paths.brainPath handles.paths.slash 'rh.inflated']);
+    curv1 = read_curv([handles.paths.brainPath handles.paths.slash 'lh.curv']);
+    curv2 = read_curv([handles.paths.brainPath handles.paths.slash 'rh.curv']);
     [handles.underlay, handles.brainFig] = plotUnderlay(vert1, face1, curv1, vert2, face2, curv2);
     hold on
 end
 
 if hObject.Value == 3
-    [vert1,face1] = read_surf([handles.paths.brainPath '/lh.inflated']);
-    curv1 = read_curv([handles.paths.brainPath '/lh.curv']);
+    [vert1,face1] = read_surf([handles.paths.brainPath handles.paths.slash 'lh.inflated']);
+    curv1 = read_curv([handles.paths.brainPath handles.paths.slash 'lh.curv']);
     [handles.underlay, handles.brainFig] = plotUnderlay(vert1, face1, curv1);
 end
 
 if hObject.Value == 4
-    [vert1,face1] = read_surf([handles.paths.brainPath '/rh.inflated']);
-    curv1 = read_curv([handles.paths.brainPath '/rh.curv']);
+    [vert1,face1] = read_surf([handles.paths.brainPath handles.paths.slash 'rh.inflated']);
+    curv1 = read_curv([handles.paths.brainPath handles.paths.slash 'rh.curv']);
     [handles.underlay, handles.brainFig] = plotUnderlay(vert1, face1, curv1);
 end
 
@@ -899,25 +908,25 @@ if isfield(handles,'underlay') == 1
             delete(handles.underlay.left)
             delete(handles.underlay.right)
             
-            [vert1,face1] = read_surf([handles.paths.brainPath '/lh.inflated']);
-            [vert2,face2] = read_surf([handles.paths.brainPath '/rh.inflated']);
-            curv1 = read_curv([handles.paths.brainPath '/lh.curv']);
-            curv2 = read_curv([handles.paths.brainPath '/rh.curv']);
+            [vert1,face1] = read_surf([handles.paths.brainPath handles.paths.slash 'lh.inflated']);
+            [vert2,face2] = read_surf([handles.paths.brainPath handles.paths.slash 'rh.inflated']);
+            curv1 = read_curv([handles.paths.brainPath handles.paths.slash 'lh.curv']);
+            curv2 = read_curv([handles.paths.brainPath handles.paths.slash 'rh.curv']);
             [handles.underlay, handles.brainFig] = plotUnderlay(vert1, face1, curv1, vert2, face2, curv2,'true');
             hold on
         end
         
         if handles.surfaceSelection.Value == 3
             delete(handles.underlay.left)
-            [vert1,face1] = read_surf([handles.paths.brainPath '/lh.inflated']);
-            curv1 = read_curv([handles.paths.brainPath '/lh.curv']);
+            [vert1,face1] = read_surf([handles.paths.brainPath handles.paths.slash 'lh.inflated']);
+            curv1 = read_curv([handles.paths.brainPath handles.paths.slash 'lh.curv']);
             [handles.underlay, handles.brainFig] = plotUnderlay(vert1, face1, curv1,'true');
         end
         
         if handles.surfaceSelection.Value == 4
             delete(handles.underlay.right)
-            [vert1,face1] = read_surf([handles.paths.brainPath '/rh.inflated']);
-            curv1 = read_curv([handles.paths.brainPath '/rh.curv']);
+            [vert1,face1] = read_surf([handles.paths.brainPath handles.paths.slash 'rh.inflated']);
+            curv1 = read_curv([handles.paths.brainPath handles.paths.slash 'rh.curv']);
             [handles.underlay, handles.brainFig] = plotUnderlay(vert1, face1, curv1,'true');
         end
         
@@ -950,10 +959,10 @@ if isfield(handles,'underlay') == 1
             delete(handles.underlay.left)
             delete(handles.underlay.right)
             
-            [vert1,face1] = read_surf([handles.paths.brainPath '/lh.inflated']);
-            [vert2,face2] = read_surf([handles.paths.brainPath '/rh.inflated']);
-            curv1 = read_curv([handles.paths.brainPath '/lh.curv']);
-            curv2 = read_curv([handles.paths.brainPath '/rh.curv']);
+            [vert1,face1] = read_surf([handles.paths.brainPath handles.paths.slash 'lh.inflated']);
+            [vert2,face2] = read_surf([handles.paths.brainPath handles.paths.slash 'rh.inflated']);
+            curv1 = read_curv([handles.paths.brainPath handles.paths.slash 'lh.curv']);
+            curv2 = read_curv([handles.paths.brainPath handles.paths.slash 'rh.curv']);
             
             thresh = inputdlg(['Choose a threshold boundary for what we will call sulci (smaller and negative values will increase gyri size...min is ' num2str(min(curv1)) ' and max is ' num2str(max(curv1))],'Sulci-gyri Boundary');
             [handles.underlay, handles.brainFig] = plotUnderlay(vert1, face1, curv1, vert2, face2, curv2,'false',str2double(thresh));
@@ -962,8 +971,8 @@ if isfield(handles,'underlay') == 1
         
         if handles.surfaceSelection.Value == 3
             delete(handles.underlay.left)
-            [vert1,face1] = read_surf([handles.paths.brainPath '/lh.inflated']);
-            curv1 = read_curv([handles.paths.brainPath '/lh.curv']);
+            [vert1,face1] = read_surf([handles.paths.brainPath handles.paths.slash 'lh.inflated']);
+            curv1 = read_curv([handles.paths.brainPath handles.paths.slash 'lh.curv']);
             thresh = inputdlg(['Choose a threshold boundary for what we will call sulci (smaller and negative values will increase gyri size...min is ' num2str(min(curv1)) ' and max is ' num2str(max(curv1))],'Sulci-gyri Boundary');
             
             [handles.underlay, handles.brainFig] = plotUnderlay(vert1, face1, curv1,'false',str2double(thresh));
@@ -971,8 +980,8 @@ if isfield(handles,'underlay') == 1
         
         if handles.surfaceSelection.Value == 4
             delete(handles.underlay.right)
-            [vert1,face1] = read_surf([handles.paths.brainPath '/rh.inflated']);
-            curv1 = read_curv([handles.paths.brainPath '/rh.curv']);
+            [vert1,face1] = read_surf([handles.paths.brainPath handles.paths.slash 'rh.inflated']);
+            curv1 = read_curv([handles.paths.brainPath handles.paths.slash 'rh.curv']);
             thresh = inputdlg(['Choose a threshold boundary for what we will call sulci (smaller and negative values will increase gyri size...min is ' num2str(min(curv1)) ' and max is ' num2str(max(curv1))],'Sulci-gyri Boundary');
             
             [handles.underlay, handles.brainFig] = plotUnderlay(vert1, face1, curv1,'false',str2double(thresh));
@@ -1318,7 +1327,7 @@ if handles.overlaySelection.Value ~= 1
         if handles.colormapCustom(hObject.Value) == 1 || hObject.Value == 52 || hObject.Value == 53
             % load in the colormap if it's an already created colormap
             if handles.colormapCustom(hObject.Value) == 1
-                customColor = load([handles.paths.colormapsPath '/' handles.colormap.String{hObject.Value} '.mat']);
+                customColor = load([handles.paths.colormapsPath handles.paths.slash handles.colormap.String{hObject.Value} '.mat']);
                 if isa(customColor,'struct') == 1
                     field = fieldnames(customColor);
                     handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor = customColor.(field{1});
@@ -1338,7 +1347,7 @@ if handles.overlaySelection.Value ~= 1
                         pause;
                         customColor = colormap(ax);
                         handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor = customColor;
-                        [oFile, oPath] = uiputfile({'*.mat'},'Pick a name for your colormap',[handles.paths.colormapsPath '/colormap']);
+                        [oFile, oPath] = uiputfile({'*.mat'},'Pick a name for your colormap',[handles.paths.colormapsPath handles.paths.slash 'colormap']);
                         save([oPath oFile]','customColor')
                         
                         handles.colormapCustom = vertcat(handles.colormapCustom,[1]);
