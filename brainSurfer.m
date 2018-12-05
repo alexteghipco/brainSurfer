@@ -1,6 +1,12 @@
 function varargout = brainSurfer(varargin)
 % Brainsurfer GUI
-% Alex Teghipco // alex.teghipco@uci.edu // 11/28/18
+% Alex Teghipco // alex.teghipco@uci.edu // 12/5/18
+%
+% Fixed bug where having only one overlay in selection box as a result of
+% deleting actions throws error (because the starting selection string of
+% 'no overlay' is no longer in a cell the way it is setup by default in
+% GUIDE).
+%
 % Last Modified by GUIDE v2.5 08-Nov-2018 22:22:55
 
 % Begin initialization code - DO NOT EDIT
@@ -79,6 +85,8 @@ end
 if isempty(colormaps) == 0
     handles.colormapCustom = vertcat(zeros([length(handles.colormap.String), 1]),ones([length(colormaps), 1]));
     handles.colormap.String = vertcat(handles.colormap.String,colormaps');
+else
+    handles.colormapCustom = vertcat(zeros([length(handles.colormap.String), 1]));
 end
 % Change some default settings for handles that are auto-generated with
 % GUIDE
@@ -202,7 +210,11 @@ if isfield(handles, 'underlay') == 1
         
         % update available list of overlays to select from
         if numSavedOverlays == 0
-            handles.overlaySelection.String = vertcat({handles.overlaySelection.String},handles.brainMap.Name(numSavedOverlays+1:(numSavedOverlays+length(overlayFiles))));
+            try % when only one overlay is left in selection box as a result of deleting overlays vertcat throws error because the selection string is no longer in cell (i.e., as the case when loading the very first overlay)
+                handles.overlaySelection.String = vertcat({handles.overlaySelection.String},handles.brainMap.Name(numSavedOverlays+1:(numSavedOverlays+length(overlayFiles))));
+            catch
+                handles.overlaySelection.String = vertcat(handles.overlaySelection.String,handles.brainMap.Name(numSavedOverlays+1:(numSavedOverlays+length(overlayFiles))));
+            end
         else
             handles.overlaySelection.String = vertcat(handles.overlaySelection.String(:),handles.brainMap.Name(numSavedOverlays+1:(numSavedOverlays+length(overlayFiles))));
         end
@@ -695,7 +707,7 @@ else
             end
         end
     else
- 
+        
         % Populate GUI options with saved settings for this selection stored in 'Current' structure
         handles.limitMin.String = num2str(handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin);
         handles.limitMax.String = num2str(handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax);
@@ -1324,78 +1336,80 @@ if handles.overlaySelection.Value ~= 1
     if hObject.Value > 1
         % if colormap is custom and already loaded in GUI or if you
         % selected to create a custom map
-        if handles.colormapCustom(hObject.Value) == 1 || hObject.Value == 52 || hObject.Value == 53
-            % load in the colormap if it's an already created colormap
-            if handles.colormapCustom(hObject.Value) == 1
-                customColor = load([handles.paths.colormapsPath handles.paths.slash handles.colormap.String{hObject.Value} '.mat']);
-                if isa(customColor,'struct') == 1
-                    field = fieldnames(customColor);
-                    handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor = customColor.(field{1});
-                    handles.colorBins.String = num2str(length(handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor));
-                    handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins = length(customColor);
+        if isfield(handles,'colormapCustom') == 1
+            if handles.colormapCustom(hObject.Value) == 1 || hObject.Value == 52 || hObject.Value == 53
+                % load in the colormap if it's an already created colormap
+                if handles.colormapCustom(hObject.Value) == 1
+                    customColor = load([handles.paths.colormapsPath handles.paths.slash handles.colormap.String{hObject.Value} '.mat']);
+                    if isa(customColor,'struct') == 1
+                        field = fieldnames(customColor);
+                        handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor = customColor.(field{1});
+                        handles.colorBins.String = num2str(length(handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor));
+                        handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins = length(customColor);
+                    end
                 end
-            end
-            % or if you asked to make a custom colormap, do that now
-            if hObject.Value == 75
-                customChoice = questdlg('Do you want to create a colormap?','Custom colormap','Yes','No','Yes');
-                switch customChoice
-                    case 'Yes'
-                        colormapeditor
-                        %pause;
-                        ax = gca;
-                        f = msgbox('When you are done selecting your colormap press any key on your computer','Unideal scenario');
-                        pause;
-                        customColor = colormap(ax);
-                        handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor = customColor;
-                        [oFile, oPath] = uiputfile({'*.mat'},'Pick a name for your colormap',[handles.paths.colormapsPath handles.paths.slash 'colormap']);
-                        save([oPath oFile]','customColor')
-                        
-                        handles.colormapCustom = vertcat(handles.colormapCustom,[1]);
-                        handles.colormap.String = vertcat(handles.colormap.String,{oFile});
+                % or if you asked to make a custom colormap, do that now
+                if hObject.Value == 75
+                    customChoice = questdlg('Do you want to create a colormap?','Custom colormap','Yes','No','Yes');
+                    switch customChoice
+                        case 'Yes'
+                            colormapeditor
+                            %pause;
+                            ax = gca;
+                            f = msgbox('When you are done selecting your colormap press any key on your computer','Unideal scenario');
+                            pause;
+                            customColor = colormap(ax);
+                            handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor = customColor;
+                            [oFile, oPath] = uiputfile({'*.mat'},'Pick a name for your colormap',[handles.paths.colormapsPath handles.paths.slash 'colormap']);
+                            save([oPath oFile]','customColor')
+                            
+                            handles.colormapCustom = vertcat(handles.colormapCustom,[1]);
+                            handles.colormap.String = vertcat(handles.colormap.String,{oFile});
+                    end
                 end
+                
+                % if you chose a single color lets ask you which one to use
+                % now
+                if hObject.Value == 76
+                    handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor = uisetcolor;
+                    handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor = repmat(singleColor,[handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,1]);
+                end
+                
+                if isfield(handles.opts,'colorbar')
+                    delete(handles.opts.colorbar)
+                end
+                
+                % now update the figure
+                %[handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data, 'overlay', handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlay,'figHandle', handles.brainFig, 'threshold',[handles.overlayThresholdNeg.Value, handles.overlayThresholdPos.Value], 'hemisphere', handles.brainMap.hemi{handles.overlaySelection.Value - 1}, 'opacity', str2double(handles.opacity.String), 'colorMap', handles.colormap.String{handles.colormap.Value}, 'colorSampling',handles.colormapSpacing.String{handles.colormapSpacing.Value},'colorBins',str2double(handles.colorBins.String),'limits', [str2double(handles.limitMin.String) str2double(handles.limitMax.String)],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh);
+                [handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data, 'overlay', handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlay,'figHandle', handles.brainFig, 'threshold',[handles.overlayThresholdNeg.Value, handles.overlayThresholdPos.Value], 'hemisphere', handles.brainMap.hemi{handles.overlaySelection.Value - 1}, 'opacity', str2double(handles.opacity.String), 'colorMap', handles.colormap.String{handles.colormap.Value}, 'colorSampling',handles.colormapSpacing.String{handles.colormapSpacing.Value},'colorBins',str2double(handles.colorBins.String),'limits', [str2double(handles.limitMin.String) str2double(handles.limitMax.String)],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
+                
+                handles.opts.colorbar = cbar;
+                handles.opts.colorbar.TickLength = [0 0];
+                imh = handles.opts.colorbar.Children(1);
+                imh.AlphaData = handles.opts.transparencyData;
+                imh.AlphaDataMapping = 'direct';
+                %handles.opts.colorbar.YTick = handles.opts.colorBarTicks;
+                %handles.opts.colorbar.YTickLabel = handles.opts.colorBarLabels;
+                
+            else % update overlay and clear custom color
+                handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor = [];
+                
+                if isfield(handles.opts,'colorbar')
+                    delete(handles.opts.colorbar)
+                end
+                
+                %[handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data, 'overlay', handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlay,'figHandle', handles.brainFig, 'threshold',[handles.overlayThresholdNeg.Value, handles.overlayThresholdPos.Value], 'hemisphere', handles.brainMap.hemi{handles.overlaySelection.Value - 1}, 'opacity', str2double(handles.opacity.String), 'colorMap', handles.colormap.String{handles.colormap.Value}, 'colorSampling',handles.colormapSpacing.String{handles.colormapSpacing.Value},'colorBins',str2double(handles.colorBins.String),'limits', [str2double(handles.limitMin.String) str2double(handles.limitMax.String)],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh);
+                [handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data, 'overlay', handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlay,'figHandle', handles.brainFig, 'threshold',[handles.overlayThresholdNeg.Value, handles.overlayThresholdPos.Value], 'hemisphere', handles.brainMap.hemi{handles.overlaySelection.Value - 1}, 'opacity', str2double(handles.opacity.String), 'colorMap', handles.colormap.String{handles.colormap.Value}, 'colorSampling',handles.colormapSpacing.String{handles.colormapSpacing.Value},'colorBins',str2double(handles.colorBins.String),'limits', [str2double(handles.limitMin.String) str2double(handles.limitMax.String)],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
+                
+                handles.opts.colorbar = cbar;
+                handles.opts.colorbar.TickLength = [0 0];
+                imh = handles.opts.colorbar.Children(1);
+                imh.AlphaData = handles.opts.transparencyData;
+                imh.AlphaDataMapping = 'direct';
+                %handles.opts.colorbar.YTick = handles.opts.colorBarTicks;
+                %handles.opts.colorbar.YTickLabel = handles.opts.colorBarLabels;
+                
             end
-            
-            % if you chose a single color lets ask you which one to use
-            % now
-            if hObject.Value == 76
-                handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor = uisetcolor;
-                handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor = repmat(singleColor,[handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,1]);
-            end
-            
-            if isfield(handles.opts,'colorbar')
-                delete(handles.opts.colorbar)
-            end
-            
-            % now update the figure
-            %[handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data, 'overlay', handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlay,'figHandle', handles.brainFig, 'threshold',[handles.overlayThresholdNeg.Value, handles.overlayThresholdPos.Value], 'hemisphere', handles.brainMap.hemi{handles.overlaySelection.Value - 1}, 'opacity', str2double(handles.opacity.String), 'colorMap', handles.colormap.String{handles.colormap.Value}, 'colorSampling',handles.colormapSpacing.String{handles.colormapSpacing.Value},'colorBins',str2double(handles.colorBins.String),'limits', [str2double(handles.limitMin.String) str2double(handles.limitMax.String)],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh);
-            [handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data, 'overlay', handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlay,'figHandle', handles.brainFig, 'threshold',[handles.overlayThresholdNeg.Value, handles.overlayThresholdPos.Value], 'hemisphere', handles.brainMap.hemi{handles.overlaySelection.Value - 1}, 'opacity', str2double(handles.opacity.String), 'colorMap', handles.colormap.String{handles.colormap.Value}, 'colorSampling',handles.colormapSpacing.String{handles.colormapSpacing.Value},'colorBins',str2double(handles.colorBins.String),'limits', [str2double(handles.limitMin.String) str2double(handles.limitMax.String)],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
-            
-            handles.opts.colorbar = cbar;
-            handles.opts.colorbar.TickLength = [0 0];
-            imh = handles.opts.colorbar.Children(1);
-            imh.AlphaData = handles.opts.transparencyData;
-            imh.AlphaDataMapping = 'direct';
-            %handles.opts.colorbar.YTick = handles.opts.colorBarTicks;
-            %handles.opts.colorbar.YTickLabel = handles.opts.colorBarLabels;
-            
-        else % update overlay and clear custom color
-            handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor = [];
-            
-            if isfield(handles.opts,'colorbar')
-                delete(handles.opts.colorbar)
-            end
-            
-            %[handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data, 'overlay', handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlay,'figHandle', handles.brainFig, 'threshold',[handles.overlayThresholdNeg.Value, handles.overlayThresholdPos.Value], 'hemisphere', handles.brainMap.hemi{handles.overlaySelection.Value - 1}, 'opacity', str2double(handles.opacity.String), 'colorMap', handles.colormap.String{handles.colormap.Value}, 'colorSampling',handles.colormapSpacing.String{handles.colormapSpacing.Value},'colorBins',str2double(handles.colorBins.String),'limits', [str2double(handles.limitMin.String) str2double(handles.limitMax.String)],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh);
-            [handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data, 'overlay', handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlay,'figHandle', handles.brainFig, 'threshold',[handles.overlayThresholdNeg.Value, handles.overlayThresholdPos.Value], 'hemisphere', handles.brainMap.hemi{handles.overlaySelection.Value - 1}, 'opacity', str2double(handles.opacity.String), 'colorMap', handles.colormap.String{handles.colormap.Value}, 'colorSampling',handles.colormapSpacing.String{handles.colormapSpacing.Value},'colorBins',str2double(handles.colorBins.String),'limits', [str2double(handles.limitMin.String) str2double(handles.limitMax.String)],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
-            
-            handles.opts.colorbar = cbar;
-            handles.opts.colorbar.TickLength = [0 0];
-            imh = handles.opts.colorbar.Children(1);
-            imh.AlphaData = handles.opts.transparencyData;
-            imh.AlphaDataMapping = 'direct';
-            %handles.opts.colorbar.YTick = handles.opts.colorBarTicks;
-            %handles.opts.colorbar.YTickLabel = handles.opts.colorBarLabels;
-            
         end
         
         % saveOverlay colormap into overlay settings
@@ -2358,8 +2372,8 @@ if handles.overlaySelection.Value ~= 1
     handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlay.FaceAlpha = 0;
     
     %[handles.underlay, handles.brainMap.Current{fileNum}.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{fileNum}.Data,'figHandle', handles.brainFig, 'threshold',[handles.overlayThresholdNeg.Value, handles.overlayThresholdPos.Value], 'hemisphere', handles.brainMap.hemi{fileNum}, 'opacity', str2double(handles.opacity.String), 'colorMap', handles.colormap.String{handles.colormap.Value}, 'colorSampling',handles.colormapSpacing.String{handles.colormapSpacing.Value},'colorBins',str2double(handles.colorBins.String),'limits', [str2double(handles.limitMin.String) str2double(handles.limitMax.String)],'inclZero',handles.brainMap.Current{fileNum}.inclZero,'clusterThresh',handles.brainMap.Current{fileNum}.clusterThresh,'binarize',handles.brainMap.Current{fileNum}.binarize,'outline',handles.brainMap.Current{fileNum}.outline,'binarizeClusters',handles.brainMap.Current{fileNum}.binarizeClusters,'customColor',handles.brainMap.Current{fileNum}.customColor,'pMap',handles.brainMap.Current{fileNum}.pVals,'pThresh',handles.brainMap.Current{fileNum}.pThresh,'transparencyLimits',handles.brainMap.Current{fileNum}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{fileNum}.transparencyThresholds,'transparencyData',handles.brainMap.Current{fileNum}.transparencyData,'transparencyPThresh',handles.brainMap.Current{fileNum}.transparencyPThresh);
-   [handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data, 'overlay', handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlay,'figHandle', handles.brainFig, 'threshold',[handles.overlayThresholdNeg.Value, handles.overlayThresholdPos.Value], 'hemisphere', handles.brainMap.hemi{handles.overlaySelection.Value - 1}, 'opacity', str2double(handles.opacity.String), 'colorMap', handles.colormap.String{handles.colormap.Value}, 'colorSampling',handles.colormapSpacing.String{handles.colormapSpacing.Value},'colorBins',str2double(handles.colorBins.String),'limits', [str2double(handles.limitMin.String) str2double(handles.limitMax.String)],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
-   
+    [handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data, 'overlay', handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlay,'figHandle', handles.brainFig, 'threshold',[handles.overlayThresholdNeg.Value, handles.overlayThresholdPos.Value], 'hemisphere', handles.brainMap.hemi{handles.overlaySelection.Value - 1}, 'opacity', str2double(handles.opacity.String), 'colorMap', handles.colormap.String{handles.colormap.Value}, 'colorSampling',handles.colormapSpacing.String{handles.colormapSpacing.Value},'colorBins',str2double(handles.colorBins.String),'limits', [str2double(handles.limitMin.String) str2double(handles.limitMax.String)],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
+    
     handles.opts.colorbar = cbar;
     handles.opts.colorbar.TickLength = [0 0];
     imh = handles.opts.colorbar.Children(1);
