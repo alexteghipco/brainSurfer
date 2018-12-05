@@ -1,14 +1,14 @@
 # brainSurfer 
 Report all bugs to Alex Teghipco @ alex.teghipco@uci.edu!
 
-*NOTE* This software is in beta. I built it to display some brains for me, so I'm not sure that it will do what you want it to do, or that it will work on your particular setup. It is *ONLY* for experimental use and comes with no guarantee of any kind. It should work with both windows and linux OSs, but has only been tested on mac OS. brainSurfer was built on MATLAB's R2017a release so your mileage may vary on older versions of MATLAB.
+*NOTE* This software is in beta. I built it to display some brains for me, so I'm not sure that it will do what you want it to do, or that it will work on your particular setup. It is *ONLY* for experimental use and comes with no guarantee of any kind. It should work with both windows and linux OSs (however importing files will be buggy on windows; see TL;DR), but has only been tested on mac OS. brainSurfer was built on MATLAB's R2017a release so your mileage may vary on older versions of MATLAB.
 
 # TL;DR
 - brainSurfer is a MATLAB toolbox for visualizing, thresholding, and manipulating surface space data. 
 
 - brainSurfer gives you as much control as I would want in the way that my data is presented. It has lots of different functionalities, which you can read about in the features section. My personal favorites include its ability to turn clusters into contours, to create 3D colormaps and plot 3D overlays, as well as the ability to modulate the transparency of a subset of data within an overlay, or to use a completely different overlay to modulate the transparency of an overlay. It also some nifty features for manipulating and getting cluster-level data.
 
-- It can project volume space data in 2mm MNI volume space onto an fsaverage surface using a registration fusion approach documentated in: Wu J, Ngo GH, Greve DN, Li J, He T, Fischl B, Eickhoff SB, Yeo BTT. Accurate nonlinear mapping between MNI volumetric and FreeSurfer surface coordinate systems, Human Brain Mapping 39:3793–3808, 2018. Code for this procedure is redistributed with brainSurfer but can be found here: https://github.com/ThomasYeoLab/CBIG. From my experience, this transformation method seems to produce much better results. If you want to implement/understand/try more conventional methods for transforming between volume and surface space, see our Atlas transformation tutorial in the NiftiMatlabTutorial repository.
+- It can project volume space data in 2mm MNI volume space onto an fsaverage surface using a registration fusion approach documentated in: Wu J, Ngo GH, Greve DN, Li J, He T, Fischl B, Eickhoff SB, Yeo BTT. Accurate nonlinear mapping between MNI volumetric and FreeSurfer surface coordinate systems, Human Brain Mapping 39:3793–3808, 2018. Code for this procedure is redistributed with brainSurfer but can be found here: https://github.com/ThomasYeoLab/CBIG. From my experience, this transformation method seems to produce much better results. If you want to implement/understand/try more conventional methods for transforming between volume and surface space, see our Atlas transformation tutorial in the NiftiMatlabTutorial repository. *Note* The CBIG toolbox uses bash scripts that it evaluates from within MATLAB. That means if you are using windows you may run into trouble.
 
 *Note*: brainSurfer also uses a few different methods for trying to preserve boundaries in thresholded volume space maps that are transformed into surface space. You may or may not agree with these approaches, so check the documentation before relying on them.
 
@@ -23,7 +23,7 @@ Report all bugs to Alex Teghipco @ alex.teghipco@uci.edu!
 
 If you need to convert between various spaces in volume space (i.e., importing requires data to be in MNI_152_2mm space), our niftiManip repository can help with that.
 
-2) *Help! I don't have any data!*
+2) *I don't have any data!*
 
 Check out some of the example maps that I used for testing brainSurfer in ./testingMaps
 
@@ -38,6 +38,10 @@ LH and RH inflated fsaverage files and their corresponding curvature files (iden
 5) *I made my own colormap with brainSurfer. Where is it?*
 
 Colormaps are saved in the ./colormaps directory. Any colormap in that directory will automatically be loaded by brainSurfer. You can find it in the colormap selection menu. Sometimes MATLAB needs to be restarted for the automatic loading to work. 
+
+6) *Nothing happens when I click import*
+
+brainSurfer checks to make sure all scripts needed for importing are in your path. They are not in your path. Add the files within the CBIG toolbox + all other files that interface with it to your path (see addpath for how to do this; see list of auxillary scripts for list of scripts that interface with CBIG). Everything you need comes with brainSurfer so if all subdirectories from the toolbox are succesfully added to the path, it should work fine.
 
 # Features
 *Support for native space*
@@ -199,3 +203,9 @@ Here is a full list of auxillery scripts that are redistributed with brainSurfer
 9) scripts in ./scripts/cbrewer ----> this is a nice collection of colormaps that are perceptually distinct (e.g., controlled for luminance)
 10) save_nfti.m -----> this script is distributed with freesurfer and is used to save a surface space overlay as an .nii file
 11) Wu2017RegistrationFusion -----> this is the toolbox that we use to transform volume space data into surface space (see TL;DR for references and links)
+
+# Bugs that will be fixed
+
+1) Zeros and invert checkbox buttons are not saved to selected overlay. That means the button values map onto either the preset defaults or your settings for your last selected overlay. However, new overlays automatically inherit preset defaults. This means that the button value reflected in the GUI does not always match the true button value, especially when you mess around with the settings for a loaded overlay and then load a new overlay. 
+2) A few import files use '/' for directories so they will not work in windows
+3) There is a hard path to freesurfer in the CBIG toolbox (main script). I could not get getenv(FREESURFER) to work on my machine so this was the less optimal workaround. This means importing will not work if FREESURFER is not installed in the  /Applications directory. You can change this yourself for now, but a solution is forthcoming. To the extent of my knowledge, this path is only needed because CBIG relies on a few MATLAB freesurfer scripts.
