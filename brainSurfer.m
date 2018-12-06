@@ -728,8 +728,8 @@ else
         
         % also update how far the sliders should be capable of moving based on
         % the data for this map
-        handles.overlayThresholdPos.Max = max(handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data);
-        handles.overlayThresholdNeg.Min = min(handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data);
+        handles.overlayThresholdPos.Max = max(max(max(handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data)));
+        handles.overlayThresholdNeg.Min = min(min(min(handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data)));
         
         % turn off any overlays on the same hemisphere as current overlay
         % (excluding current file's overlay which might be passed on in
