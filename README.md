@@ -203,9 +203,10 @@ Here is a full list of auxillery scripts that are redistributed with brainSurfer
 9) scripts in ./scripts/cbrewer ----> this is a nice collection of colormaps that are perceptually distinct (e.g., controlled for luminance)
 10) save_nfti.m -----> this script is distributed with freesurfer and is used to save a surface space overlay as an .nii file
 11) Wu2017RegistrationFusion -----> this is the toolbox that we use to transform volume space data into surface space (see TL;DR for references and links)
+12) load_nifti_hdr -----> freesurfer script for loading header for nifti file (used by load_nifti.m)
+13) strlen -----> freesurfer script used by load_nifti.m
 
-# Bugs that will be fixed
+# Bugs that will be fixed soon...
 
-1) Zeros and invert checkbox buttons are not saved to selected overlay. That means the button values map onto either the preset defaults or your settings for your last selected overlay. However, new overlays automatically inherit preset defaults. This means that the button value reflected in the GUI does not always match the true button value, especially when you mess around with the settings for a loaded overlay and then load a new overlay. 
-2) A few import files use '/' for directories so they will not work in windows
-3) There is a hard path to freesurfer in the CBIG toolbox (main script). I could not get getenv(FREESURFER) to work on my machine so this was the less optimal workaround. This means importing will not work if FREESURFER is not installed in the  /Applications directory. You can change this yourself for now, but a solution is forthcoming. To the extent of my knowledge, this path is only needed because CBIG relies on a few MATLAB freesurfer scripts.
+1) A few files necessary to import volume space files use '/' for directories so they will not work in windows.
+2) There is a hard path to freesurfer in the CBIG toolbox (main script). I could not get getenv(FREESURFER) to work on my machine so this was the less optimal workaround. This means importing will not work if FREESURFER is not installed in the  /Applications directory. You can change this yourself for now, but a solution is forthcoming. To the extent of my knowledge, this path is only needed because CBIG relies on a few MATLAB freesurfer scripts.
