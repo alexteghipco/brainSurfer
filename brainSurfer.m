@@ -1,11 +1,8 @@
 function varargout = brainSurfer(varargin)
 % Brainsurfer GUI
-% Alex Teghipco // alex.teghipco@uci.edu // 12/5/18
+% Alex Teghipco // alex.teghipco@uci.edu // 12/6/18
 %
-% Fixed bug where having only one overlay in selection box as a result of
-% deleting actions throws error (because the starting selection string of
-% 'no overlay' is no longer in a cell the way it is setup by default in
-% GUIDE).
+% Fixed bug where certain GUI parameters were not being updated during overlay selection process
 %
 % Last Modified by GUIDE v2.5 08-Nov-2018 22:22:55
 
@@ -346,7 +343,13 @@ function screenshotButton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 if handles.overlaySelection.Value ~= 1
-    [~,file, ~] = fileparts(handles.brainMap.Name{handles.overlaySelection.Value - 1});
+    try
+        [~,file, ~] = fileparts(handles.brainMap.Name{handles.overlaySelection.Value - 1});
+    catch
+        % you selected more than 1 file...that's alright
+        [~,file, ~] = fileparts(handles.brainMap.Name{handles.overlaySelection.Value(1) - 1});
+        file = [file '_MultipleOverlays'];
+    end
     [oFile, oPath] = uiputfile({'*.png'},'Screenshot of current overlay',file);
     saveas(handles.brainFig,[oPath oFile]);
 end
@@ -646,8 +649,12 @@ if length(handles.overlaySelection.Value) > 1
     % also turn off any other available overlays
     for overlayi = 1:length(handles.brainMap.Current)
         if isempty(handles.brainMap.Current{overlayi}) == 0
-            if isvalid(handles.brainMap.Current{overlayi}.overlay)
-                handles.brainMap.Current{overlayi}.overlay.FaceAlpha = 0;
+            try
+                if isvalid(handles.brainMap.Current{overlayi}.overlay)
+                    handles.brainMap.Current{overlayi}.overlay.FaceAlpha = 0;
+                end
+            catch
+                warning('brainSurfer may have generated an extra overlay by accident...')
             end
         end
     end
@@ -715,11 +722,34 @@ else
         handles.overlayThresholdNeg.Value = handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg;
         handles.colormap.Value = handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap;
         handles.opacity.String = num2str(handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity);
+        handles.binarizeSwitch.Value = handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize;
+       
+        if strcmp(handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'true')
+            handles.zeroButton.Value = 1;
+        else
+            handles.zeroButton.Value = 0;
+        end
+        
+        if strcmp(handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'false')
+            handles.outlineButton.Value = 0;
+        elseif strcmp(handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'true')
+            handles.outlineButton.Value = 1;
+        end
+        
+        if strcmp(handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'false')
+            handles.invertColorButton.Value = 0;
+        elseif strcmp(handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'true')
+            handles.invertColorButton.Value = 1;
+        end
+        
+        handles.growROI.String = num2str(handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
         
         if strcmp(handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'even')
             handles.colormapSpacing.Value = 2;
-        else
+        elseif strcmp(handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'center on zero')
             handles.colormapSpacing.Value = 3;
+        elseif strcmp(handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'center on threshold')
+            handles.colormapSpacing.Value = 4;
         end
         
         handles.overlayThresholdPosDynamic.String = num2str(handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos);
