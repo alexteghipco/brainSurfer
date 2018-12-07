@@ -152,7 +152,12 @@ end
 % If you did not provide transparency data, make that data overlay
 if isempty(options.transparencyData)
     options.transparencyData = overlayData;
+    % if you did provide transparency data, if you are not thresholding it,
+    % then
+elseif ~isempty(options.transparencyData) && options.transparencyThresholds(1) == 0 && options.transparencyThresholds(2) == 0
+    options.modulate = 'true';
 end
+
 
 % Create limits if they were not provided
 if isempty(options.limits)
@@ -810,7 +815,69 @@ if (isempty(options.transparencyThresholds) == 0 || isempty(options.transparency
     opacityColorbar(transIdxNeg) = transNeg * 62;
 end
 
-FaceVertexAlphaData = opacityColorbar(cDataIdx);
+% if we are just modulating the data by some other map, then just use that
+% as the opacity, otherwise map the colorbar onto data
+if isfield(options,'modulate')
+    dataModSpace = linspace(min(options.transparencyData),max(options.transparencyData),10);
+    range = max(options.transparencyData) - min(options.transparencyData);
+    options.transparencyData = (options.transparencyData - min(options.transparencyData)) / range;
+    
+     switch options.invertOpacity
+        case 'true'
+           options.transparencyData = (options.transparencyData)*-1;
+           options.transparencyData = options.transparencyData + 1;
+     end
+    
+    % scale between gradient values
+    range2 = options.transparencyLimits(2) - options.transparencyLimits(1);
+    options.transparencyData = (options.transparencyData * range2) + options.transparencyLimits(1);
+    options.transparencyData = options.transparencyData * 62;
+    
+    % fix colorbar now
+    %opacityColorbar = ones([size(cData,2), 1])*62;
+    for i = 1:length(cData)
+        idx = find(overlayData == cData(i));
+        opacityColorbar(i) = mean(options.transparencyData(idx));
+    end
+    
+    A = reshape(cMap,[size(cMap,1),1,3]);
+    B = repmat(A,1,10,1);
+
+    cSpaceFig = figure;
+    cSpaceImg = imshow(B);
+    truesize(cSpaceFig,[1000 1000])
+
+    alpha = repmat([linspace(0,1,10)],size(cMap,1),1,1);
+    alpha = fliplr(alpha);
+    
+    set(cSpaceImg, 'AlphaData', alpha);
+    cSpaceImg.AlphaDataMapping = 'none';
+    title('Transparency modulated colorbar')
+    axis on
+    cSpaceFig.CurrentAxes.TickLength = [0 0];
+    
+    cSpaceFig.CurrentAxes.XTick = 1:10;
+    cSpaceFig.CurrentAxes.XTickLabelRotation = 60;    
+    cSpaceFig.CurrentAxes.XTickLabel = num2cell(fliplr(dataModSpace));
+    
+    cSpaceFig.CurrentAxes.YTick = 1:length(cData);
+    cSpaceFig.CurrentAxes.YTickLabel = num2cell(cData);
+    %hold on
+    
+    % To DO:!
+%     % now draw boxes around the values for current cluster
+%     tmp = linspace(min(options.transparencyData),max(options.transparencyData),10);
+%     for i = 1:length(opacityColorbar)
+%         pos = find(opacityColorbar(i) > tmp);
+%         coord = [i pos(end)];
+%     
+%     end
+
+    FaceVertexAlphaData = options.transparencyData;
+else
+    FaceVertexAlphaData = opacityColorbar(cDataIdx);
+end
+
 
 %% 4. Patch data
 % if you provided a figure to patch, use that, otherwise lets rebuild the
