@@ -74,22 +74,22 @@ Colormaps are saved in the ./colormaps directory. Any colormap in that directory
 
 *Note* the main brainSurfer GUI just generated a new figure for patching your data. Feel free to resize it. You should also be able to resize the GUI in case it doesn't fit in your screen. 
 
-![](http://www.giphy.com/gifs/dstlTkFyugaLPGGsXR/giphy.gif)
+![](https://media.giphy.com/media/dstlTkFyugaLPGGsXR/giphy.gif)
 
 2) Edit your underlay
 - You can come back to this, but now that you have an underlay loaded, you can change some of its properties. One thing we can do, is edit the sulci/gyri colors. Navigate to the menu and select edit sulci/gyri colors. The first color you select wil correspond to the gyri and the second to the sulci (you can see this referenced in the title of the color picker GUI that pops up).
 
-![](http://www.giphy.com/gifs/f6ItoMoE73QPfBBibP/giphy.gif))
+![](https://media.giphy.com/media/f6ItoMoE73QPfBBibP/giphy.gif)
 
 - You can also edit the threshold for what counts as a sulci and what counts as a gyri. This information is contained in .curv files that are loaded in with your underlay. Make sure to have these files ready to load in case you are loading a surface space underlay that isn't FSAVERAGE. 
 
-![](http://www.giphy.com/gifs/KGZWLFh8u5ENB0yqhV/giphy.gif))
+![](https://media.giphy.com/media/KGZWLFh8u5ENB0yqhV/giphy.gif)
 
 *Note* the color of sulci and gyri reverse to default. 
 
 - Finally, we can plot the raw sulci/gyri data instead of counting values above some threshold as gyri and below as sulci.
 
-![](http://www.giphy.com/gifs/L2le7srIXOWW1IuI8J/giphy.gif))
+![](https://media.giphy.com/media/L2le7srIXOWW1IuI8J/giphy.gif)
 
 
 
