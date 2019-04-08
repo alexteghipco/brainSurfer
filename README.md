@@ -67,13 +67,29 @@ Check out some of the example maps that I used for testing brainSurfer in ./brai
 Colormaps are saved in the ./colormaps directory. Any colormap in that directory will automatically be loaded by brainSurfer each time you launch it. You can find it in the colormap selection menu.
 
 # How to use brainSurfer
-1) Surface selection
-- First, choose an underlay to load. There are some presets. You can choose 1 or both hemispheres. Load your own surface file as long as it's a freesurfer compatible surface file (sorry brainvoyagers:( check out the niftiManip repository to convert your TAL files to MNI space).
+1) Select an underlay
+- First, choose an underlay to load. An underlay refers to the surface structure on which we'll be plotting statistical maps. There are some preloaded FSAVERAGE brains you can choose to load. You can choose 1 or both hemispheres (I recommend using both). Load your own surface file as long as it's a freesurfer compatible surface file (sorry brainvoyagers:( check out the niftiManip repository to convert your TAL files to MNI space).
+
 ![](https://media.giphy.com/media/Ph73pwuwnapmwNOL2B/giphy.gif)
 
-- Now, edit the properties of the underlay as you see fit, changing sulci/gyri colors and thresholds. You can come back and do this later, but it's worth doing now.
-![](selectSurface.gif)
+*Note* the main brainSurfer GUI just generated a new figure for patching your data. Feel free to resize it. You should also be able to resize the GUI in case it doesn't fit in your screen. 
 
+![](http://www.giphy.com/gifs/dstlTkFyugaLPGGsXR/giphy.gif)
+
+2) Edit your underlay
+- You can come back to this, but now that you have an underlay loaded, you can change some of its properties. One thing we can do, is edit the sulci/gyri colors. Navigate to the menu and select edit sulci/gyri colors. The first color you select wil correspond to the gyri and the second to the sulci (you can see this referenced in the title of the color picker GUI that pops up).
+
+![](http://www.giphy.com/gifs/f6ItoMoE73QPfBBibP/giphy.gif))
+
+- You can also edit the threshold for what counts as a sulci and what counts as a gyri. This information is contained in .curv files that are loaded in with your underlay. Make sure to have these files ready to load in case you are loading a surface space underlay that isn't FSAVERAGE. 
+
+![](http://www.giphy.com/gifs/KGZWLFh8u5ENB0yqhV/giphy.gif))
+
+*Note* the color of sulci and gyri reverse to default. 
+
+- Finally, we can plot the raw sulci/gyri data instead of counting values above some threshold as gyri and below as sulci.
+
+![](http://www.giphy.com/gifs/L2le7srIXOWW1IuI8J/giphy.gif))
 
 
 
