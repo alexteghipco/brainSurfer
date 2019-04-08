@@ -707,7 +707,8 @@ switch options.colorSampling
         cDataNeg = linspace(options.limits(1),0,(options.colorBins/2)+1);
         cDataPos = linspace(0,options.limits(2),options.colorBins/2);
         cData = horzcat(cDataNeg,cDataPos);
-        cData(round((length(cMap)/2)+1)) = [];
+        %cData(round((length(cMap)/2)+1)) = [];
+        cData(round((length(cData)/2)+1)) = [];
         cMap(floor((length(cMap)/2)+1),:) = [];
         
         options.ticks = linspace(options.limits(1),options.limits(2),11);
