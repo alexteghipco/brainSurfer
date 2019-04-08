@@ -67,6 +67,8 @@ Check out some of the example maps that I used for testing brainSurfer in ./brai
 Colormaps are saved in the ./colormaps directory. Any colormap in that directory will automatically be loaded by brainSurfer each time you launch it. You can find it in the colormap selection menu.
 
 # How to use brainSurfer
+This guide will get you on your way to using brainSurfer.
+
 1) Select an underlay
 - First, choose an underlay to load. An underlay refers to the surface structure on which we'll be plotting statistical maps. There are some preloaded FSAVERAGE brains you can choose to load. You can choose 1 or both hemispheres (I recommend using both). Load your own surface file as long as it's a freesurfer compatible surface file (sorry brainvoyagers:( check out the niftiManip repository to convert your TAL files to MNI space).
 
@@ -85,36 +87,114 @@ Colormaps are saved in the ./colormaps directory. Any colormap in that directory
 
 ![](https://media.giphy.com/media/KGZWLFh8u5ENB0yqhV/giphy.gif)
 
-*Note* the color of sulci and gyri reverse to default. 
+*Note* the color of sulci and gyri reverse to default. Also, you can now close the previous figure. brainSurfer will only patch onto the newly generated figure. This is useful in case you want to use the old one to compare to the new one. 
 
 - Finally, we can plot the raw sulci/gyri data instead of counting values above some threshold as gyri and below as sulci.
 
 ![](https://media.giphy.com/media/L2le7srIXOWW1IuI8J/giphy.gif)
 
+2) Load or import an overlay
+- Lets try loading a file packaged with brainSurfer in ./brainMapsforTesting. If your file name does not contain reference to a hemisphere (i.e., left, right, lh, rh) then the script will ask you which hemisphere to project your overlay onto. Below, I load MNI_TFCE_LPT_FC_pFWER-05.nii_RF_ANTs_MNI152_orig_to_fsaverage_LH.nii.gz and MNI_TFCE_LPT_FC_pFWER-05.nii_RF_ANTs_MNI152_orig_to_fsaverage_RH.nii.gz
 
+![](https://media.giphy.com/media/SxAVEfWhrUdaZO76Yq/giphy.gif)
 
-- Now load or import an overlay. If your file name does not contain reference to a hemisphere (i.e., left, right, lh, rh) then the script will ask you which hemisphere to project your overlay onto. For more information on import options, see features and FAQ above. Both loaded and imported files must be in NIFTI format.
+*Note* you can select as many files as you want. 
 
-2) Select an overlay to patch
-- By default, 'No overlay' is selected. Each time you click on an overlay you have loaded, its settings are pulled up and it is repatched (e.g., overlayed). Settings are usually saved unless you are smoothing. In that case, the 'save' button should be used to fix the state of the overlay. If you ever need to undo some setting and you can't seem to remember which change will restore your overlay to its pristine state, just click 'reload'. Note, reload is incapable of undoing smoothing. If you want to make a copy of an overlay, click 'duplicate'. If you want to delete an overlay, click 'delete'. If you want to save an overlay with its current thresholds applied, click 'save'. 
+- Try importing a file as well. The file named Visuospatial_network_binarized_IMPORT_ME_FROM_MNI_to_FSAVERAGE.nii.gz is a binarized network of the visuospatial network. Importing an overlay can occur in three different ways (this is the second prompt that comes up). Because this is an ROI we will select the second option. A second dialogue prompt will come up. This is a poweruser option so just leave the field blank and click okay (in the event ROIs overlay when projected into surface space it allows you to weight one heavier than the other). See list of features for more information on what these options do. The 'unthresholded map' option (rightmost option) is the most straightforward and conventional strategy for importing but does not work for ROIs.
 
-3) Threshold the patched overlay 
-- Threshold your overlay using a value-based threshold (corresponding to whatever unit/measurement your data represents) or load a p-value map for this specific overlay/data and use a p-value based threshold. If you want, you could go crazy and apply both thresholds. The last threshold allows you to exclude clusters smaller than some size in the current overlay.
+![](https://media.giphy.com/media/huJBCR2zD67RKmU321/giphy.gif)
 
-4) Adjustments
-- See list of features above and poke around the GUI. These are all pretty intuitive. 
+*Note* if you are not importing, your file must have "LH" or "left" in the name. This tells brainSurfer which hemisphere to patch on top of. If brainSurfer is ever confused about this, it will ask you. When you import, brainSurfer will write converted files into the same directory as the files you asked it to convert. They will be appended, and the conversion process will be performed for the right and left hemisphere. This is why both right and left hemisphere files will be loaded automatically into brainSurfer after importing. Files to import can be .nii or .nii.gz.
+
+3) Select an overlay
+
+- Select an overlay to patch it. Zeros in the overlay will always show up as black. Since we've selected the ROI we just imported, the colorbar is empty (i.e., there is only one value) 
+
+![](https://media.giphy.com/media/L19BbEfCUq8XKbpO7v/giphy.gif)
+
+*Note* You can still change the colormap to have the one value in your overlay change color. Buttons are pretty self-explanatory so check them out on your own. 
+
+*More important note* if there is ever an error in patching (for instance, you click something too fast and the patch gets applied to the colorbar), then just close the window containing the messed up patch. And reselect the same map. 
+
+![](https://media.giphy.com/media/U7zZN1VkKDArj3R7mH/giphy.gif)
+
+*Followup note* if something goes wrong with your particular selections and you want to return the overlay to its initial state, use the reload overlay button. It will return all settings to default and reload the original file's data.
+
+![](https://media.giphy.com/media/KGMlSCs3we3pgojlVz/giphy.gif)
+
+4) Threshold overlay
+- Now you can start to threshold your overlay. Because we can't really do this with the binarized ROI file we just imported, we will return to the two maps we initially loaded. Threshold positive and negative values seperately.
+
+![](https://media.giphy.com/media/lqSf7JlvohgTLwGhxE/giphy.gif)
+
+*Note* if you click add p-values you will be able to upload a map that contains a p-value for each vertex in currently loaded overlay. You can them change the p-value threshold on top of the value threshold that you choose. You can also threshold the cluster size using the cluster size threshold bar. 
+
+5) Edit colormap
+- Now we can edit our colormap. We can choose colormaps which come baked in with brainSurfer. 
+
+![](https://media.giphy.com/media/Td3X7NoDkILI9jAwee/giphy.gif)
+
+- You can quickly invert the colorbar. For instance, we might want green to correspond to negative values to make them pop (since there are so few vertices surving our negative value threshold). 
+
+![](https://media.giphy.com/media/KffkiZABmC9LejrTNB/giphy.gif)
+
+- You can change the number of colors in the colorbar. 
+
+![](https://media.giphy.com/media/XHunsPO6PMiNIcU2X6/giphy.gif)
+
+- You can change the value of the middle color in your colormap. For instance, in this map it looks like there is a stronger effect for positive values than negative ones. We can fix the middle color in the colormap to correspond to zero, or our thresholds.
+
+![](https://media.giphy.com/media/Xymk3naiiChNe00AYP/giphy.gif)
+
+- You can also change the opacity of the colorbar. Values closer to 0 are more transparent. 
+
+![](https://media.giphy.com/media/PiQRrcp5jf5x3kZjhP/giphy.gif)
+
+- Finally, we can create our own colormap!
+
+![](https://media.giphy.com/media/gK5iHbXM4G07gzAm2B/giphy.gif)
+
+*Note* colormaps you create will be immediately available in colormap options. The colormap GUI will dissapear upon patching. 
+
+6) Adjustments
+
+- In the adjustments menu, you can change the value of the bin that maps onto the limits of the colorbar. For instance, here the limits of the positive data are much higher than the negative (because there are fewer high magnitude negative values). In this case, we might decrease the limits for the positive values. 
+
+![](https://media.giphy.com/media/gLuerJOqeIaWYTZT8t/giphy.gif)
+
+- In this menu we can also change the map to outline clusters. 
+
+![](https://media.giphy.com/media/cM95YUMMfNuRW2Gf6v/giphy.gif)
+
+- These lines are really thin, but luckily, we can grow them. 
+
+![](https://media.giphy.com/media/jUd2jUQxjrzhuX34Rm/giphy.gif)
+
+*Note* you can also grow a whole map. The new values will take the average of the values in their corresponding cluster. Negative values will shrink the map. 
+
+7) Modulate transparency
+
+8) Edit clusters
+
+9) Select multiple overlays
+
+10) Delete
+
+11) Save
+
+12) Duplicate
 
 # List of features
 *Support for native space*
 - Use either fsaverage brains that come with the toolbox, or render your own surface files. Then, overlay any data that fits the dimensions of your files (in .nii format). *see 'select a surface'*
 
 *Overlay multiple maps at once*
-- Once you have loaded multiple files into the GUI, you can overlay them on top of each other (why can't you do this freeview/BrainNet?!) *use shift+click or cmd+click in the 'select an overlay' menu to select multiple overlays*
-- Overlays can be moved up and down like layers in photoshop to determine which map ends up on the bottom (why are you so clunky at this surfice/neuroelf?!) *see the up/down buttons on the left of the 'select an overlay' menu*
+- Once you have loaded multiple files into the GUI, you can overlay them on top of each other *use shift+click or cmd+click in the 'select an overlay' menu to select multiple overlays*
+- Overlays can be moved up and down like layers in photoshop to determine which map ends up on the bottom *see the up/down buttons on the left of the 'select an overlay' menu*
 
 *Batch load overlays*
 - Select as many as 50 overlays to load into brainSurfer at once. No more file CLICK load CLICK folder CLICK another folder CLICK another folder CLICK ...wait for overlay to load...repeat 50 times. *see load button*
-- left hemisphere and right hemisphere loading is not handled by seperate buttons, load them all in at once! (looking at you freeview) *see load button*
+- left hemisphere and right hemisphere loading is not handled by seperate buttons, load them all in at once! *see load button*
 
 *Import unthresholded NIFTI maps from MNI volume space*
 - Moving from MNI space to fsaverage surface space is tricky. A new, more accurate method is implemented using scripts released by Ngo et al (see TL;DR for references). *see import button and select 'unthresholded map'*
@@ -129,23 +209,23 @@ Colormaps are saved in the ./colormaps directory. Any colormap in that directory
 - A new surface space rendering can be opened and manipulated simply by selecting a new surface in the selection menu. This detaches the old rendering from brainSurfer, meaning that you won't be able to make any other changes to those old renderings. However, all settings in brainSurfer (including loaded files) are saved, and can be applied to the new surface rendering. *re-select a surface*
 
 *A workspace for overlays*
-- A dedicated overlay workspace allows for quick duplication, reloading, deleting, and saving of overlays (why can't you do this BrainNet, Surfice, Freeview, Neuroelf, etc!) *see buttons below list of overlays in the 'select an overlay' menu*
+- A dedicated overlay workspace allows for quick duplication, reloading, deleting, and saving of overlays *see buttons below list of overlays in the 'select an overlay' menu*
 
 *Apply value-based and p-value thresholds*
-- A p-value map can be loaded and associated with the current overlay. Two different thresholds can then be applied. (why can't you do this or let me p-value threshold BrainNet, Surfice, Freeview, Neuroelf, etc!). *see threshold overlay menu*
+- A p-value map can be loaded and associated with the current overlay. Two different thresholds can then be applied. *see threshold overlay menu*
 
 *Apply cluster thresholds*
-- You can remove clusters less than a certain size from the overlay. For instance, you can get a clusterform threshold using monte-carlo style simulations of your data (see brainvoyager for nice implementation of this approach and comprehensive documentation, future versions of brainSurfer will do this too) *see threshold overlay menu*
+- You can remove clusters less than a certain size from the overlay. For instance, you can get a clusterform threshold using monte-carlo style simulations of your data *see threshold overlay menu*
 
 *Threshold negative and positive values seperately*
 - Come on freesurfer, why does a threshold of 3.5 have to remove all values between -3.5 and 3.5? *see threshold overlay menu*
 
 *Adjustable limits*
-- The min and max values of my overlay should be adjustable independent of the thresholds I set! (good job, AFNI!) *see the two text boxes in the limits subsection of adjustments menu*
+- The min and max values of my overlay should be adjustable independent of the thresholds I set! *see the two text boxes in the limits subsection of adjustments menu*
 
 *Adjustable colorbar spacing*
-- Why should my colorbar be evenly spaced? If it has 2 primary colors, I should be able to force the middle of my colorbar to map onto zero, that way negative values are 1 color, and positive values are the 2nd color (why on earth is this not an option already?!) *see limits subsection of adjustments menu and select 'color spacing' options*
-- Same goes for thresholds in my overlay (good job freeview!)
+- Why should my colorbar be evenly spaced? If it has 2 primary colors, I should be able to force the middle of my colorbar to map onto zero, that way negative values are 1 color, and positive values are the 2nd color  *see limits subsection of adjustments menu and select 'color spacing' options*
+- Same goes for thresholds in my overlay 
 
 *Dynamic colorbar*
 - Colorbar updates with opacity of overlay (and with thresholds).
@@ -157,7 +237,7 @@ Colormaps are saved in the ./colormaps directory. Any colormap in that directory
 - Control the number of bins in your colormap! Ever thought of providing less information about your overlay? Now you can decrease the resolution of the colorbar/colormap by removing the number of data bins that constitute it. *type an integer into the text box 'data bins' in the appearance settings*
 
 *Quick colormap inverter*
-- Why go through the hassle of creating a whole new colormap from scratch? (good job freview!) *tick 'invert' in appearance settings*
+- Why go through the hassle of creating a whole new colormap from scratch?  *tick 'invert' in appearance settings*
 
 *Native binarization of overlays*
 - Confused as to why this simple operation is not standard in visualization software! Assign all vertices meeting threshold in the current overlay a whole integer value of 1. *tick binarize*
@@ -201,7 +281,7 @@ Colormaps are saved in the ./colormaps directory. Any colormap in that directory
 - Change the colors of sulci and gyri to anything you want *make a selection from the 'edit surface properties' menu*
 
 *3D colormaps*
-- Only available via scripting. Allows for the construction of a colormap that is based on a 3d colorcube of any size. Maps your overlay data directly onto this colorcube. *use the script plotOverlay3D*
+- Only available via scripting. Allows for the construction of a colormap that is based on a 3d colorcube of any size. Maps your overlay data directly onto this colorcube. *use the script plotOverlay3D also see plotOverlay2D*
 
 # Dependencies and organization
 
