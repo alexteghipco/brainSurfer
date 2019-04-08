@@ -1,52 +1,11 @@
 # brainSurfer
-brainSurfer is (I'd like to think) a powerful surface space visualization toolbox for MATLAB. 
+brainSurfer is (I'd like to think) a powerful surface space visualization toolbox for MATLAB.
 
-*NOTE* This software is provided as is. I built it to display some brains for me, and while I've tried to make it as user-friendly as possible, it's still in the process of being updated, and may not work on your machine/setup. While the code has been updated to (in theory) suppport Windows OS, it has only been debugged on macOS Mojave (most versions) in MATLAB (most versions from 2016 - 2018).  
+It has lots of functionalities, which you can read about in the features section (or hover over the buttons). My personal favorites include its ability to turn clusters into contours, to create 3D or 2D colormaps and plot 3D or 2D overlays, as well as the ability to modulate the transparency of a subset of data within an overlay, or to use a completely different overlay to modulate the transparency of an overlay. It also some nifty features for manipulating and getting cluster-level data.
+
+*NOTE* This software is provided as is. I built it to display some brains for me, and while I've tried to make it as user-friendly as possible, it's still in the process of being updated, and may not work on your machine/setup. While the code has been updated to (in theory) suppport Windows OS, it has only been debugged on macOS Mojave and in MATLAB versions between 2017 and 2019.  
 
 Report all bugs to Alex Teghipco @ alex.teghipco@uci.edu!
-
-# The boring stuff: What's new in this version?
-- A new toolbar for settings
-
-The toolbar now contains all of the options for editing your underlay, the cluster editor, and the ability to mask overlays. New functions added to the toolbar include the ability to convert between TAL and MNI for nifti images (volume space), an option to show the entire colorbar rather than threshold it by colors that exist in your current overlay, the ability to generate a quick histogram of the data in the current selection, and the ability to save and load settings from previous maps (including the data for that map if you so choose).
-
--  Totally revamped GUI, including new button layout to make access to common functions for manipulating statistical maps easier  
-
-Buttons have been moved around the overlay selection listbox. New functions include the ability to delete all overlays in the selection listbox and to copy the settings for one overlay and apply them to as many other overlays as you want. I've also added a multioverlay settings GUI that allows for much greater control of visualization when multiple overlays are selected. 
-
-- Lots of under the hood updates
-
-Lots of bugs for changing colormaps, lighting, taking screenshots, modulating transparency have been fixed. brainSurfer.m is now faster, (better) commented, and better organized (including variable structures). There is still work to do here, so stay tuned. You can also now resize all GUIs. 
-
-- Colormap editor
-
-There is now a dedicated GUI for creating your own colormaps that provides realtime feedback. Colormap storage/loading is much more efficient now. 
-
-- Make 2D overlays
-
-3d overlays were here, now make 2d overlays in case you don't like transparency as your 2nd dimension (see plotOverlay2D)
-
-# The boring stuff: warnings and bugs
-These are some current issues that will be fixed in the future
-
-- modulate transparency has some bugs 
-
-Should work fine unless you have a map with both positive and negative values, in which case the transparency modulated 2D colormap that is generated is inaccurate. The real data plotted over that colormap should be translated across the x-axis.
-
-- some options in the menu are not ready yet
-
-There will be a GUI for creating 2D/3D colormaps but it's not ready yet (use the scripts on their own). Cluster correction is not supported yet. Statistical analysis is not yet supported. volume viewer is not yet supported. 
-
-# TL;DR
-- brainSurfer is a MATLAB toolbox for visualizing, thresholding, and manipulating surface space data. 
-
--It has lots of functionalities, which you can read about in the features section. My personal favorites include its ability to turn clusters into contours, to create 3D or 2D colormaps and plot 3D or 2D overlays, as well as the ability to modulate the transparency of a subset of data within an overlay, or to use a completely different overlay to modulate the transparency of an overlay. It also some nifty features for manipulating and getting cluster-level data.
-
-- It can also project volume space data in 2mm MNI volume space onto an fsaverage surface using a registration fusion approach (see dependencies section for more info)
-
-*Note*: brainSurfer also uses a few different methods for trying to preserve boundaries in thresholded volume space maps that are transformed into surface space. You may or may not agree with these approaches, so check the documentation before relying on them.
-
-- Just hover over buttons/input boxes to get some help with what they do. 
 
 # Getting started
 1) Plop all of these files in any directory you want. 
@@ -70,7 +29,7 @@ Colormaps are saved in the ./colormaps directory. Any colormap in that directory
 This guide will get you on your way to using brainSurfer.
 
 1) Select an underlay
-- First, choose an underlay to load. An underlay refers to the surface structure on which we'll be plotting statistical maps. There are some preloaded FSAVERAGE brains you can choose to load. You can choose 1 or both hemispheres (I recommend using both). Load your own surface file as long as it's a freesurfer compatible surface file (sorry brainvoyagers:( check out the niftiManip repository to convert your TAL files to MNI space).
+- The brainSurfer workflow starts by loading in an underlay, which refers to the surface structure on which we'll be plotting statistical maps. There are some preloaded fsaverage brains you can choose to load (from freesurfer). For this guide, we will use the preloaded brains. You can choose 1 or both hemispheres (I recommend using both). 
 
 ![](https://media.giphy.com/media/Ph73pwuwnapmwNOL2B/giphy.gif)
 
@@ -78,41 +37,45 @@ This guide will get you on your way to using brainSurfer.
 
 ![](https://media.giphy.com/media/dstlTkFyugaLPGGsXR/giphy.gif)
 
+*Note* Load your own surface file as long as it's a freesurfer compatible surface file (sorry brainvoyagers:( check out the niftiManip repository to convert your TAL files to MNI space).
+
 2) Edit your underlay
 - You can come back to this, but now that you have an underlay loaded, you can change some of its properties. One thing we can do, is edit the sulci/gyri colors. Navigate to the menu and select edit sulci/gyri colors. The first color you select wil correspond to the gyri and the second to the sulci (you can see this referenced in the title of the color picker GUI that pops up).
 
 ![](https://media.giphy.com/media/f6ItoMoE73QPfBBibP/giphy.gif)
 
-- You can also edit the threshold for what counts as a sulci and what counts as a gyri. This information is contained in .curv files that are loaded in with your underlay. Make sure to have these files ready to load in case you are loading a surface space underlay that isn't FSAVERAGE. 
+- You can also edit the threshold for what counts as a sulci and what counts as a gyri. This information is contained in .curv files that are loaded in with your underlay. Make sure to have these files ready to load in case you are loading a surface space underlay that isn't fsaverage (i.e., user provided underlay). 
 
 ![](https://media.giphy.com/media/KGZWLFh8u5ENB0yqhV/giphy.gif)
 
-*Note* the color of sulci and gyri reverse to default. Also, you can now close the previous figure. brainSurfer will only patch onto the newly generated figure. This is useful in case you want to use the old one to compare to the new one. 
+*Note* the color of sulci and gyri reverses to the defaults. You can now close the previous figure because brainSurfer will only patch onto the newly generated figure. It might be useful to keep the old figure around for comparison.  
 
-- Finally, we can plot the raw sulci/gyri data instead of counting values above some threshold as gyri and below as sulci.
+- Finally, we can also patch the raw sulci/gyri data instead of thresholding values to determine what counts as gyri and what counts as sulci.
 
 ![](https://media.giphy.com/media/L2le7srIXOWW1IuI8J/giphy.gif)
 
-2) Load or import an overlay
-- Lets try loading a file packaged with brainSurfer in ./brainMapsforTesting. If your file name does not contain reference to a hemisphere (i.e., left, right, lh, rh) then the script will ask you which hemisphere to project your overlay onto. Below, I load MNI_TFCE_LPT_FC_pFWER-05.nii_RF_ANTs_MNI152_orig_to_fsaverage_LH.nii.gz and MNI_TFCE_LPT_FC_pFWER-05.nii_RF_ANTs_MNI152_orig_to_fsaverage_RH.nii.gz
+3) Load or import an overlay
+- Lets try loading a statistical map now. We have a few packaged with brainSurfer (in ./brainMapsforTesting). Loading is for patching a statistical map on your underlay that is ALREADY in the same space. Below, I load MNI_TFCE_LPT_FC_pFWER-05.nii_RF_ANTs_MNI152_orig_to_fsaverage_LH.nii.gz and MNI_TFCE_LPT_FC_pFWER-05.nii_RF_ANTs_MNI152_orig_to_fsaverage_RH.nii.gz
 
 ![](https://media.giphy.com/media/SxAVEfWhrUdaZO76Yq/giphy.gif)
 
-*Note* you can select as many files as you want. 
+*Note* you can select as many files as you want, up to 50. If your file name does not contain reference to a hemisphere (i.e., left, right, lh, rh) then the script will ask you which hemisphere to project your overlay onto. 
 
-- Try importing a file as well. The file named Visuospatial_network_binarized_IMPORT_ME_FROM_MNI_to_FSAVERAGE.nii.gz is a binarized network of the visuospatial network. Importing an overlay can occur in three different ways (this is the second prompt that comes up). Because this is an ROI we will select the second option. A second dialogue prompt will come up. This is a poweruser option so just leave the field blank and click okay (in the event ROIs overlay when projected into surface space it allows you to weight one heavier than the other). See list of features for more information on what these options do. The 'unthresholded map' option (rightmost option) is the most straightforward and conventional strategy for importing but does not work for ROIs.
+- In case your file is in volume space, and you have the default fsaverage underlay loaded, we can "import" it, which transforms it into this standardized surface space using a predetermined transformation matrix. Let's import the file named Visuospatial_network_binarized_IMPORT_ME_FROM_MNI_to_FSAVERAGE.nii.gz, which is a binarized network (as you guessed, the visuospatial network). 
+
+- Importing an overlay can occur in three different ways (this is the second prompt that comes up). Because this is effectively an ROI (i.e., binarized) we will select the second option. A second dialogue prompt will come up. This is a "poweruser" input so just leave the field blank and click okay. In the event ROIs overlap when projected into surface space, this dialogue allows you to put greater weight onto one ROI than the other (by default there is equal weight). See list of features for more information on what these options do. The 'unthresholded map' option (rightmost) is the most straightforward and conventional strategy for importing, but unfortunately won't work for ROIs.
 
 ![](https://media.giphy.com/media/huJBCR2zD67RKmU321/giphy.gif)
 
-*Note* if you are not importing, your file must have "LH" or "left" in the name. This tells brainSurfer which hemisphere to patch on top of. If brainSurfer is ever confused about this, it will ask you. When you import, brainSurfer will write converted files into the same directory as the files you asked it to convert. They will be appended, and the conversion process will be performed for the right and left hemisphere. This is why both right and left hemisphere files will be loaded automatically into brainSurfer after importing. Files to import can be .nii or .nii.gz.
+*Note* if you are not importing, your file must have "LH" or "left" in the name. This tells brainSurfer which hemisphere to patch on top of. If brainSurfer is ever confused about this, it will ask you. When you import, brainSurfer will write converted files into the same directory as the files you asked it to convert. They will be appended, and the conversion process will be performed for the right and left hemisphere. This is why both right and left hemisphere files will be loaded automatically into brainSurfer after importing. Files to import can be .nii or .nii.gz. Note also that there will be confidence maps generated when importing. These maps tell you how certain we are that ROI X should be assigned to vertex Y. By default, ROI conversion will convert every ROI in your map seperately to surface space and then see which ROIs map more strongly onto any vertex for which another ROI might also end up mapping onto.  
 
 3) Select an overlay
 
-- Select an overlay to patch it. Zeros in the overlay will always show up as black. Since we've selected the ROI we just imported, the colorbar is empty (i.e., there is only one value) 
+- When we select an overlay, it gets patched on top of the underlay. Since we've selected the ROI we just imported, the colorbar is empty (i.e., there is only one value in the map).
 
 ![](https://media.giphy.com/media/L19BbEfCUq8XKbpO7v/giphy.gif)
 
-*Note* You can still change the colormap to have the one value in your overlay change color. Buttons are pretty self-explanatory so check them out on your own. 
+*Note* Zeros in the overlay will always show up as black and you can turn them off in the adjustment settings. Also, although there is only one value in our map and the colorbar is empty, you can still change the color of that value by changing the colormap settings.
 
 *More important note* if there is ever an error in patching (for instance, you click something too fast and the patch gets applied to the colorbar), then just close the window containing the messed up patch. And reselect the same map. 
 
@@ -123,68 +86,140 @@ This guide will get you on your way to using brainSurfer.
 ![](https://media.giphy.com/media/KGMlSCs3we3pgojlVz/giphy.gif)
 
 4) Threshold overlay
-- Now you can start to threshold your overlay. Because we can't really do this with the binarized ROI file we just imported, we will return to the two maps we initially loaded. Threshold positive and negative values seperately.
+- After selecting an overlay, thresholds can be applied. Because we can't really threshold our binarized ROI that we just imported, we will return to the two maps we initially loaded. Threshold positive and negative values seperately using the slider or the textbox.
 
 ![](https://media.giphy.com/media/lqSf7JlvohgTLwGhxE/giphy.gif)
 
-*Note* if you click add p-values you will be able to upload a map that contains a p-value for each vertex in currently loaded overlay. You can them change the p-value threshold on top of the value threshold that you choose. You can also threshold the cluster size using the cluster size threshold bar. 
+*Note* if you click add p-values you will be able to upload a map that contains a p-value for each vertex in currently loaded overlay. You can then change the p-value threshold on top of the value threshold that you chose above. 
+
+*Followup note* You can also threshold the cluster size using the cluster size threshold slider or textbox.
 
 5) Edit colormap
 - Now we can edit our colormap. We can choose colormaps which come baked in with brainSurfer. 
 
 ![](https://media.giphy.com/media/Td3X7NoDkILI9jAwee/giphy.gif)
 
-- You can quickly invert the colorbar. For instance, we might want green to correspond to negative values to make them pop (since there are so few vertices surving our negative value threshold). 
+- We can also quickly invert the colorbar. For instance, we might want green to correspond to negative values in this map in order to make them pop. After all, there are so few vertices surving our negative value threshold.
 
 ![](https://media.giphy.com/media/KffkiZABmC9LejrTNB/giphy.gif)
 
-- You can change the number of colors in the colorbar. 
+- You can also change the number of colors in the colorbar. 
 
 ![](https://media.giphy.com/media/XHunsPO6PMiNIcU2X6/giphy.gif)
 
-- You can change the value of the middle color in your colormap. For instance, in this map it looks like there is a stronger effect for positive values than negative ones. We can fix the middle color in the colormap to correspond to zero, or our thresholds.
+- Sometimes it makes sense to change the value of the middle color in your colormap as well. For instance, in this map, it looks like there is a stronger effect for positive values than negative ones. We can fix the middle color in the colormap to correspond to zero, or our thresholds. This way, values above zero can correspond to the upper half of the colormap and values below zero can correspond to the lower half of the colormap. Because this option is divorced from the axis limits (more on that later), you can still change what the top and bottom colors of your colormap correspond to in your data. 
 
 ![](https://media.giphy.com/media/Xymk3naiiChNe00AYP/giphy.gif)
 
-- You can also change the opacity of the colorbar. Values closer to 0 are more transparent. 
+- You can also change the opacity of the colormap (on the brain) to see the underlying sulci/gyri. Values closer to 0 are more transparent. 
 
 ![](https://media.giphy.com/media/PiQRrcp5jf5x3kZjhP/giphy.gif)
 
-- Finally, we can create our own colormap!
+- Finally, there is also the option to create your own colormap!
 
 ![](https://media.giphy.com/media/gK5iHbXM4G07gzAm2B/giphy.gif)
 
-*Note* colormaps you create will be immediately available in colormap options. The colormap GUI will dissapear upon patching. 
+*Note* colormaps you create will be immediately available in colormap options.
 
 6) Adjustments
 
-- In the adjustments menu, you can change the value of the bin that maps onto the limits of the colorbar. For instance, here the limits of the positive data are much higher than the negative (because there are fewer high magnitude negative values). In this case, we might decrease the limits for the positive values. 
+- In the adjustments menu, you can change the value of the bin that maps onto the limits of the colorbar. For instance, here the limits of the positive data are much higher than the negative (because there are fewer high magnitude negative values). In this case, we might decrease the limits for the positive values to make them closer to the limits for the negative values. By default the lower limit is the minimum value in the map, and the higher limit is the maximum value in the map. 
 
 ![](https://media.giphy.com/media/gLuerJOqeIaWYTZT8t/giphy.gif)
 
-- In this menu we can also change the map to outline clusters. 
+- In this menu, we can also create 'contours' of clusters in our map by ticking outline clusters. By default, these lines will be really thin as they represent the vertex on the boundary of thresholded and unthresholded values. 
 
 ![](https://media.giphy.com/media/cM95YUMMfNuRW2Gf6v/giphy.gif)
 
-- These lines are really thin, but luckily, we can grow them. 
+- But we can grow these lines using the grow/shrink input box. 
 
 ![](https://media.giphy.com/media/jUd2jUQxjrzhuX34Rm/giphy.gif)
 
-*Note* you can also grow a whole map. The new values will take the average of the values in their corresponding cluster. Negative values will shrink the map. 
+*Note* you can also grow a whole map. The new values will take the average of the values in their corresponding cluster. Negative values will shrink the map rather than grow it. 
+
+- You can also binarize your map
+
+(forthcoming image)
+
+- Or you can untick zeros in case you can still see zeros despite your thresholds/settings
+
+(forthcoming image)
 
 7) Modulate transparency
 
-8) Edit clusters
+- Another cool feature in brainSurfer is that you can modulate the transparency of every vertex, using either a secondary map, or by applying a linear opacity gradient along your colorbar.
 
-9) Select multiple overlays
+(forthcoming image)
 
-10) Delete
+*Note* you can change the minimum opacity in the map so that the linear opacity gradient starts at a particular opacity value other than zero. In the same way, you can change the maximum opacity value. 
 
-11) Save
+8) Smoothing
 
-12) Duplicate
 
-# List of features
+9) Edit clusters
+
+- Click edit clusters in the menu to discretize your map into clusters. You can then select individual clusters, get data about those clusters, or even delete them from your map
+
+10) ROIification
+
+- This option allows you to turn all clusters in your map into different ROIs
+
+11) Select multiple overlays
+
+- You can visualize multiple overlays. Note, that the overlays will be patched in order in the listbox. That means overlays higher up in the selection will be patched first and subsequent overlays will be patched on top of them. 
+
+(forthcoming image)
+
+- When you select multiple overlays, you can't change the settings in brainSurfer so make sure the overlay looks how you want it to look prior to selecting multiple overlays to plot on top of each other. There is also a GUI for editing the transparency settings of the different overlays you've selected. 
+
+(forthcoming image)
+
+12) Lighting
+
+13) Delete
+
+14) Apply
+
+15) Save
+
+16) Duplicate
+
+16) Information
+
+
+# What's new in this version?
+- A new toolbar for settings
+
+The toolbar now contains all of the options for editing your underlay, the cluster editor, and the ability to mask overlays. New functions added to the toolbar include the ability to convert between TAL and MNI for nifti images (volume space), an option to show the entire colorbar rather than threshold it by colors that exist in your current overlay, the ability to generate a quick histogram of the data in the current selection, and the ability to save and load settings from previous maps (including the data for that map if you so choose).
+
+-  Totally revamped GUI, including new button layout to make access to common functions for manipulating statistical maps easier  
+
+Buttons have been moved around the overlay selection listbox. New functions include the ability to delete all overlays in the selection listbox and to copy the settings for one overlay and apply them to as many other overlays as you want. I've also added a multioverlay settings GUI that allows for much greater control of visualization when multiple overlays are selected. 
+
+- Lots of under the hood updates
+
+Lots of bugs for changing colormaps, lighting, taking screenshots, modulating transparency have been fixed. brainSurfer.m is now faster, (better) commented, and better organized (including variable structures). There is still work to do here, so stay tuned. You can also now resize all GUIs. 
+
+- Colormap editor
+
+There is now a dedicated GUI for creating your own colormaps that provides realtime feedback. Colormap storage/loading is much more efficient now. 
+
+- Make 2D overlays
+
+3d overlays were here, now make 2d overlays in case you don't like transparency as your 2nd dimension (see plotOverlay2D)
+
+# Warnings and bugs
+These are some current issues that will be fixed in the future
+
+- modulate transparency has some bugs 
+
+Should work fine unless you have a map with both positive and negative values, in which case the transparency modulated 2D colormap that is generated is inaccurate. The real data plotted over that colormap should be translated across the x-axis.
+
+- some options in the menu are not ready yet
+
+There will be a GUI for creating 2D/3D colormaps but it's not ready yet (use the scripts on their own). Cluster correction is not supported yet. Statistical analysis is not yet supported. volume viewer is not yet supported. 
+
+# Full list of features
 *Support for native space*
 - Use either fsaverage brains that come with the toolbox, or render your own surface files. Then, overlay any data that fits the dimensions of your files (in .nii format). *see 'select a surface'*
 
