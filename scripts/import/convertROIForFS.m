@@ -145,6 +145,11 @@ if verbose == 0
     end
 end
     
+
+for i = 1:length(toConvertFS_RH)
+    hdr = load_nifti(toConvertFS_RH{i});
+    allVol(:,i) = hdr.vol;
+end
 for j = 1:size(allVol,1)
     vert = allVol(j,:); % get all roi values at vertex j
     if all(vert == 0) == 0 % check if no roi maps onto that vertex at all
