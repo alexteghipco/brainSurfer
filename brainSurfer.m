@@ -4,7 +4,7 @@ function varargout = brainSurfer(varargin)
 %
 % Too many updates to list!
 %
-% Last Modified by GUIDE v2.5 03-Apr-2019 17:00:46
+% Last Modified by GUIDE v2.5 09-Apr-2019 15:09:56
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %% %% Setup and initialize %% %% %% 
@@ -107,7 +107,7 @@ else
 end
 % Change some default settings for handles that are auto-generated with
 % GUIDE
-set(handles.overlaySelection,'Max',50,'Min',0); % don't allow more than 50 overlays to be plotted in brainSurfer at once
+set(handles.overlaySelection,'Max',1000,'Min',0); % don't allow more than 50 overlays to be plotted in brainSurfer at once
 set(handles.overlaySelection,'String',cellstr(handles.overlaySelection.String)); % change the string from overlaySelection to a cell
 
 guidata(hObject, handles);
@@ -363,10 +363,15 @@ if isfield(handles,'brainMap')
     if isfield(handles.brainMap,'overlay') %if there is an overlay field (i.e., not your first click)
         if iscell(handles.brainMap.overlay) % check if overlay is a cell (i.e., multioverlay)
             for celli = 1:length(handles.brainMap.overlay)
-                handles.brainMap.overlay{celli}.FaceAlpha = 0;
+                try
+                    handles.brainMap.overlay{celli}.FaceAlpha = 0;
+                catch
+                    delete(handles.brainMap.overlay{celli});
+                end
             end
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         elseif isvalid(handles.brainMap.overlay)
+            handles.overlayCopy = handles.brainMap.overlay;
             handles.brainMap.overlay.FaceAlpha = 0;
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         end
@@ -469,7 +474,7 @@ if isfield(handles,'brainMap')
             
             handles.smoothArea.String = num2str(handles.brainMap.Current{handles.overlaySelection.Value - 1}.smoothArea);
             handles.smoothSteps.String = num2str(handles.brainMap.Current{handles.overlaySelection.Value - 1}.smoothSteps);
-            
+            figure(handles.brainFig)
             [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
             
             handles.brainMap.colorbar = cbar;
@@ -482,11 +487,35 @@ if isfield(handles,'brainMap')
                 handles.brainMap.colorbar.YTick = handles.opts.ticks;
                 handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
             end
+            
+            if isfield(handles,'overlayCopy')
+                if isvalid(handles.overlayCopy)
+                    handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+                    handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+                    handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+                    handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+                    handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
+                end
+            end
+
         end
         
+%        % copy in overlay settings from previous overlay
+%        %handles.overlayCopy;
+%        if isfield(handles,'overlayCopy')
+%            if isvalid(handles.overlayCopy)
+%                handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+%                handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+%                handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+%                handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+%                handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
+%            end
+%        end
+       
     elseif length(handles.overlaySelection.Value) > 1
         
         for filei = handles.overlaySelection.Value
+            figure(handles.brainFig)
             [handles.underlay, handles.brainMap.overlay{filei - 1}, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{filei - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{filei - 1}.overlayThresholdNeg, handles.brainMap.Current{filei - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{filei - 1}.hemi, 'opacity', handles.brainMap.Current{filei - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{filei - 1}.colormap}, 'colorSampling',handles.brainMap.Current{filei - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{filei - 1}.colorBins,'limits', [handles.brainMap.Current{filei - 1}.limitMin handles.brainMap.Current{filei - 1}.limitMax],'inclZero',handles.brainMap.Current{filei - 1}.inclZero,'clusterThresh',handles.brainMap.Current{filei - 1}.clusterThresh,'binarize',handles.brainMap.Current{filei - 1}.binarize,'outline',handles.brainMap.Current{filei - 1}.outline,'binarizeClusters',handles.brainMap.Current{filei - 1}.binarizeClusters,'customColor',handles.brainMap.Current{filei - 1}.customColor,'pMap',handles.brainMap.Current{filei - 1}.pVals,'pThresh',handles.brainMap.Current{filei - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{filei - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{filei - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{filei - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{filei - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{filei - 1}.invertColor,'invertOpacity',handles.brainMap.Current{filei - 1}.invertOpacity,'growROI',handles.brainMap.Current{filei - 1}.growROI);
         end
         
@@ -575,11 +604,12 @@ if handles.overlaySelection.Value ~= 1 % make sure you are not duplicating 'no o
                 end
                 handles.brainMap = rmfield(handles.brainMap,'overlay');
             elseif isvalid(handles.brainMap.overlay)
+                handles.overlayCopy = handles.brainMap.overlay;
                 handles.brainMap.overlay.FaceAlpha = 0;
                 handles.brainMap = rmfield(handles.brainMap,'overlay');
             end
         end
-        
+        figure(handles.brainFig)
         [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
         
         handles.brainMap.colorbar = cbar;
@@ -591,6 +621,14 @@ if handles.overlaySelection.Value ~= 1 % make sure you are not duplicating 'no o
         if handles.colormapSpacing.Value == 4 || handles.colormapSpacing.Value == 3
             handles.brainMap.colorbar.YTick = handles.opts.ticks;
             handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
+        end
+        
+        if isfield(handles,'overlayCopy')
+            handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+            handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+            handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+            handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+            handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
         end
         
         guidata(hObject, handles);
@@ -643,6 +681,7 @@ if length(handles.overlaySelection.Value) == 1 % reloading only works if you don
                 end
                 handles.brainMap = rmfield(handles.brainMap,'overlay');
             elseif isvalid(handles.brainMap.overlay)
+                handles.overlayCopy = handles.brainMap.overlay;
                 handles.brainMap.overlay.FaceAlpha = 0;
                 handles.brainMap = rmfield(handles.brainMap,'overlay');
             end
@@ -710,6 +749,7 @@ if length(handles.overlaySelection.Value) == 1 % reloading only works if you don
         handles.overlayThresholdPos.Max = max(max(max(handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data)));
         handles.overlayThresholdNeg.Min = min(min(min(handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data)));
         
+        figure(handles.brainFig)
         [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
         
         handles.brainMap.colorbar = cbar;
@@ -721,6 +761,14 @@ if length(handles.overlaySelection.Value) == 1 % reloading only works if you don
         if handles.colormapSpacing.Value == 4 || handles.colormapSpacing.Value == 3
             handles.brainMap.colorbar.YTick = handles.opts.ticks;
             handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
+        end
+        
+        if isfield(handles,'overlayCopy')
+            handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+            handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+            handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+            handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+            handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
         end
         
         % update handles
@@ -749,6 +797,7 @@ if length(handles.overlaySelection.Value) == 1 % deleting only works if you don'
                 end
                 handles.brainMap = rmfield(handles.brainMap,'overlay');
             elseif isvalid(handles.brainMap.overlay)
+                handles.overlayCopy = handles.brainMap.overlay;
                 handles.brainMap.overlay.FaceAlpha = 0;
                 handles.brainMap = rmfield(handles.brainMap,'overlay');
             else
@@ -821,6 +870,7 @@ if isfield(handles.brainMap,'overlay') %if there is an overlay field (i.e., not 
         end
         handles.brainMap = rmfield(handles.brainMap,'overlay');
     elseif isvalid(handles.brainMap.overlay)
+        handles.overlayCopy = handles.brainMap.overlay;
         handles.brainMap.overlay.FaceAlpha = 0;
         handles.brainMap = rmfield(handles.brainMap,'overlay');
     else
@@ -909,6 +959,12 @@ function screenshotsButton_Callback(hObject, eventdata, handles)
 if handles.overlaySelection.Value ~= 1 
     handles = guidata(hObject);
     
+    for j = 1:length(handles.brainFig.Children)
+        if ~strcmp(handles.brainFig.Children(j).Tag,'cbar')
+            cNum = j;
+        end
+    end
+    
     if length(handles.overlaySelection.Value) == 1 % if you only have one overlay turned on...
         [~,file, ~] = fileparts(handles.brainMap.Current{handles.overlaySelection.Value - 1}.name);
         [oFile, oPath] = uiputfile({'*'},'Pick a base name for all screenshots',file);
@@ -918,16 +974,16 @@ if handles.overlaySelection.Value ~= 1
             
             figure(handles.brainFig)
             % inferior view
-            view(90, -90);
+            view(handles.brainFig.Children(cNum),90, -90);
             saveas(handles.brainFig,[oPath oFile '_inferior.png']);
             % superior view
-            view(-90, 90);
+            view(handles.brainFig.Children(cNum),-90, 90);
             saveas(handles.brainFig,[oPath oFile '_superior.png']);
             % lateral from left
-            view(-90, 0);
+            view(handles.brainFig.Children(cNum),-90, 0);
             saveas(handles.brainFig,[oPath oFile '_lateral.png']);
             % lateral from right
-            view(90, 0);
+            view(handles.brainFig.Children(cNum),90, 0);
             saveas(handles.brainFig,[oPath oFile '_medial.png']);
             
             handles.underlay.right.FaceAlpha = 1;
@@ -937,16 +993,16 @@ if handles.overlaySelection.Value ~= 1
             
             figure(handles.brainFig)
             % inferior view
-            view(90, -90);
+            view(handles.brainFig.Children(cNum),90, -90);
             saveas(handles.brainFig,[oPath oFile '_inferior.png']);
             % superior view
-            view(-90, 90);
+            view(handles.brainFig.Children(cNum),-90, 90);
             saveas(handles.brainFig,[oPath oFile '_superior.png']);
             % lateral from left
-            view(-90, 0);
+            view(handles.brainFig.Children(cNum),-90, 0);
             saveas(handles.brainFig,[oPath oFile '_medial.png']);
             % lateral from right
-            view(90, 0);
+            view(handles.brainFig.Children(cNum),90, 0);
             saveas(handles.brainFig,[oPath oFile '_lateral.png']);
         
             handles.underlay.left.FaceAlpha = 1;
@@ -965,22 +1021,22 @@ if handles.overlaySelection.Value ~= 1
         figure(handles.brainFig)
         % start with inferior/superior
         % inferior view
-        view(90, -90);
+        view(handles.brainFig.Children(cNum),90, -90);
         saveas(handles.brainFig,[oPath oFile '_inferior.png']);
         % superior view
-        view(-90, 90);
+        view(handles.brainFig.Children(cNum),-90, 90);
         saveas(handles.brainFig,[oPath oFile '_superior.png']);
 
         % now get lateral left and right
         % lateral from left
-        view(-90, 0);
+        view(handles.brainFig.Children(cNum),-90, 0);
         saveas(handles.brainFig,[oPath oFile '_leftlateral.png']);
         % lateral from right
-        view(90, 0);
+        view(handles.brainFig.Children(cNum),90, 0);
         saveas(handles.brainFig,[oPath oFile '_rightlateral.png']);
         
         % now medial
-        view(-90, 0);
+        view(handles.brainFig.Children(cNum),-90, 0);
         handles.underlay.left.FaceAlpha = 0;
         for i = 1:length(lIdx)
             handles.brainMap.overlay{lIdx(i)}.FaceAlpha = 0;
@@ -992,7 +1048,7 @@ if handles.overlaySelection.Value ~= 1
             handles.brainMap.overlay{lIdx(i)}.FaceAlpha = op(lIdx(i));
         end
         
-        view(90, 0);
+        view(handles.brainFig.Children(cNum),90, 0);
         handles.underlay.right.FaceAlpha = 0;
         for i = 1:length(rIdx)
             handles.brainMap.overlay{rIdx(i)}.FaceAlpha = 0;
@@ -1008,6 +1064,188 @@ if handles.overlaySelection.Value ~= 1
     % update handles
     guidata(hObject, handles);
 end
+
+%% batch photos
+function batchPhotos_Callback(hObject, eventdata, handles)
+handles = guidata(hObject);
+
+for i = 1:length(handles.brainMap.Current)
+    % remove colorbar if it exists
+    if isfield(handles.brainMap,'colorbar')
+        delete(handles.brainMap.colorbar)
+        handles.brainMap = rmfield(handles.brainMap,'colorbar');
+    end
+    
+    % now turn off any overlays that might exist and delete them
+    % multioverlays are in a cell
+    if isfield(handles.brainMap,'overlay') %if there is an overlay field (i.e., not your first click)
+        if iscell(handles.brainMap.overlay) % check if overlay is a cell (i.e., multioverlay)
+            for celli = 1:length(handles.brainMap.overlay)
+                try
+                    handles.brainMap.overlay{celli}.FaceAlpha = 0;
+                catch
+                    delete(handles.brainMap.overlay{celli});
+                end
+            end
+            handles.brainMap = rmfield(handles.brainMap,'overlay');
+        elseif isvalid(handles.brainMap.overlay)
+            handles.overlayCopy = handles.brainMap.overlay;
+            handles.brainMap.overlay.FaceAlpha = 0;
+            handles.brainMap = rmfield(handles.brainMap,'overlay');
+        end
+    end
+    
+    % get file name
+    [~,file, ~] = fileparts(handles.brainMap.Current{i}.name);
+    path = handles.brainMap.Current{i}.path;
+    oName = [path handles.paths.slash file];
+    
+    % check if repatch will produce a new figure...
+    figPre = findobj('type','figure');
+    
+    % repatch
+    figure(handles.brainFig)
+    %[handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
+    [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{i}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{i}.overlayThresholdNeg, handles.brainMap.Current{i}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{i}.hemi, 'opacity', handles.brainMap.Current{i}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{i}.colormap}, 'colorSampling',handles.brainMap.Current{i}.colormapSpacing,'colorBins',handles.brainMap.Current{i}.colorBins,'limits', [handles.brainMap.Current{i}.limitMin handles.brainMap.Current{i}.limitMax],'inclZero',handles.brainMap.Current{i}.inclZero,'clusterThresh',handles.brainMap.Current{i}.clusterThresh,'binarize',handles.brainMap.Current{i}.binarize,'outline',handles.brainMap.Current{i}.outline,'binarizeClusters',handles.brainMap.Current{i}.binarizeClusters,'customColor',handles.brainMap.Current{i}.customColor,'pMap',handles.brainMap.Current{i}.pVals,'pThresh',handles.brainMap.Current{i}.pThresh,'transparencyLimits',handles.brainMap.Current{i}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{i}.transparencyThresholds,'transparencyData',handles.brainMap.Current{i}.transparencyData,'transparencyPThresh',handles.brainMap.Current{i}.transparencyPThresh,'invertColor',handles.brainMap.Current{i}.invertColor,'invertOpacity',handles.brainMap.Current{i}.invertOpacity,'growROI',handles.brainMap.Current{i}.growROI);
+    
+    %bar = figure;
+    handles.brainMap.colorbar = cbar;
+    handles.brainMap.colorbar.TickLength = [0 0];
+    imh = handles.brainMap.colorbar.Children(1);
+    imh.AlphaData = handles.opts.transparencyData;
+    imh.AlphaDataMapping = 'direct';
+    
+    if handles.colormapSpacing.Value == 4 || handles.colormapSpacing.Value == 3
+        handles.brainMap.colorbar.YTick = handles.opts.ticks;
+        handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
+    end
+    
+    if isfield(handles,'overlayCopy')
+        handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+        handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+        handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+        handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+        handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
+    end
+    
+    % check for transparency modulation
+    figPost = findobj('type','figure');
+    if length(figPost) > length(figPre)
+        [C,ia] = setdiff([figPost(:).Number],[figPre(:).Number]);
+        for i = 1:length(figPost)
+            if figPost(i).Number == C
+                % take photo of it...
+                saveas(figPost(i),[oName '_transparencyModulatedColorbar.png']);
+                deleteFig = i;
+            end
+        end
+    end
+    
+    if exist('deleteFig','var')
+        delete(figPost(deleteFig))
+    end
+    
+    % so that we don't rotate the colorbar find it in children of brainFig
+    for j = 1:length(handles.brainFig.Children)
+        if ~strcmp(handles.brainFig.Children(j).Tag,'cbar')
+            cNum = j;
+        end
+    end
+    
+    % take screenshots
+    if strcmp(handles.brainMap.Current{i}.hemi,'left')
+        handles.underlay.right.FaceAlpha = 0;
+        
+        figure(handles.brainFig)
+        % inferior view
+        view(handles.brainFig.Children(cNum),90, -90);
+        saveas(handles.brainFig,[oName '_inferior.png']);
+        % superior view
+        view(handles.brainFig.Children(cNum),-90, 90);
+        saveas(handles.brainFig,[oName '_superior.png']);
+        % lateral from left
+        view(handles.brainFig.Children(cNum),-90, 0);
+        saveas(handles.brainFig,[oName '_lateral.png']);
+        % lateral from right
+        view(handles.brainFig.Children(cNum),90, 0);
+        saveas(handles.brainFig,[oName '_medial.png']);
+        
+        handles.underlay.right.FaceAlpha = 1;
+        
+    elseif strcmp(handles.brainMap.Current{i}.hemi,'right')
+        handles.underlay.left.FaceAlpha = 0;
+        
+        figure(handles.brainFig)
+        % inferior view
+        view(handles.brainFig.Children(cNum),90, -90);
+        saveas(handles.brainFig,[oName '_inferior.png']);
+        % superior view
+        view(handles.brainFig.Children(cNum),-90, 90);
+        saveas(handles.brainFig,[oName '_superior.png']);
+        % lateral from left
+        view(handles.brainFig.Children(cNum),-90, 0);
+        saveas(handles.brainFig,[oName '_medial.png']);
+        % lateral from right
+        view(handles.brainFig.Children(cNum),90, 0);
+        saveas(handles.brainFig,[oName '_lateral.png']);
+        
+        handles.underlay.left.FaceAlpha = 1;
+    end
+        
+end
+
+% repatch original overlay
+% remove colorbar if it exists
+if isfield(handles.brainMap,'colorbar')
+    delete(handles.brainMap.colorbar)
+    handles.brainMap = rmfield(handles.brainMap,'colorbar');
+end
+
+% now turn off any overlays that might exist and delete them
+% multioverlays are in a cell
+if isfield(handles.brainMap,'overlay') %if there is an overlay field (i.e., not your first click)
+    if iscell(handles.brainMap.overlay) % check if overlay is a cell (i.e., multioverlay)
+        for celli = 1:length(handles.brainMap.overlay)
+            try
+                handles.brainMap.overlay{celli}.FaceAlpha = 0;
+            catch
+                delete(handles.brainMap.overlay{celli});
+            end
+        end
+        handles.brainMap = rmfield(handles.brainMap,'overlay');
+    elseif isvalid(handles.brainMap.overlay)
+        handles.overlayCopy = handles.brainMap.overlay;
+        handles.brainMap.overlay.FaceAlpha = 0;
+        handles.brainMap = rmfield(handles.brainMap,'overlay');
+    end
+end
+
+figure(handles.brainFig)
+[handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
+
+handles.brainMap.colorbar = cbar;
+handles.brainMap.colorbar.TickLength = [0 0];
+imh = handles.brainMap.colorbar.Children(1);
+imh.AlphaData = handles.opts.transparencyData;
+imh.AlphaDataMapping = 'direct';
+    
+if handles.colormapSpacing.Value == 4 || handles.colormapSpacing.Value == 3
+    handles.brainMap.colorbar.YTick = handles.opts.ticks;
+    handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
+end
+
+if isfield(handles,'overlayCopy')
+    if isvalid(handles.overlayCopy)
+        handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+        handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+        handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+        handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+        handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
+    end
+end
+
+% update handles
+guidata(hObject, handles);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %% %% Thresholds %% %% %%
@@ -1039,13 +1277,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
             end
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         elseif isvalid(handles.brainMap.overlay)
+            handles.overlayCopy = handles.brainMap.overlay;
             handles.brainMap.overlay.FaceAlpha = 0;
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         else
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         end
     end
-    
+    figure(handles.brainFig)
     [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
     
     handles.brainMap.colorbar = cbar;
@@ -1057,6 +1296,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
     if handles.colormapSpacing.Value == 4 || handles.colormapSpacing.Value == 3
         handles.brainMap.colorbar.YTick = handles.opts.ticks;
         handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
+    end
+    
+    if isfield(handles,'overlayCopy')
+        handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+        handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+        handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+        handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+        handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
     end
     
     guidata(hObject, handles);
@@ -1088,13 +1335,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
             end
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         elseif isvalid(handles.brainMap.overlay)
+            handles.overlayCopy = handles.brainMap.overlay;
             handles.brainMap.overlay.FaceAlpha = 0;
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         else
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         end
     end
-    
+    figure(handles.brainFig)
     [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
     
     handles.brainMap.colorbar = cbar;
@@ -1106,6 +1354,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
     if handles.colormapSpacing.Value == 4 || handles.colormapSpacing.Value == 3
         handles.brainMap.colorbar.YTick = handles.opts.ticks;
         handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
+    end
+    
+    if isfield(handles,'overlayCopy')
+        handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+        handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+        handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+        handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+        handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
     end
     
     guidata(hObject, handles);
@@ -1137,13 +1393,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
             end
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         elseif isvalid(handles.brainMap.overlay)
+            handles.overlayCopy = handles.brainMap.overlay;
             handles.brainMap.overlay.FaceAlpha = 0;
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         else
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         end
     end
-    
+    figure(handles.brainFig)
     [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
     
     handles.brainMap.colorbar = cbar;
@@ -1155,6 +1412,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
     if handles.colormapSpacing.Value == 4 || handles.colormapSpacing.Value == 3
         handles.brainMap.colorbar.YTick = handles.opts.ticks;
         handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
+    end
+    
+    if isfield(handles,'overlayCopy')
+        handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+        handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+        handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+        handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+        handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
     end
     
     guidata(hObject, handles);
@@ -1186,13 +1451,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
             end
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         elseif isvalid(handles.brainMap.overlay)
+            handles.overlayCopy = handles.brainMap.overlay;
             handles.brainMap.overlay.FaceAlpha = 0;
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         else
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         end
     end
-    
+    figure(handles.brainFig)
     [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
     
     handles.brainMap.colorbar = cbar;
@@ -1204,6 +1470,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
     if handles.colormapSpacing.Value == 4 || handles.colormapSpacing.Value == 3
         handles.brainMap.colorbar.YTick = handles.opts.ticks;
         handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
+    end
+    
+    if isfield(handles,'overlayCopy')
+        handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+        handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+        handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+        handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+        handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
     end
     
     guidata(hObject, handles);
@@ -1244,13 +1518,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
             end
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         elseif isvalid(handles.brainMap.overlay)
+            handles.overlayCopy = handles.brainMap.overlay;
             handles.brainMap.overlay.FaceAlpha = 0;
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         else
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         end
     end
-    
+    figure(handles.brainFig)
     [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
     
     handles.brainMap.colorbar = cbar;
@@ -1262,6 +1537,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
     if handles.colormapSpacing.Value == 4 || handles.colormapSpacing.Value == 3
         handles.brainMap.colorbar.YTick = handles.opts.ticks;
         handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
+    end
+    
+    if isfield(handles,'overlayCopy')
+        handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+        handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+        handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+        handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+        handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
     end
     
     guidata(hObject, handles);
@@ -1292,13 +1575,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
             end
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         elseif isvalid(handles.brainMap.overlay)
+            handles.overlayCopy = handles.brainMap.overlay;
             handles.brainMap.overlay.FaceAlpha = 0;
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         else
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         end
     end
-    
+    figure(handles.brainFig)
     [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
     
     handles.brainMap.colorbar = cbar;
@@ -1310,6 +1594,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
     if handles.colormapSpacing.Value == 4 || handles.colormapSpacing.Value == 3
         handles.brainMap.colorbar.YTick = handles.opts.ticks;
         handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
+    end
+    
+    if isfield(handles,'overlayCopy')
+        handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+        handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+        handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+        handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+        handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
     end
     
     guidata(hObject, handles);
@@ -1341,13 +1633,14 @@ if handles.overlaySelection.Value ~= 1
             end
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         elseif isvalid(handles.brainMap.overlay)
+            handles.overlayCopy = handles.brainMap.overlay;
             handles.brainMap.overlay.FaceAlpha = 0;
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         else
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         end
     end
-    
+    figure(handles.brainFig)
     [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
     
     handles.brainMap.colorbar = cbar;
@@ -1359,6 +1652,14 @@ if handles.overlaySelection.Value ~= 1
     if handles.colormapSpacing.Value == 4 || handles.colormapSpacing.Value == 3
         handles.brainMap.colorbar.YTick = handles.opts.ticks;
         handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
+    end
+    
+    if isfield(handles,'overlayCopy')
+        handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+        handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+        handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+        handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+        handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
     end
     
     guidata(hObject, handles);
@@ -1389,13 +1690,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
             end
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         elseif isvalid(handles.brainMap.overlay)
+            handles.overlayCopy = handles.brainMap.overlay;
             handles.brainMap.overlay.FaceAlpha = 0;
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         else
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         end
     end
-    
+    figure(handles.brainFig)
     [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
     
     handles.brainMap.colorbar = cbar;
@@ -1407,6 +1709,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
     if handles.colormapSpacing.Value == 4 || handles.colormapSpacing.Value == 3
         handles.brainMap.colorbar.YTick = handles.opts.ticks;
         handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
+    end
+    
+    if isfield(handles,'overlayCopy')
+        handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+        handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+        handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+        handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+        handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
     end
     
     guidata(hObject, handles);
@@ -1487,11 +1797,12 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
             end
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         elseif isvalid(handles.brainMap.overlay)
+            handles.overlayCopy = handles.brainMap.overlay;
             handles.brainMap.overlay.FaceAlpha = 0;
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         end
     end
-    
+    figure(handles.brainFig)
     [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
     
     handles.brainMap.colorbar = cbar;
@@ -1503,6 +1814,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
     if get(hObject,'Value') == 4 || get(hObject,'Value') == 3
         handles.brainMap.colorbar.YTick = handles.opts.ticks;
         handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
+    end
+    
+    if isfield(handles,'overlayCopy')
+        handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+        handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+        handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+        handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+        handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
     end
     
     guidata(hObject, handles);
@@ -1544,11 +1863,12 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
                         end
                         handles.brainMap = rmfield(handles.brainMap,'overlay');
                     elseif isvalid(handles.brainMap.overlay)
+                        handles.overlayCopy = handles.brainMap.overlay;
                         handles.brainMap.overlay.FaceAlpha = 0;
                         handles.brainMap = rmfield(handles.brainMap,'overlay');
                     end
                 end
-            
+                figure(handles.brainFig)
                 [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
                 
                 handles.brainMap.colorbar = cbar;
@@ -1560,6 +1880,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
                 if handles.colormapSpacing.Value == 4 || handles.colormapSpacing.Value == 3
                     handles.brainMap.colorbar.YTick = handles.opts.ticks;
                     handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
+                end
+                
+                if isfield(handles,'overlayCopy')
+                    handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+                    handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+                    handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+                    handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+                    handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
                 end
                 
             else % update overlay and clear custom color
@@ -1580,11 +1908,12 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
                         end
                         handles.brainMap = rmfield(handles.brainMap,'overlay');
                     elseif isvalid(handles.brainMap.overlay)
+                        handles.overlayCopy = handles.brainMap.overlay;
                         handles.brainMap.overlay.FaceAlpha = 0;
                         handles.brainMap = rmfield(handles.brainMap,'overlay');
                     end
                 end
-                
+                figure(handles.brainFig)
                 [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
                 
                 handles.brainMap.colorbar = cbar;
@@ -1597,6 +1926,15 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
                     handles.brainMap.colorbar.YTick = handles.opts.ticks;
                     handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
                 end
+                
+                if isfield(handles,'overlayCopy')
+                    handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+                    handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+                    handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+                    handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+                    handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
+                end
+                
             end
         end
     end
@@ -1627,11 +1965,12 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
             end
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         elseif isvalid(handles.brainMap.overlay)
+            handles.overlayCopy = handles.brainMap.overlay;
             handles.brainMap.overlay.FaceAlpha = 0;
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         end
     end
-    
+    figure(handles.brainFig)
     [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
     
     handles.brainMap.colorbar = cbar;
@@ -1643,6 +1982,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
     if handles.colormapSpacing.Value == 4 || handles.colormapSpacing.Value == 3
         handles.brainMap.colorbar.YTick = handles.opts.ticks;
         handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
+    end
+    
+    if isfield(handles,'overlayCopy')
+        handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+        handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+        handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+        handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+        handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
     end
     
     guidata(hObject, handles);
@@ -1683,11 +2030,12 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
             end
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         elseif isvalid(handles.brainMap.overlay)
+            handles.overlayCopy = handles.brainMap.overlay;
             handles.brainMap.overlay.FaceAlpha = 0;
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         end
     end
-    
+    figure(handles.brainFig)
     [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
     
     handles.brainMap.colorbar = cbar;
@@ -1699,6 +2047,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
     if handles.colormapSpacing.Value == 4 || handles.colormapSpacing.Value == 3
         handles.brainMap.colorbar.YTick = handles.opts.ticks;
         handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
+    end
+    
+    if isfield(handles,'overlayCopy')
+        handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+        handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+        handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+        handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+        handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
     end
     
     guidata(hObject, handles);
@@ -1731,11 +2087,12 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
             end
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         elseif isvalid(handles.brainMap.overlay)
+            handles.overlayCopy = handles.brainMap.overlay;
             handles.brainMap.overlay.FaceAlpha = 0;
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         end
     end
-    
+    figure(handles.brainFig)
     [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
     
     handles.brainMap.colorbar = cbar;
@@ -1747,6 +2104,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
     if handles.colormapSpacing.Value == 4 || handles.colormapSpacing.Value == 3
         handles.brainMap.colorbar.YTick = handles.opts.ticks;
         handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
+    end
+    
+    if isfield(handles,'overlayCopy')
+        handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+        handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+        handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+        handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+        handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
     end
     
     guidata(hObject, handles);
@@ -1778,11 +2143,12 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
             end
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         elseif isvalid(handles.brainMap.overlay)
+            handles.overlayCopy = handles.brainMap.overlay;
             handles.brainMap.overlay.FaceAlpha = 0;
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         end
     end
-    
+    figure(handles.brainFig)
     [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
     
     handles.brainMap.colorbar = cbar;
@@ -1794,6 +2160,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
     if handles.colormapSpacing.Value == 4 || handles.colormapSpacing.Value == 3
         handles.brainMap.colorbar.YTick = handles.opts.ticks;
         handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
+    end
+    
+    if isfield(handles,'overlayCopy')
+        handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+        handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+        handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+        handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+        handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
     end
     
     guidata(hObject, handles);
@@ -1822,11 +2196,12 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
             end
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         elseif isvalid(handles.brainMap.overlay)
+            handles.overlayCopy = handles.brainMap.overlay;
             handles.brainMap.overlay.FaceAlpha = 0;
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         end
     end
-    
+    figure(handles.brainFig)
     [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
     
     handles.brainMap.colorbar = cbar;
@@ -1838,6 +2213,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
     if handles.colormapSpacing.Value == 4 || handles.colormapSpacing.Value == 3
         handles.brainMap.colorbar.YTick = handles.opts.ticks;
         handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
+    end
+    
+    if isfield(handles,'overlayCopy')
+        handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+        handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+        handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+        handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+        handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
     end
     
     guidata(hObject, handles);
@@ -1866,11 +2249,12 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
             end
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         elseif isvalid(handles.brainMap.overlay)
+            handles.overlayCopy = handles.brainMap.overlay;
             handles.brainMap.overlay.FaceAlpha = 0;
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         end
     end
-    
+    figure(handles.brainFig)
     [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
     
     handles.brainMap.colorbar = cbar;
@@ -1882,6 +2266,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
     if handles.colormapSpacing.Value == 4 || handles.colormapSpacing.Value == 3
         handles.brainMap.colorbar.YTick = handles.opts.ticks;
         handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
+    end
+    
+    if isfield(handles,'overlayCopy')
+        handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+        handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+        handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+        handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+        handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
     end
     
     guidata(hObject, handles);
@@ -1929,11 +2321,12 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
             end
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         elseif isvalid(handles.brainMap.overlay)
+            handles.overlayCopy = handles.brainMap.overlay;
             handles.brainMap.overlay.FaceAlpha = 0;
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         end
     end
-    
+    figure(handles.brainFig)
     [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
     
     handles.brainMap.colorbar = cbar;
@@ -1945,6 +2338,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
     if handles.colormapSpacing.Value == 4 || handles.colormapSpacing.Value == 3
         handles.brainMap.colorbar.YTick = handles.opts.ticks;
         handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
+    end
+    
+    if isfield(handles,'overlayCopy')
+        handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+        handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+        handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+        handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+        handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
     end
     
     guidata(hObject, handles);
@@ -1972,11 +2373,12 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
             end
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         elseif isvalid(handles.brainMap.overlay)
+            handles.overlayCopy = handles.brainMap.overlay;
             handles.brainMap.overlay.FaceAlpha = 0;
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         end
     end
-    
+    figure(handles.brainFig)
     [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
     
     handles.brainMap.colorbar = cbar;
@@ -1988,6 +2390,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
     if handles.colormapSpacing.Value == 4 || handles.colormapSpacing.Value == 3
         handles.brainMap.colorbar.YTick = handles.opts.ticks;
         handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
+    end
+    
+    if isfield(handles,'overlayCopy')
+        handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+        handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+        handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+        handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+        handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
     end
     
     guidata(hObject, handles);
@@ -2087,6 +2497,7 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
             end
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         elseif isvalid(handles.brainMap.overlay)
+            handles.overlayCopy = handles.brainMap.overlay;
             handles.brainMap.overlay.FaceAlpha = 0;
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         end
@@ -2103,7 +2514,7 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
     elseif handles.smoothBelowThresh.Value == 0 && handles.smoothAboveThresh.Value == 1
         handles.brainMap.Current{handles.overlaySelection.Value - 1}.smoothThreshold = 'above';
     end
-    
+    figure(handles.brainFig)
     [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI,'smoothSteps',str2double(handles.smoothSteps.String),'smoothArea',str2double(handles.smoothArea.String),'smoothThreshold',handles.brainMap.Current{handles.overlaySelection.Value - 1}.smoothThreshold,'smoothType',handles.brainMap.Current{handles.overlaySelection.Value - 1}.smoothType);
     
     handles.brainMap.colorbar = cbar;
@@ -2115,6 +2526,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
     if handles.colormapSpacing.Value == 4 || handles.colormapSpacing.Value == 3
         handles.brainMap.colorbar.YTick = handles.opts.ticks;
         handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
+    end
+    
+    if isfield(handles,'overlayCopy')
+        handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+        handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+        handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+        handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+        handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
     end
     
     guidata(hObject, handles);
@@ -2172,6 +2591,7 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
             end
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         elseif isvalid(handles.brainMap.overlay)
+            handles.overlayCopy = handles.brainMap.overlay;
             handles.brainMap.overlay.FaceAlpha = 0;
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         end
@@ -2179,9 +2599,17 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
     
     % this is the switch for roi-ification
     handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters = 'true';
-    
+    figure(handles.brainFig)
     % get new data without patching...
     [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI,'plotSwitch','off');
+    
+    if isfield(handles,'overlayCopy')
+        handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+        handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+        handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+        handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+        handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
+    end
     
     % now using the roi data update GUI settings and settings for current
     % map
@@ -2227,7 +2655,7 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
     % analysis (which takes time because you need to trigger delineation of
     % clusters). So, we should turn it of for future patching.
     handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters = 'false';
-    
+    figure(handles.brainFig)
     [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
     
     handles.brainMap.colorbar = cbar;
@@ -2236,6 +2664,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
     imh.AlphaData = handles.opts.transparencyData;
     imh.AlphaDataMapping = 'direct';
             
+    if isfield(handles,'overlayCopy')
+        handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+        handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+        handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+        handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+        handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
+    end
+    
     guidata(hObject, handles);
 end
 
@@ -2537,11 +2973,12 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
                         end
                         handles.brainMap = rmfield(handles.brainMap,'overlay');
                     elseif isvalid(handles.brainMap.overlay)
+                        handles.overlayCopy = handles.brainMap.overlay;
                         handles.brainMap.overlay.FaceAlpha = 0;
                         handles.brainMap = rmfield(handles.brainMap,'overlay');
                     end
                 end
-                
+                figure(handles.brainFig)
                 [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
                 
                 handles.brainMap.colorbar = cbar;
@@ -2553,6 +2990,14 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
                 if handles.colormapSpacing.Value == 4 || handles.colormapSpacing.Value == 3
                     handles.brainMap.colorbar.YTick = handles.opts.ticks;
                     handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
+                end
+                
+                if isfield(handles,'overlayCopy')
+                    handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+                    handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+                    handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+                    handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+                    handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
                 end
                 
             end
@@ -2649,11 +3094,12 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
                         end
                         handles.brainMap = rmfield(handles.brainMap,'overlay');
                     elseif isvalid(handles.brainMap.overlay)
+                        handles.overlayCopy = handles.brainMap.overlay;
                         handles.brainMap.overlay.FaceAlpha = 0;
                         handles.brainMap = rmfield(handles.brainMap,'overlay');
                     end
                 end
-                
+                figure(handles.brainFig)
                 [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
                 
                 handles.brainMap.colorbar = cbar;
@@ -2666,6 +3112,15 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
                     handles.brainMap.colorbar.YTick = handles.opts.ticks;
                     handles.brainMap.colorbar.YTickLabel = handles.opts.tickLabels;
                 end
+                
+                if isfield(handles,'overlayCopy')
+                    handles.brainMap.overlay.SpecularStrength = handles.overlayCopy.SpecularStrength;
+                    handles.brainMap.overlay.SpecularExponent = handles.overlayCopy.SpecularExponent;
+                    handles.brainMap.overlay.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+                    handles.brainMap.overlay.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+                    handles.brainMap.overlay.AmbientStrength =  handles.overlayCopy.AmbientStrength;
+                end
+                
             else
                 handles.w = warndlg('You do not have an overlay selected for which to load settings into','Error');
             end
