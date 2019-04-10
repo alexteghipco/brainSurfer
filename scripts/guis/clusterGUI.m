@@ -641,12 +641,36 @@ nonClusterVerts = setdiff(vertList,allClustVert);
 
 mainGuiData.brainMap.Current{currSelection}.Data(nonClusterVerts) = 0;
 
-% delete overlay
-if isfield(handles,'overlay')
-    delete(handles.overlay)
+% % delete overlay
+% if isfield(handles,'overlay')
+%     delete(handles.overlay)
+% end
+% remove colorbar if it exists
+if isfield(mainGuiData.brainMap,'colorbar')
+    delete(mainGuiData.brainMap.colorbar)
+    mainGuiData.brainMap = rmfield(mainGuiData.brainMap,'colorbar');
+    replot = 1;
+else
+    replot = 0;
+end
+
+% now turn off any overlays that might exist and delete them
+% multioverlays are in a cell
+if isfield(mainGuiData.brainMap,'overlay') %if there is an overlay field (i.e., not your first click)
+    if iscell(mainGuiData.brainMap.overlay) % check if overlay is a cell (i.e., multioverlay)
+        for celli = 1:length(mainGuiData.brainMap.overlay)
+            mainGuiData.brainMap.overlay{celli}.FaceAlpha = 0;
+        end
+        mainGuiData.brainMap = rmfield(mainGuiData.brainMap,'overlay');
+    elseif isvalid(mainGuiData.brainMap.overlay)
+        mainGuiData.overlayCopy = mainGuiData.brainMap.overlay;
+        mainGuiData.brainMap.overlay.FaceAlpha = 0;
+        mainGuiData.brainMap = rmfield(mainGuiData.brainMap,'overlay');
+    end
 end
 
 % replot overlay you started out with but with new colormap
+figure(mainGuiData.brainFig)
 [mainGuiData.underlay, mainGuiData.brainMap.overlay, mainGuiData.brainFig, mainGuiData.opts] = plotOverlay(mainGuiData.underlay, mainGuiData.brainMap.Current{currSelection}.Data,'figHandle', mainGuiData.brainFig, 'threshold',[mainGuiData.brainMap.Current{currSelection}.overlayThresholdNeg, mainGuiData.brainMap.Current{currSelection}.overlayThresholdPos], 'hemisphere', mainGuiData.brainMap.Current{currSelection}.hemi, 'opacity', mainGuiData.brainMap.Current{currSelection}.opacity, 'colorMap', mainGuiData.colormap.String{mainGuiData.brainMap.Current{currSelection}.colormap}, 'colorSampling',mainGuiData.brainMap.Current{currSelection}.colormapSpacing,'colorBins',mainGuiData.brainMap.Current{currSelection}.colorBins,'limits', [mainGuiData.brainMap.Current{currSelection}.limitMin mainGuiData.brainMap.Current{currSelection}.limitMax],'inclZero',mainGuiData.brainMap.Current{currSelection}.inclZero,'clusterThresh',mainGuiData.brainMap.Current{currSelection}.clusterThresh,'binarize',mainGuiData.brainMap.Current{currSelection}.binarize,'outline',mainGuiData.brainMap.Current{currSelection}.outline,'binarizeClusters',mainGuiData.brainMap.Current{currSelection}.binarizeClusters,'customColor',mainGuiData.brainMap.Current{currSelection}.customColor,'pMap',mainGuiData.brainMap.Current{currSelection}.pVals,'pThresh',mainGuiData.brainMap.Current{currSelection}.pThresh,'transparencyLimits',mainGuiData.brainMap.Current{currSelection}.transparencyLimits,'transparencyThresholds',mainGuiData.brainMap.Current{currSelection}.transparencyThresholds,'transparencyData',mainGuiData.brainMap.Current{currSelection}.transparencyData,'transparencyPThresh',mainGuiData.brainMap.Current{currSelection}.transparencyPThresh,'invertColor',mainGuiData.brainMap.Current{currSelection}.invertColor,'invertOpacity',mainGuiData.brainMap.Current{currSelection}.invertOpacity,'growROI',mainGuiData.brainMap.Current{currSelection}.growROI);
 
 mainGuiData.brainMap.colorbar = cbar;
@@ -658,6 +682,14 @@ imh.AlphaDataMapping = 'direct';
 if mainGuiData.colormapSpacing.Value == 4 || mainGuiData.colormapSpacing.Value == 3
     mainGuiData.brainMap.colorbar.YTick = mainGuiData.opts.ticks;
     mainGuiData.brainMap.colorbar.YTickLabel = mainGuiData.opts.tickLabels;
+end
+
+if isfield(mainGuiData.overlayCopy,'overlayCopy')
+    mainGuiData.overlayCopy.brainMap.overlay.SpecularStrength = mainGuiData.overlayCopy.overlayCopy.SpecularStrength;
+    mainGuiData.overlayCopy.brainMap.overlay.SpecularExponent = mainGuiData.overlayCopy.overlayCopy.SpecularExponent;
+    mainGuiData.overlayCopy.brainMap.overlay.SpecularColorReflectance =  mainGuiData.overlayCopy.overlayCopy.SpecularColorReflectance;
+    mainGuiData.overlayCopy.brainMap.overlay.DiffuseStrength = mainGuiData.overlayCopy.overlayCopy.DiffuseStrength;
+    mainGuiData.overlayCopy.brainMap.overlay.AmbientStrength =  mainGuiData.overlayCopy.overlayCopy.AmbientStrength;
 end
 
 % save GUI
@@ -800,9 +832,33 @@ function closenoSave_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 % close everything
 handles = guidata(hObject);
-% delete overlay
-if isfield(handles,'overlay')
-    delete(handles.overlay)
+% % delete overlay
+% if isfield(handles,'overlay')
+%     delete(handles.overlay)
+% end
+
+% remove colorbar if it exists
+if isfield(mainGuiData.brainMap,'colorbar')
+    delete(mainGuiData.brainMap.colorbar)
+    mainGuiData.brainMap = rmfield(mainGuiData.brainMap,'colorbar');
+    replot = 1;
+else
+    replot = 0;
+end
+
+% now turn off any overlays that might exist and delete them
+% multioverlays are in a cell
+if isfield(mainGuiData.brainMap,'overlay') %if there is an overlay field (i.e., not your first click)
+    if iscell(mainGuiData.brainMap.overlay) % check if overlay is a cell (i.e., multioverlay)
+        for celli = 1:length(mainGuiData.brainMap.overlay)
+            mainGuiData.brainMap.overlay{celli}.FaceAlpha = 0;
+        end
+        mainGuiData.brainMap = rmfield(mainGuiData.brainMap,'overlay');
+    elseif isvalid(mainGuiData.brainMap.overlay)
+        mainGuiData.overlayCopy = mainGuiData.brainMap.overlay;
+        mainGuiData.brainMap.overlay.FaceAlpha = 0;
+        mainGuiData.brainMap = rmfield(mainGuiData.brainMap,'overlay');
+    end
 end
 
 h = get(0,'Children');
@@ -817,6 +873,7 @@ mainGuiData = guidata(h(mainGuiNum));
 
 currSelection = (get(mainGuiData.overlaySelection,'Value') - 1);
 
+figure(mainGuiData.brainFig)
 [mainGuiData.underlay, mainGuiData.brainMap.overlay, mainGuiData.brainFig, mainGuiData.opts] = plotOverlay(mainGuiData.underlay, mainGuiData.brainMap.Current{currSelection}.Data,'figHandle', mainGuiData.brainFig, 'threshold',[mainGuiData.brainMap.Current{currSelection}.overlayThresholdNeg, mainGuiData.brainMap.Current{currSelection}.overlayThresholdPos], 'hemisphere', mainGuiData.brainMap.Current{currSelection}.hemi, 'opacity', mainGuiData.brainMap.Current{currSelection}.opacity, 'colorMap', mainGuiData.colormap.String{mainGuiData.brainMap.Current{currSelection}.colormap}, 'colorSampling',mainGuiData.brainMap.Current{currSelection}.colormapSpacing,'colorBins',mainGuiData.brainMap.Current{currSelection}.colorBins,'limits', [mainGuiData.brainMap.Current{currSelection}.limitMin mainGuiData.brainMap.Current{currSelection}.limitMax],'inclZero',mainGuiData.brainMap.Current{currSelection}.inclZero,'clusterThresh',mainGuiData.brainMap.Current{currSelection}.clusterThresh,'binarize',mainGuiData.brainMap.Current{currSelection}.binarize,'outline',mainGuiData.brainMap.Current{currSelection}.outline,'binarizeClusters',mainGuiData.brainMap.Current{currSelection}.binarizeClusters,'customColor',mainGuiData.brainMap.Current{currSelection}.customColor,'pMap',mainGuiData.brainMap.Current{currSelection}.pVals,'pThresh',mainGuiData.brainMap.Current{currSelection}.pThresh,'transparencyLimits',mainGuiData.brainMap.Current{currSelection}.transparencyLimits,'transparencyThresholds',mainGuiData.brainMap.Current{currSelection}.transparencyThresholds,'transparencyData',mainGuiData.brainMap.Current{currSelection}.transparencyData,'transparencyPThresh',mainGuiData.brainMap.Current{currSelection}.transparencyPThresh,'invertColor',mainGuiData.brainMap.Current{currSelection}.invertColor,'invertOpacity',mainGuiData.brainMap.Current{currSelection}.invertOpacity,'growROI',mainGuiData.brainMap.Current{currSelection}.growROI,'smoothSteps',0,'smoothArea',1,'smoothThreshold','above','smoothType','neighbors');
 
 mainGuiData.brainMap.colorbar = cbar;
@@ -828,6 +885,14 @@ imh.AlphaDataMapping = 'direct';
 if mainGuiData.colormapSpacing.Value == 4 || mainGuiData.colormapSpacing.Value == 3
     mainGuiData.brainMap.colorbar.YTick = mainGuiData.opts.ticks;
     mainGuiData.brainMap.colorbar.YTickLabel = mainGuiData.opts.tickLabels;
+end
+
+if isfield(mainGuiData.overlayCopy,'overlayCopy')
+    mainGuiData.overlayCopy.brainMap.overlay.SpecularStrength = mainGuiData.overlayCopy.overlayCopy.SpecularStrength;
+    mainGuiData.overlayCopy.brainMap.overlay.SpecularExponent = mainGuiData.overlayCopy.overlayCopy.SpecularExponent;
+    mainGuiData.overlayCopy.brainMap.overlay.SpecularColorReflectance =  mainGuiData.overlayCopy.overlayCopy.SpecularColorReflectance;
+    mainGuiData.overlayCopy.brainMap.overlay.DiffuseStrength = mainGuiData.overlayCopy.overlayCopy.DiffuseStrength;
+    mainGuiData.overlayCopy.brainMap.overlay.AmbientStrength =  mainGuiData.overlayCopy.overlayCopy.AmbientStrength;
 end
 
 % close figure

@@ -81,34 +81,34 @@ end
 mainGuiData = guidata(h(mainGuiNum));
 
 % make all settings the same as overlay selection
-for i = 1:length(mainGuiData.brainMap.Current)
-   mainGuiData.brainMap.Current{i}.colormap = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.colormap;
-   mainGuiData.brainMap.Current{i}.overlayThresholdNeg =  mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.overlayThresholdNeg;
-   mainGuiData.brainMap.Current{i}.overlayThresholdPos = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.overlayThresholdPos;
-   mainGuiData.brainMap.Current{i}.limitMin =  mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.limitMin;
-   mainGuiData.brainMap.Current{i}.limitMax = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.limitMax;
-   mainGuiData.brainMap.Current{i}.opacity = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.opacity;
-   mainGuiData.brainMap.Current{i}.colormapSpacing = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.colormapSpacing;
-   mainGuiData.brainMap.Current{i}.colorBins = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.colorBins;
-   mainGuiData.brainMap.Current{i}.clusterThresh = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.clusterThresh;
-   mainGuiData.brainMap.Current{i}.binarize = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.binarize;
-   mainGuiData.brainMap.Current{i}.inclZero = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.inclZero;
-   mainGuiData.brainMap.Current{i}.outline = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.outline;
-   mainGuiData.brainMap.Current{i}.smoothSteps = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.smoothSteps;
-   mainGuiData.brainMap.Current{i}.smoothArea = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.smoothArea;
-   mainGuiData.brainMap.Current{i}.smoothThreshold = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.smoothThreshold;
-   mainGuiData.brainMap.Current{i}.customColor = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.customColor;
-   mainGuiData.brainMap.Current{i}.binarizeClusters = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.binarizeClusters;
-   mainGuiData.brainMap.Current{i}.pThresh = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.pThresh;
-   mainGuiData.brainMap.Current{i}.pVals = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.pVals;
-   mainGuiData.brainMap.Current{i}.transparencyLimits = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.transparencyLimits;
-   mainGuiData.brainMap.Current{i}.transparencyThresholds = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.transparencyThresholds;
-   mainGuiData.brainMap.Current{i}.transparencyData = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.transparencyData;
-   mainGuiData.brainMap.Current{i}.transparencyPThresh = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.transparencyPThresh;
-   mainGuiData.brainMap.Current{i}.invertColor = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.invertColor;
-   mainGuiData.brainMap.Current{i}.invertOpacity = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.invertOpacity;
-   mainGuiData.brainMap.Current{i}.growROI = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.growROI;
-   mainGuiData.brainMap.Current{i}.smoothType = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.smoothType;
+for i = 1:length(handles.selectionList.Value)
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.colormap = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.colormap;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.overlayThresholdNeg =  mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.overlayThresholdNeg;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.overlayThresholdPos = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.overlayThresholdPos;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.limitMin =  mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.limitMin;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.limitMax = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.limitMax;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.opacity = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.opacity;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.colormapSpacing = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.colormapSpacing;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.colorBins = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.colorBins;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.clusterThresh = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.clusterThresh;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.binarize = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.binarize;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.inclZero = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.inclZero;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.outline = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.outline;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.smoothSteps = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.smoothSteps;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.smoothArea = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.smoothArea;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.smoothThreshold = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.smoothThreshold;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.customColor = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.customColor;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.binarizeClusters = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.binarizeClusters;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.pThresh = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.pThresh;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.pVals = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.pVals;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.transparencyLimits = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.transparencyLimits;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.transparencyThresholds = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.transparencyThresholds;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.transparencyData = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.transparencyData;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.transparencyPThresh = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.transparencyPThresh;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.invertColor = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.invertColor;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.invertOpacity = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.invertOpacity;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.growROI = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.growROI;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.smoothType = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.smoothType;
 end
 
 % save GUI
