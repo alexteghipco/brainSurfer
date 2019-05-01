@@ -238,7 +238,10 @@ if isfield(handles, 'underlay') % only allow for button to work if there's an un
         end
         
         % now update visible overlays in GUI
-        handles.overlaySelection.String = vertcat(handles.overlaySelection.String(:),extractfield([handles.brainMap.Current{numSavedOverlays+1:(numSavedOverlays+length(overlayFiles))}],'name')');
+        %handles.overlaySelection.String = vertcat(handles.overlaySelection.String(:),extractfield([handles.brainMap.Current{numSavedOverlays+1:(numSavedOverlays+length(overlayFiles))}],'name')');
+        tmp = ([handles.brainMap.Current{numSavedOverlays+1:(numSavedOverlays+length(overlayFiles))}]);
+        handles.overlaySelection.String = vertcat(handles.overlaySelection.String(:),tmp.name);
+        
     end
     
     guidata(hObject, handles);
@@ -256,10 +259,10 @@ if isfield(handles, 'underlay') && (exist('convertMNI2FS.m','file') && exist('co
                 case 'Thresholded map'
                     smoothing = inputdlg({'Smoothing area', 'Smoothing steps'});
                     if isempty(smoothing{1})
-                        smoothing{1} = 0;
+                        smoothing{1} = '0';
                     end
                     if isempty(smoothing{2})
-                        smoothing{2} = 0;
+                        smoothing{2} = '0';
                     end
                     outFiles = {};
                     for i = 1:length(overlayFiles)
@@ -328,7 +331,10 @@ if isfield(handles, 'underlay') && (exist('convertMNI2FS.m','file') && exist('co
             end
             
             % now update visible overlays in GUI
-            handles.overlaySelection.String = vertcat(handles.overlaySelection.String(:),extractfield([handles.brainMap.Current{numSavedOverlays+1:(numSavedOverlays+length(overlayFiles))}],'name')');
+            %handles.overlaySelection.String = vertcat(handles.overlaySelection.String(:),extractfield([handles.brainMap.Current{numSavedOverlays+1:(numSavedOverlays+length(overlayFiles))}],'name')');
+            tmp = ([handles.brainMap.Current{numSavedOverlays+1:(numSavedOverlays+length(overlayFiles))}]);
+            handles.overlaySelection.String = vertcat(handles.overlaySelection.String(:),tmp.name);
+            
             guidata(hObject, handles);
         end
 
@@ -388,7 +394,7 @@ if isfield(handles,'brainMap')
             handles.pSlider.Value = 1;
             handles.pText.String = '1';
             handles.clusterThreshSlider.Value = 0;
-            handles.clusterThreshText = '0';
+            handles.clusterThreshText.String = '0';
             
             handles.colormap.Value = 1;
             handles.invertColorButton.Value = 0;
@@ -418,6 +424,9 @@ if isfield(handles,'brainMap')
             handles.colormap.Value = handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap;
             handles.opacity.String = num2str(handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity);
             handles.binarizeSwitch.Value = handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize;
+            
+            handles.clusterThreshSlider.Value = handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh;
+            handles.clusterThreshText.String = num2str(handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh);
             
             if strcmp(handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'true')
                 handles.zeroButton.Value = 1;
@@ -517,6 +526,16 @@ if isfield(handles,'brainMap')
         for filei = handles.overlaySelection.Value
             figure(handles.brainFig)
             [handles.underlay, handles.brainMap.overlay{filei - 1}, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{filei - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{filei - 1}.overlayThresholdNeg, handles.brainMap.Current{filei - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{filei - 1}.hemi, 'opacity', handles.brainMap.Current{filei - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{filei - 1}.colormap}, 'colorSampling',handles.brainMap.Current{filei - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{filei - 1}.colorBins,'limits', [handles.brainMap.Current{filei - 1}.limitMin handles.brainMap.Current{filei - 1}.limitMax],'inclZero',handles.brainMap.Current{filei - 1}.inclZero,'clusterThresh',handles.brainMap.Current{filei - 1}.clusterThresh,'binarize',handles.brainMap.Current{filei - 1}.binarize,'outline',handles.brainMap.Current{filei - 1}.outline,'binarizeClusters',handles.brainMap.Current{filei - 1}.binarizeClusters,'customColor',handles.brainMap.Current{filei - 1}.customColor,'pMap',handles.brainMap.Current{filei - 1}.pVals,'pThresh',handles.brainMap.Current{filei - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{filei - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{filei - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{filei - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{filei - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{filei - 1}.invertColor,'invertOpacity',handles.brainMap.Current{filei - 1}.invertOpacity,'growROI',handles.brainMap.Current{filei - 1}.growROI);
+            if isfield(handles,'overlayCopy')
+                if isvalid(handles.overlayCopy)
+                    handles.brainMap.overlay{filei - 1}.SpecularStrength = handles.overlayCopy.SpecularStrength;
+                    handles.brainMap.overlay{filei - 1}.SpecularExponent = handles.overlayCopy.SpecularExponent;
+                    handles.brainMap.overlay{filei - 1}.SpecularColorReflectance =  handles.overlayCopy.SpecularColorReflectance;
+                    handles.brainMap.overlay{filei - 1}.DiffuseStrength = handles.overlayCopy.DiffuseStrength;
+                    handles.brainMap.overlay{filei - 1}.AmbientStrength =  handles.overlayCopy.AmbientStrength;
+                end
+            end
+            
         end
         
     end
@@ -585,7 +604,9 @@ if handles.overlaySelection.Value ~= 1 % make sure you are not duplicating 'no o
         
         fileNum = length(handles.brainMap.Current) + 1;
         handles.brainMap.Current{fileNum} = handles.brainMap.Current{handles.overlaySelection.Value - 1};
-        handles.overlaySelection.String = vertcat(handles.overlaySelection.String(:),extractfield([handles.brainMap.Current{handles.overlaySelection.Value - 1}],'name')');
+        %handles.overlaySelection.String = vertcat(handles.overlaySelection.String(:),extractfield([handles.brainMap.Current{handles.overlaySelection.Value - 1}],'name')');
+        tmp = ([handles.brainMap.Current{handles.overlaySelection.Value - 1}]);
+        handles.overlaySelection.String = vertcat(handles.overlaySelection.String(:),tmp.name);
         
         handles.overlaySelection.Value = length(handles.overlaySelection.String);
         
@@ -690,17 +711,28 @@ if length(handles.overlaySelection.Value) == 1 % reloading only works if you don
         % return current selection to original state
         tmpPath = handles.brainMap.Current{handles.overlaySelection.Value - 1}.path;
         tmpName = handles.brainMap.Current{handles.overlaySelection.Value - 1}.name;
-        tmpExt = handles.brainMap.Current{handles.overlaySelection.Value - 1}.ext;
+        try
+            tmpExt = handles.brainMap.Current{handles.overlaySelection.Value - 1}.ext;
+        catch
+            warndlg('No extension in brainmap, probably import error')
+        end
         tmpHemi = handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi;
         
         handles.brainMap.Current{handles.overlaySelection.Value - 1} = handles.defaultOptions;
-        hdr = load_nifti([tmpPath handles.paths.slash tmpName tmpExt]); % load in data
+        try
+            hdr = load_nifti([tmpPath handles.paths.slash tmpName tmpExt]); % load in data
+        catch
+            hdr = load_nifti([tmpPath handles.paths.slash tmpName '.gz']);
+        end
         handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data = hdr.vol;
         handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin = min(hdr.vol);
         handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax = max(hdr.vol);
         handles.brainMap.Current{handles.overlaySelection.Value - 1}.path = tmpPath;
         handles.brainMap.Current{handles.overlaySelection.Value - 1}.name = tmpName;
-        handles.brainMap.Current{handles.overlaySelection.Value - 1}.ext = tmpExt;
+        try
+            handles.brainMap.Current{handles.overlaySelection.Value - 1}.ext = tmpExt;
+        catch
+        end
         handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi = tmpHemi;
         
         % load all settings saved for this overlay into the GUI
@@ -1013,8 +1045,14 @@ if handles.overlaySelection.Value ~= 1
         
         % this is temporary -- for outlines if necessary (i.e., to trace
         % which hemisphere was first, etc)
-        hemis = extractfield([handles.brainMap.Current{handles.overlaySelection.Value - 1}],'hemi');
-        op = extractfield([handles.brainMap.Current{handles.overlaySelection.Value - 1}],'opacity');
+        %hemis = extractfield([handles.brainMap.Current{handles.overlaySelection.Value - 1}],'hemi');
+        %op = extractfield([handles.brainMap.Current{handles.overlaySelection.Value - 1}],'opacity');
+        
+        tmp = ([handles.brainMap.Current{handles.overlaySelection.Value - 1}]);
+        %handles.overlaySelection.String = vertcat(handles.overlaySelection.String(:),tmp.name);
+        hemis = {tmp.hemi};
+        op = {tmp.opacity};
+        
         lIdx = find(contains(hemis,'left'));
         rIdx = find(contains(hemis,'right'));
         
@@ -1191,7 +1229,6 @@ for i = 1:length(handles.brainMap.Current)
         
         handles.underlay.left.FaceAlpha = 1;
     end
-        
 end
 
 % repatch original overlay
@@ -1250,7 +1287,6 @@ guidata(hObject, handles);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %% %% Thresholds %% %% %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 %% positive value threshold
 function overlayThresholdPos_Callback(hObject, eventdata, handles)
 if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value) == 1
@@ -1970,6 +2006,7 @@ if handles.overlaySelection.Value ~= 1 && length(handles.overlaySelection.Value)
             handles.brainMap = rmfield(handles.brainMap,'overlay');
         end
     end
+    
     figure(handles.brainFig)
     [handles.underlay, handles.brainMap.overlay, handles.brainFig, handles.opts] = plotOverlay(handles.underlay, handles.brainMap.Current{handles.overlaySelection.Value - 1}.Data,'figHandle', handles.brainFig, 'threshold',[handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdNeg, handles.brainMap.Current{handles.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', handles.brainMap.Current{handles.overlaySelection.Value - 1}.hemi, 'opacity', handles.brainMap.Current{handles.overlaySelection.Value - 1}.opacity, 'colorMap', handles.colormap.String{handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormap}, 'colorSampling',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colormapSpacing,'colorBins',handles.brainMap.Current{handles.overlaySelection.Value - 1}.colorBins,'limits', [handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMin handles.brainMap.Current{handles.overlaySelection.Value - 1}.limitMax],'inclZero',handles.brainMap.Current{handles.overlaySelection.Value - 1}.inclZero,'clusterThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.clusterThresh,'binarize',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarize,'outline',handles.brainMap.Current{handles.overlaySelection.Value - 1}.outline,'binarizeClusters',handles.brainMap.Current{handles.overlaySelection.Value - 1}.binarizeClusters,'customColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.customColor,'pMap',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pVals,'pThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.pThresh,'transparencyLimits',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',handles.brainMap.Current{handles.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertColor,'invertOpacity',handles.brainMap.Current{handles.overlaySelection.Value - 1}.invertOpacity,'growROI',handles.brainMap.Current{handles.overlaySelection.Value - 1}.growROI);
     
@@ -3592,6 +3629,18 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
+% --- Executes during object creation, after setting all properties.
+function combMaps_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to growROI (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
 % --- Executes on button press in reloadOverlay.
 function pushbutton41_Callback(hObject, eventdata, handles)
 % hObject    handle to reloadOverlay (see GCBO)
@@ -3666,19 +3715,33 @@ function multidimOverlay_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+% --------------------------------------------------------------------
+function combMaps_Callback(hObject, eventdata, handles)
+% hObject    handle to multidimOverlay (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
 
 % --------------------------------------------------------------------
 function patch2d_Callback(hObject, eventdata, handles)
 % hObject    handle to patch2d (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+if length(handles.overlaySelection.Value) == 1
+    handles = guidata(hObject);
+    colormapEditor2D
+    guidata(hObject, handles);
+end
 
 % --------------------------------------------------------------------
 function patch3d_Callback(hObject, eventdata, handles)
 % hObject    handle to patch3d (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+if length(handles.overlaySelection.Value) == 1
+    handles = guidata(hObject);
+    colormapEditor3D
+    guidata(hObject, handles);
+end
 
 % --------------------------------------------------------------------
 function Untitled_16_Callback(hObject, eventdata, handles)
@@ -3703,7 +3766,7 @@ function clustCorr_Callback(hObject, eventdata, handles)
 % hObject    handle to clustCorr (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+handles.w = warndlg('Sorry! This is not currently supported');
 % --------------------------------------------------------------------
 % function copyOSet_Callback(hObject, eventdata, handles)
 % % hObject    handle to copyOSet (see GCBO)
@@ -3754,10 +3817,4 @@ function volumeViewer_Callback(hObject, eventdata, handles)
 % hObject    handle to volumeViewer (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-
-% --- Executes on button press in copyButton.
-function combMaps_Callback(hObject, eventdata, handles)
-% hObject    handle to copyButton (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+handles.w = warndlg('Sorry! This is not currently supported');
