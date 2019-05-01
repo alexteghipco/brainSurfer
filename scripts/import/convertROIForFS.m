@@ -85,8 +85,8 @@ for i = 1:length(toConvert)
         file = file(1:end-4);
         ext = '.nii.gz';
     end
-    toConvertFS_LH{i,1} = [path slash 'MNI_' file '_RF_ANTs_MNI152_to_fsaverage_LH.nii.gz'];
-    toConvertFS_RH{i,1} = [path slash 'MNI_' file '_RF_ANTs_MNI152_to_fsaverage_RH.nii.gz'];
+    toConvertFS_LH{i,1} = [path slash file '_RF_ANTs_MNI152_to_fsaverage_LH.nii.gz'];
+    toConvertFS_RH{i,1} = [path slash file '_RF_ANTs_MNI152_to_fsaverage_RH.nii.gz'];
 end
 
 if verbose == 0
@@ -97,6 +97,7 @@ end
 
 %% 3) Loop over maps and determine which intensity is most strongly associated with each vertex
 for i = 1:length(toConvertFS_LH)
+    disp(num2str(i))
     hdr = load_nifti(toConvertFS_LH{i});
     allVol(:,i) = hdr.vol;
 end

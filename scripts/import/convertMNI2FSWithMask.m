@@ -53,11 +53,11 @@ valsVox = find(inNifti.vol ~= 0); % get nonempty voxels
 % write out both empty and nonempty voxels as new nifti files
 inNifti.vol = zeros(91,109,91);
 inNifti.vol(emptVox) = 1;
-save_nifti(inNifti,[path slash file '_EMPTY_MASK.nii'])
+save_nifti(inNifti,[path slash file '_EMPTY_MASK.nii']);
 
 inNifti.vol = zeros(91,109,91);
 inNifti.vol(valsVox) = 1;
-save_nifti(inNifti,[path slash file '_VALS_MASK.nii'])
+save_nifti(inNifti,[path slash file '_VALS_MASK.nii']);
 
 % convert file, and both masks (i.e., empty and non-empty voxel nifti
 % files)
@@ -71,8 +71,8 @@ end
 
 % load in the converted files in LH and check vertices that are more
 % closely associated with empty voxels
-emptyMask = load_nifti([path slash 'MNI_' file '_EMPTY_MASK_RF_ANTs_MNI152_to_fsaverage_LH.nii.gz']);
-valMask = load_nifti([ path slash 'MNI_' file '_VALS_MASK_RF_ANTs_MNI152_to_fsaverage_LH.nii.gz']);
+emptyMask = load_nifti([path slash file '_EMPTY_MASK_RF_ANTs_MNI152_to_fsaverage_LH.nii.gz']);
+valMask = load_nifti([ path slash file '_VALS_MASK_RF_ANTs_MNI152_to_fsaverage_LH.nii.gz']);
 
 % smooth the masks
 if smoothSteps > 0
@@ -99,11 +99,11 @@ for i = 1:length(emptyMask.vol) % compare masks at each vertex
 end
     
 emptyMask.vol = threshMask; % save out these vertices as a surface mask
-save_nifti(emptyMask,[path slash 'MNI_' file '_SURFACE_MASK_' num2str(smoothSteps) '_SMOOTHING_STEPS_WITH_' num2str(reps) '_REPS_RF_ANTs_MNI152_to_fsaverage_LH.nii.gz']);
+save_nifti(emptyMask,[path slash file '_SURFACE_MASK_' num2str(smoothSteps) '_SMOOTHING_STEPS_WITH_' num2str(reps) '_REPS_RF_ANTs_MNI152_to_fsaverage_LH.nii.gz']);
 
 % load in the original file projected into surface space and mask out
 % vertices from the surface mask
-data = load_nifti([ path slash 'MNI_' file '_VALS_MASK_RF_ANTs_MNI152_to_fsaverage_LH.nii.gz']);
+data = load_nifti([ path slash file '_VALS_MASK_RF_ANTs_MNI152_to_fsaverage_LH.nii.gz']);
 for i = 1:length(data.vol)
     if threshMask(i,1) == 1
         outMask(i,1) = 0;
@@ -112,12 +112,12 @@ for i = 1:length(data.vol)
     end
 end
 data.vol = outMask;
-save_nifti(data,[path slash 'MNI_' file '_SURFACE_MASKED_' num2str(smoothSteps) '_SMOOTHING_STEPS_WITH_' num2str(reps) '_REPS_RF_ANTs_MNI152_to_fsaverage_LH.nii.gz']);
-outFiles{1} = [path slash 'MNI_' file '_SURFACE_MASKED_' num2str(smoothSteps) '_SMOOTHING_STEPS_WITH_' num2str(reps) '_REPS_RF_ANTs_MNI152_to_fsaverage_LH.nii.gz'];
+save_nifti(data,[path slash file '_SURFACE_MASKED_' num2str(smoothSteps) '_SMOOTHING_STEPS_WITH_' num2str(reps) '_REPS_RF_ANTs_MNI152_to_fsaverage_LH.nii.gz']);
+outFiles{1} = [path slash file '_SURFACE_MASKED_' num2str(smoothSteps) '_SMOOTHING_STEPS_WITH_' num2str(reps) '_REPS_RF_ANTs_MNI152_to_fsaverage_LH.nii.gz'];
 
 % repeat all of the same steps for right hemisphere now
-emptyMask = load_nifti([path slash 'MNI_' file '_EMPTY_MASK_RF_ANTs_MNI152_to_fsaverage_RH.nii.gz']);
-valMask = load_nifti([ path slash 'MNI_' file '_VALS_MASK_RF_ANTs_MNI152_to_fsaverage_RH.nii.gz']);
+emptyMask = load_nifti([path slash file '_EMPTY_MASK_RF_ANTs_MNI152_to_fsaverage_RH.nii.gz']);
+valMask = load_nifti([ path slash file '_VALS_MASK_RF_ANTs_MNI152_to_fsaverage_RH.nii.gz']);
 
 % smooth the masks
 if smoothSteps > 0
@@ -143,11 +143,11 @@ for i = 1:length(emptyMask.vol) % compare masks at each vertex
 end
 
 emptyMask.vol = threshMask; % save out these vertices as a surface mask
-save_nifti(emptyMask,[path slash 'MNI_' file '_SURFACE_MASK_' num2str(smoothSteps) '_SMOOTHING_STEPS_WITH_' num2str(reps) '_REPS_RF_ANTs_MNI152_to_fsaverage_RH.nii.gz']);
+save_nifti(emptyMask,[path slash file '_SURFACE_MASK_' num2str(smoothSteps) '_SMOOTHING_STEPS_WITH_' num2str(reps) '_REPS_RF_ANTs_MNI152_to_fsaverage_RH.nii.gz']);
 
 % load in the original file projected into surface space and mask out
 % vertices from the surface mask
-data = load_nifti([ path slash 'MNI_' file '_VALS_MASK_RF_ANTs_MNI152_to_fsaverage_RH.nii.gz']);
+data = load_nifti([ path slash file '_VALS_MASK_RF_ANTs_MNI152_to_fsaverage_RH.nii.gz']);
 for i = 1:length(data.vol)
     if emptyMask.vol(i,1) == 1
         outMask(i,1) = 0;
@@ -156,5 +156,5 @@ for i = 1:length(data.vol)
     end
 end
 data.vol = outMask;
-save_nifti(data,[path slash 'MNI_' file '_SURFACE_MASKED_' num2str(smoothSteps) '_SMOOTHING_STEPS_WITH_' num2str(reps) '_REPS_RF_ANTs_MNI152_to_fsaverage_RH.nii.gz']);
-outFiles{2} = [path slash 'MNI_' file '_SURFACE_MASKED_' num2str(smoothSteps) '_SMOOTHING_STEPS_WITH_' num2str(reps) '_REPS_RF_ANTs_MNI152_to_fsaverage_RH.nii.gz'];
+save_nifti(data,[path slash file '_SURFACE_MASKED_' num2str(smoothSteps) '_SMOOTHING_STEPS_WITH_' num2str(reps) '_REPS_RF_ANTs_MNI152_to_fsaverage_RH.nii.gz']);
+outFiles{2} = [path slash file '_SURFACE_MASKED_' num2str(smoothSteps) '_SMOOTHING_STEPS_WITH_' num2str(reps) '_REPS_RF_ANTs_MNI152_to_fsaverage_RH.nii.gz'];
