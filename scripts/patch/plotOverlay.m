@@ -367,6 +367,24 @@ if isempty(options.customColor) == 0
     else
         cMap = tmpMap;
     end
+    % if # bins requested does not match provided colormap, downsample
+    % or upsample colormap image
+    if size(cMap,1) ~= options.colorBins
+        cMapRe = ones([size(cMap,1),2,3]);
+        cMapRe(:,1,:) = cMap;
+        cMapRe(:,2,:) = cMap;
+        
+        F = griddedInterpolant(double(cMapRe));
+        [sx,sy,sz] = size(cMapRe);
+        imRat = size(cMapRe,1)/options.colorBins;
+        
+        xq = (1:imRat:sx)';
+        yq = (1:imRat:sy)';
+        zq = (1:sz)';
+        vq = (F({xq,yq,zq}));
+        
+        cMap = squeeze(vq);
+    end
 end
 
 % if you want to invert colors
@@ -428,7 +446,9 @@ overlayData(vertList(ia)) = 0;
 % trigger clusterization in case you want to grow or shrink your ROI, or if
 % you are going to outline border of your ROI
 if options.growROI ~= 0 || strcmp(options.smoothThreshold,'border') == 1
-    options.clusterThresh = 0.05;
+    if options.clusterThresh == 0
+        options.clusterThresh = 0.05;
+    end
     idx = find(overlayData == 0);% remove zeros in case it's an ROI IE repeat inclZero = 'false'
     [C,ia,ib] = intersect(idx,allThreshVert);
     allThreshVert(ib) = [];
@@ -904,7 +924,8 @@ if isfield(options,'modulate')
     cSpaceImg = image(flipud(B));
     truesize(cSpaceFig,[1000 1000])
 
-    alpha = repmat([linspace(0,1,10)],size(cMap,1),1,1);
+    %alpha = repmat([linspace(0,1,10)],size(cMap,1),1,1);
+    alpha = repmat([linspace(options.transparencyLimits(1),options.transparencyLimits(2),10)],size(cMap,1),1,1);
     %alphaT = alpha * 62;
     
     set(cSpaceImg, 'AlphaData', alpha);
@@ -962,6 +983,9 @@ if isfield(options,'modulate')
                 isnanList(i,1) = 1;
             else
                 idx = find(dataModSpaceScaled >= opacityColorbar(i));
+                if isempty(idx) % occassionally matlab returns bizzare bug here. identical items are not being treated as equal so the operator in the idx fails. Rounding fixes it. 
+                    idx = find(round(dataModSpaceScaled) >= round(opacityColorbar(i)));
+                end
                 tMarks(i,1) = idx(1);
                 isnanList(i,1) = 0;
             end

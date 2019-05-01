@@ -47,18 +47,21 @@ end
 
 % interpolate between supplied colors
 colorMap = zeros(cBins,cBins,3);
-colorMap(:,1,:) = customColorMapInterp(cMap(1:2,:),cBins);
-colorMap(:,end,:) = customColorMapInterp(cMap(3:4,:),cBins);
-
-for i = 1:size(colorMap,2)
-    mixMat = vertcat(squeeze(colorMap(i,1,:))',squeeze(colorMap(i,end,:))');
-    colorMap(i,:,:) = customColorMapInterp(mixMat,cBins);
+if size(cMap,1) == 4
+    colorMap(:,1,:) = customColorMapInterp(cMap(1:2,:),cBins);
+    colorMap(:,end,:) = customColorMapInterp(cMap(3:4,:),cBins);
+    for i = 1:size(colorMap,2)
+        mixMat = vertcat(squeeze(colorMap(i,1,:))',squeeze(colorMap(i,end,:))');
+        colorMap(i,:,:) = customColorMapInterp(mixMat,cBins);
+    end
+else
+    colorMap = cMap;
 end
 
 % plot 2d colormap
-cSpaceFig = figure;
-cSpaceImg = image(flipud(colorMap));
-truesize(cSpaceFig,[1000 1000])
+% cSpaceFig = figure;
+% cSpaceImg = image(flipud(colorMap));
+% truesize(cSpaceFig,[1000 1000])
 
 % for each data point in overlay, find closest 2d bin
 xLinSpace = linspace(limits(1,1), limits(2,1), cBins);
@@ -67,6 +70,10 @@ for i = 1:length(inData)
     disp(['Mapping data onto colormap...' num2str((i/length(inData))* 100) '%'])
     % get closest bin in the x dim
     idx1 = find(xLinSpace <= inData(i,1));
+    if isempty(idx1) % if idx is empty, check if it is equal to max
+       idx1 = find(round(xLinSpace,1) <= round(inData(i,1),1));
+    end
+    
     % Bins need to be adjusted if closest value is negative
     xbin = idx1(end);
     if xLinSpace(xbin) < 0
@@ -75,10 +82,16 @@ for i = 1:length(inData)
     
     % Repeat for y dim
     idx2 = find(yLinSpace <= inData(i,2));
+    if isempty(idx2) % if idx is empty, check if it is equal to max
+        idx2 = find(round(yLinSpace,1) <= round(inData(i,2),1));
+    end
+    
     ybin = idx2(end);
     if yLinSpace(ybin) < 0
         ybin = ybin+1;
     end
+    %idx2 = find(ceil(yLinSpace) <= ceil(inData(i,2)));
+    %ybin = idx2(1);
     
     % get coordinate on colorcube
     data_out(i,1) = xbin;
