@@ -1,25 +1,25 @@
 # brainSurfer
-brainSurfer is a useful MATLAB toolbox for visualizing brain data in surface space that places emphasis on customizability. It features the ability to create and visualize 3D or 2D statistical brain maps, to modulate the transparency of statistical maps using other (statistical) maps, to overlay multiple maps on top of each other, and a host of other tools that include a powerful cluster editor and colormap editor. 
+brainSurfer is a useful MATLAB toolbox for visualizing brain data in surface space that places emphasis on customization. It features the ability to create and visualize 3D or 2D statistical brain maps, to modulate the transparency of statistical maps using other statistical maps, to overlay multiple surface maps on top of each other, and a host of other tools that include a powerful cluster editor and colormap editor. 
 
-*NOTE* This software is provided as is. I built it to display some brains for me, and while I've tried to make it as user-friendly as possible, it's still in the process of  being updated, and may not work on your machine/setup. While the code has been updated to (in theory) suppport Windows OS, it has only been debugged on macOS Mojave and in MATLAB (2017 - 2019).
+*NOTE* This software is provided as is with no guarantee of any kind. I built it to display some brains for me, and while I've tried to make it as user-friendly as possible, it's still in the process of  being updated, and may not work on your machine/setup. While the code has been updated to (in theory) suppport Windows OS, it has only been debugged on macOS Mojave and in MATLAB (2016 - 2018).
 
 Report all bugs to Alex Teghipco @ alex.teghipco@uci.edu!
 
 # Getting started
 1) Plop all of these files in any directory you want. 
 2) Open matlab and navigate to the brainSurfer folder.
-2) Type 'brainSurfer' into the matlab command window to display the main GUI. Most functionality is contained within the plotUnderlay.m and plotOverlay.m functions in the ./scripts directory so you can use them to write your own scripts without relying on the GUI. 
+2) Type 'brainSurfer' into the matlab command window to display the main GUI. Most functionality is contained within the plotUnderlay.m and plotOverlay.m functions in the ./scripts directory so you can use these to write your own scripts without relying on the GUI. 
 
 # FAQ
-1) *My volume data is not in 2mm space but I want to convert to surface space*
+1) *My volume data is not in 2mm space but I still want to convert to surface space*
 
-If you need to convert between various spaces in volume space (i.e., importing requires data to be in MNI_152_2mm space), our niftiManip repository can help with that.
+If you need to convert between various spaces in volume space (i.e., importing requires data to be in MNI_152_2mm space), our niftiManip repository can help with that. Brainsurfer should be able to do this soon. 
 
 2) *Help! I don't have any data!*
 
-Check out some of the example maps that I used for testing brainSurfer in ./brainMapsforTesting
+Check out some of the example maps provided in ./brainMapsforTesting
 
-3) *I made my own colormap with brainSurfer. Where is it?*
+3) *I made my own colormap in brainSurfer. Where is it?*
 
 Colormaps are saved in the ./colormaps directory. Colormaps in that directory will automatically be loaded by brainSurfer each time you launch it.
 
@@ -27,7 +27,7 @@ Colormaps are saved in the ./colormaps directory. Colormaps in that directory wi
 This guide will get you on your way to using brainSurfer.
 
 1) Select an underlay
-- The brainSurfer workflow starts by loading in an underlay, which refers to the surface structure on which we'll be plotting statistical maps. There are some preloaded fsaverage brains you can choose to load (from freesurfer). For this guide, we will use the preloaded brains. You can choose 1 or both hemispheres (I recommend using both). 
+- The brainSurfer workflow starts by loading in an underlay, which refers to the surface structure on which we'll be plotting statistical maps. If you don't have an underaly loaded, buttons in brainSurfer will be unresponsive. There are some preloaded fsaverage brains you can choose to load (from freesurfer). For this guide, we will use the preloaded brains. You can choose 1 or both hemispheres (I recommend using both). 
 
 ![](https://media.giphy.com/media/Ph73pwuwnapmwNOL2B/giphy.gif)
 
@@ -46,7 +46,7 @@ This guide will get you on your way to using brainSurfer.
 
 ![](https://media.giphy.com/media/f6ItoMoE73QPfBBibP/giphy.gif)
 
-- You can also edit the threshold for what counts as a sulci and what counts as a gyri. This information is contained in .curv files that are loaded in with your underlay. Make sure to have these files ready to load in case you are loading a surface space underlay that isn't fsaverage (i.e., user provided underlay). 
+- You can also edit the threshold for what counts as a sulci and what counts as a gyri. This information is contained in .curv files that are loaded in with your underlay. Make sure to have these files ready to load in case you are loading your own surface space file. 
 
 ![](https://media.giphy.com/media/KGZWLFh8u5ENB0yqhV/giphy.gif)
 
@@ -61,11 +61,11 @@ This guide will get you on your way to using brainSurfer.
 
 ![](https://media.giphy.com/media/SxAVEfWhrUdaZO76Yq/giphy.gif)
 
-*Note* you can select as many files as you want while importing or loading, up to 50. If your file name does not contain reference to a hemisphere in its name (i.e., left, right, lh, rh) then the script will ask you which hemisphere to project your overlay onto. 
+*Note* you can select as many files as you want while importing or loading, up to 50. If your file name does not contain reference to a hemisphere in its name (i.e., left, right, lh, rh) then brainSurfer will ask you which hemisphere to project your overlay onto. 
 
 - In case your file is in volume space, and you have the default fsaverage underlay loaded, we can "import" the file, which transforms it into "standardized" surface space using a precomputed transformation matrix. Lets import the file named Visuospatial_network_binarized_IMPORT_ME_FROM_MNI_to_FSAVERAGE.nii.gz, which is a binarized network (as you may have guessed, the visuospatial network!). 
 
-- Importing an overlay can occur in three different ways (this is the second prompt that comes up after clicking import). Because our file is effectively an ROI (i.e., binarized) we will select the second option. Another dialogue prompt will come up. This prompt is asking you to weight your ROIs in case there is an overlap. This import option will seperate individual values in your files (i.e., ostensibly ROIs) and convert them to surface space one by one. Because volume space has a higher dimensionality there will inevitably be some vertices that map onto multiple ROIs when converted. By default, the script assigns a value to these ambiguous vertices based on which ROI overlaps most with that vertex. However, you can provide your own weightings if you'd rather fix a different ROI to always win in this process. Since we have no reason to determine one ROI to always win against another, we will stick to the default behavior of this import option by leaving the field blank. See list of features for more details about import options. 
+- Importing an overlay can occur in three different ways (this is the second prompt that comes up after clicking import). Because our file is effectively an ROI (i.e., binarized) we will select the second option. Another dialogue prompt will come up. This prompt is asking you to weight your ROIs in case there is an overlap. This import option will seperate individual values in your files (i.e., ostensibly representing different ROIs) and convert them to surface space one by one. Because volume space has a higher dimensionality, there will inevitably be some vertices that map onto multiple ROIs when converted. By default, the script assigns a value to these ambiguous vertices based on which ROI overlaps most with that vertex. However, you can provide your own weightings if you'd rather fix a different ROI to always win in this process. Since we have no reason to determine one ROI to always win against another, we will stick to the default behavior of this import option by leaving the field blank. See list of features for more details about import options. 
 
 ![](https://media.giphy.com/media/huJBCR2zD67RKmU321/giphy.gif)
 
@@ -209,9 +209,9 @@ This guide will get you on your way to using brainSurfer.
 # What's new in this version?
 - A new toolbar for settings
 
-The toolbar now contains all of the options for editing your underlay, the cluster editor, and the ability to mask overlays. New functions added to the toolbar include the ability to convert between TAL and MNI for nifti images (volume space), an option to show the entire colorbar rather than threshold it by colors that exist in your current overlay, the ability to generate a quick histogram of the data in the current selection, and the ability to save and load settings from previous maps (including the data for that map if you so choose).
+The toolbar now contains all of the options for editing your underlay, the cluster editor, and the ability to mask overlays. New functions added to the toolbar include the ability to convert between TAL and MNI for nifti images (volume space), an option to show the entire colorbar rather than threshold it by colors that exist in your current overlay, the ability to generate a quick histogram of the data in the current selection, and the ability to save and load settings from previous maps (including the data for that map if you so choose). 
 
--  Totally revamped GUI, including new button layout to make access to common functions for manipulating statistical maps easier  
+-  Revamped GUI, including new button layout to make access to common functions for manipulating statistical maps easier  
 
 Buttons have been moved around the overlay selection listbox. New functions include the ability to delete all overlays in the selection listbox and to copy the settings for one overlay and apply them to as many other overlays as you want. I've also added a multioverlay settings GUI that allows for much greater control of visualization when multiple overlays are selected. 
 
@@ -227,6 +227,10 @@ There is now a dedicated GUI for creating your own colormaps that provides realt
 
 3d overlays were here, now make 2d overlays in case you don't like transparency as your 2nd dimension (see plotOverlay2D)
 
+- GUIs for generating 2D and 3D overlay
+
+There is also now functionality from within the brainSurfer GUI to generate 2D and 3D statistical maps (and to create your own 2D/3D colormaps)
+
 # Warnings and bugs
 These are some current issues that will be fixed in the future
 
@@ -236,7 +240,7 @@ Should work fine unless you have a map with both positive and negative values, i
 
 - some options in the menu are not ready yet
 
-There will be a GUI for creating 2D/3D colormaps but it's not ready yet (use the scripts on their own). Cluster correction is not supported yet. Statistical analysis is not yet supported. volume viewer is not yet supported. 
+Cluster correction is not supported yet. Statistical analysis is not yet supported. volume viewer is not yet supported. 
 
 # Full list of features
 *Support for native space*
@@ -265,7 +269,7 @@ There will be a GUI for creating 2D/3D colormaps but it's not ready yet (use the
 *A workspace for overlays*
 - A dedicated overlay workspace allows for quick duplication, reloading, deleting, and saving of overlays *see buttons below list of overlays in the 'select an overlay' menu*
 
-*Apply value-based and p-value thresholds*
+*Stack value-based and p-value thresholds*
 - A p-value map can be loaded and associated with the current overlay. Two different thresholds can then be applied. *see threshold overlay menu*
 
 *Apply cluster thresholds*
