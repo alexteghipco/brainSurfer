@@ -147,6 +147,7 @@ handles.Current.transparencyData = tmp.vol;
 handles.positiveThreshSlider.Max = max(handles.Current.transparencyData);
 handles.negativeThreshSlider.Min = min(handles.Current.transparencyData);
 
+
 % and change what they are set to
 handles.positiveThreshSlider.Value = 0;
 handles.negativeThreshSlider.Value = 0;

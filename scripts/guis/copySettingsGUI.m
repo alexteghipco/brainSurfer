@@ -82,33 +82,39 @@ mainGuiData = guidata(h(mainGuiNum));
 
 % make all settings the same as overlay selection
 for i = 1:length(handles.selectionList.Value)
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.colormap = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.colormap;
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.overlayThresholdNeg =  mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.overlayThresholdNeg;
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.overlayThresholdPos = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.overlayThresholdPos;
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.limitMin =  mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.limitMin;
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.limitMax = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.limitMax;
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.opacity = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.opacity;
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.colormapSpacing = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.colormapSpacing;
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.colorBins = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.colorBins;
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.clusterThresh = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.clusterThresh;
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.binarize = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.binarize;
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.inclZero = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.inclZero;
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.outline = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.outline;
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.smoothSteps = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.smoothSteps;
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.smoothArea = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.smoothArea;
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.smoothThreshold = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.smoothThreshold;
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.customColor = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.customColor;
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.binarizeClusters = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.binarizeClusters;
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.pThresh = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.pThresh;
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.pVals = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.pVals;
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.transparencyLimits = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.transparencyLimits;
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.transparencyThresholds = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.transparencyThresholds;
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.transparencyData = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.transparencyData;
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.transparencyPThresh = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.transparencyPThresh;
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.invertColor = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.invertColor;
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.invertOpacity = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.invertOpacity;
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.growROI = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.growROI;
-   mainGuiData.brainMap.Current{handles.selectionList.Value(i)}.smoothType = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.smoothType;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.colormap = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.colormap;
+   
+   if handles.applyThresh.Value == 1
+       mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.overlayThresholdNeg =  mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.overlayThresholdNeg;
+       mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.overlayThresholdPos = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.overlayThresholdPos;
+   end
+   if handles.applyLimit.Value == 1
+       mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.limitMin =  mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.limitMin;
+       mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.limitMax = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.limitMax;
+   end
+   
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.opacity = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.opacity;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.colormapSpacing = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.colormapSpacing;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.colorBins = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.colorBins;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.clusterThresh = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.clusterThresh;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.binarize = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.binarize;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.inclZero = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.inclZero;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.outline = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.outline;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.smoothSteps = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.smoothSteps;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.smoothArea = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.smoothArea;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.smoothThreshold = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.smoothThreshold;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.customColor = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.customColor;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.binarizeClusters = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.binarizeClusters;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.pThresh = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.pThresh;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.pVals = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.pVals;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.transparencyLimits = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.transparencyLimits;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.transparencyThresholds = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.transparencyThresholds;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.transparencyData = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.transparencyData;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.transparencyPThresh = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.transparencyPThresh;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.invertColor = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.invertColor;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.invertOpacity = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.invertOpacity;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.growROI = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.growROI;
+   mainGuiData.brainMap.Current{handles.selectionList.Value(i)-1}.smoothType = mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.smoothType;
 end
 
 % save GUI
@@ -123,6 +129,42 @@ for hi = 1:length(h)
         close(h(hi))
     end
 end
+
+% --- Executes on selection change in selectionList.
+function applyThresh_Callback(hObject, eventdata, handles)
+% hObject    handle to selectionList (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns selectionList contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from selectionList
+
+% --- Executes during object creation, after setting all properties.
+function applyThresh_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to selectionList (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: listbox controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+
+% --- Executes on selection change in selectionList.
+function applyLimit_Callback(hObject, eventdata, handles)
+% hObject    handle to selectionList (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns selectionList contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from selectionList
+
+% --- Executes during object creation, after setting all properties.
+function applyLimit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to selectionList (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: listbox controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
 
 % --- Executes on selection change in selectionList.
 function selectionList_Callback(hObject, eventdata, handles)

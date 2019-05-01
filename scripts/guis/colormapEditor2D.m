@@ -1,35 +1,35 @@
-function varargout = colormapEditorfig(varargin)
-% COLORMAPEDITORFIG MATLAB code for colormapEditorfig.fig
-%      COLORMAPEDITORFIG, by itself, creates a new COLORMAPEDITORFIG or raises the existing
+function varargout = colormapEditor2D(varargin)
+% COLORMAPEDITOR2D MATLAB code for colormapEditor2D.fig
+%      COLORMAPEDITOR2D, by itself, creates a new COLORMAPEDITOR2D or raises the existing
 %      singleton*.
 %
-%      H = COLORMAPEDITORFIG returns the handle to a new COLORMAPEDITORFIG or the handle to
+%      H = COLORMAPEDITOR2D returns the handle to a new COLORMAPEDITOR2D or the handle to
 %      the existing singleton*.
 %
-%      COLORMAPEDITORFIG('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in COLORMAPEDITORFIG.M with the given input arguments.
+%      COLORMAPEDITOR2D('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in COLORMAPEDITOR2D.M with the given input arguments.
 %
-%      COLORMAPEDITORFIG('Property','Value',...) creates a new COLORMAPEDITORFIG or raises the
+%      COLORMAPEDITOR2D('Property','Value',...) creates a new COLORMAPEDITOR2D or raises the
 %      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before colormapEditorfig_OpeningFcn gets called.  An
+%      applied to the GUI before colormapEditor2D_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to colormapEditorfig_OpeningFcn via varargin.
+%      stop.  All inputs are passed to colormapEditor2D_OpeningFcn via varargin.
 %
 %      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
 %      instance to run (singleton)".
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Edit the above text to modify the response to help colormapEditorfig
+% Edit the above text to modify the response to help colormapEditor2D
 
-% Last Modified by GUIDE v2.5 01-Apr-2019 23:01:32
+% Last Modified by GUIDE v2.5 27-Apr-2019 12:27:27
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @colormapEditorfig_OpeningFcn, ...
-                   'gui_OutputFcn',  @colormapEditorfig_OutputFcn, ...
+                   'gui_OpeningFcn', @colormapEditor2D_OpeningFcn, ...
+                   'gui_OutputFcn',  @colormapEditor2D_OutputFcn, ...
                    'gui_LayoutFcn',  [] , ...
                    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
@@ -44,15 +44,15 @@ end
 % End initialization code - DO NOT EDIT
 
 
-% --- Executes just before colormapEditorfig is made visible.
-function colormapEditorfig_OpeningFcn(hObject, eventdata, handles, varargin)
+% --- Executes just before colormapEditor2D is made visible.
+function colormapEditor2D_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to colormapEditorfig (see VARARGIN)
+% varargin   command line arguments to colormapEditor2D (see VARARGIN)
 
-% Choose default command line output for colormapEditorfig
+% Choose default command line output for colormapEditor2D
 handles.output = hObject;
 handles = guidata(hObject);
 
@@ -76,6 +76,9 @@ options.colorBins = 1000;
 handles.colormapName = handles.selectButton.String{handles.selectButton.Value};
 if mainGuiData.colormapCustom(handles.selectButton.Value) ~= 1
     switch handles.colormapName
+        case 'select colormap'
+            handles.cMap = jet(options.colorBins);
+            handles.selectButton.Value = 2;
         case 'jet'
             handles.cMap = jet(options.colorBins);
         case 'parula'
@@ -273,10 +276,6 @@ handles.edit1.String = num2str(handles.rVal);
 handles.edit4.String = num2str(handles.gVal);
 handles.edit5.String = num2str(handles.bVal);
 
-if length(handles.currColor) > 1
-    handles.currColor(1) = [];
-end
-
 axes(handles.currColor)
 handles.curImage = reshape([handles.rVal handles.gVal handles.bVal],[1,1,3]);
 handles.cMapImageH = image(handles.curImage);
@@ -286,15 +285,28 @@ set(handles.currColor,'xticklabel',[])
 set(handles.currColor,'ytick',[])
 set(handles.currColor,'yticklabel',[])
 
+axes(handles.axes3)
+handles.curImageMulti = reshape([1 1 1],[1,1,3]);
+handles.cMapImageHMulti = image(handles.curImageMulti);
+
+set(handles.axes3,'xtick',[])
+set(handles.axes3,'xticklabel',[])
+set(handles.axes3,'ytick',[])
+set(handles.axes3,'yticklabel',[])
+
+handles.listbox.String = vertcat({handles.listbox.String},mainGuiData.overlaySelection.String{2:end});
+set(handles.listbox,'Max',2,'Min',0);
+handles.edit14.String = num2str(size(handles.cMap,1));
+
 % Update handles structure
 guidata(h(mainGuiNum), mainGuiData);
 guidata(hObject, handles);
-% UIWAIT makes colormapEditorfig wait for user response (see UIRESUME)
+% UIWAIT makes colormapEditor2D wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = colormapEditorfig_OutputFcn(hObject, eventdata, handles) 
+function varargout = colormapEditor2D_OutputFcn(hObject, eventdata, handles) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -707,10 +719,6 @@ if mainGuiData.colormapCustom(handles.selectButton.Value) ~= 1
     end
     handles.customColor = 0;
 else
-    %     tmp = load([mainGuiData.paths.colormapsPath mainGuiData.paths.slash mainGuiData.colormap.String{handles.selectButton.Value} '.mat']);
-    %     handles.customColor = tmp.customColor;
-    %     handles.cMap = handles.customColor;
-    %     handles.customColor = 1;
     handles.customColor = load([mainGuiData.paths.colormapsPath mainGuiData.paths.slash mainGuiData.colormap.String{handles.selectButton.Value} '.mat']);
     if isa(handles.customColor,'struct') == 1
         field = fieldnames(handles.customColor);
@@ -764,6 +772,7 @@ set(handles.currColor,'xtick',[])
 set(handles.currColor,'xticklabel',[])
 set(handles.currColor,'ytick',[])
 set(handles.currColor,'yticklabel',[])
+handles.edit14.String = num2str(size(handles.cMap,1));
 
 guidata(h(mainGuiNum), mainGuiData);
 guidata(hObject, handles);
@@ -781,90 +790,37 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in saveColor.
-function saveColor_Callback(hObject, eventdata, handles)
-% hObject    handle to saveColor (see GCBO)
+% --- Executes on button press in patchButton.
+function patchButton_Callback(hObject, eventdata, handles)
+% hObject    handle to patchButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 handles = guidata(hObject);
-handles.output = hObject;
-h = get(0,'Children');
-% find brain surfer
-for hi = 1:length(h)
-    if strcmp(h(hi).Name,'Brain Surfer') == 1
-        mainGuiNum = hi;
-    end
-end
-mainGuiData = guidata(h(mainGuiNum));
-customColor = handles.cMap;
-
-[oFile, oPath] = uiputfile({'*.mat'},'Pick a name for your colormap',[mainGuiData.paths.colormapsPath mainGuiData.paths.slash 'colormap']);
-save([oPath oFile]','customColor')
-
-mainGuiData.colormapCustom = vertcat(mainGuiData.colormapCustom,1);
-mainGuiData.colormap.String = vertcat(mainGuiData.colormap.String,oFile(1:end-4));
-mainGuiData.colormap.Value = length(mainGuiData.colormap.String);
-mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.colormap = length(mainGuiData.colormap.String);
-mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.customColor = customColor;
-
-% remove colorbar if it exists
-if isfield(mainGuiData.brainMap,'colorbar')
-    delete(mainGuiData.brainMap.colorbar)
-    mainGuiData.brainMap = rmfield(mainGuiData.brainMap,'colorbar');
-    replot = 1;
-else
-    replot = 0;
-end
-
-% now turn off any overlays that might exist and delete them
-% multioverlays are in a cell
-if isfield(mainGuiData.brainMap,'overlay') %if there is an overlay field (i.e., not your first click)
-    if iscell(mainGuiData.brainMap.overlay) % check if overlay is a cell (i.e., multioverlay)
-        for celli = 1:length(mainGuiData.brainMap.overlay)
-            mainGuiData.brainMap.overlay{celli}.FaceAlpha = 0;
+if length(handles.listbox.Value) == 2
+    h = get(0,'Children');
+    % find brain surfer
+    for hi = 1:length(h)
+        if strcmp(h(hi).Name,'Brain Surfer') == 1
+            mainGuiNum = hi;
         end
-        mainGuiData.brainMap = rmfield(mainGuiData.brainMap,'overlay');
-    elseif isvalid(mainGuiData.brainMap.overlay)
-        mainGuiData.overlayCopy = mainGuiData.brainMap.overlay;
-        mainGuiData.brainMap.overlay.FaceAlpha = 0;
-        mainGuiData.brainMap = rmfield(mainGuiData.brainMap,'overlay');
     end
-end
-
-figure(mainGuiData.brainFig)
-[mainGuiData.underlay, mainGuiData.brainMap.overlay, mainGuiData.brainFig, mainGuiData.opts] = plotOverlay(mainGuiData.underlay, mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.Data,'figHandle', mainGuiData.brainFig, 'threshold',[mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.overlayThresholdNeg, mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.overlayThresholdPos], 'hemisphere', mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.hemi, 'opacity', mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.opacity, 'colorMap', mainGuiData.colormap.String{mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.colormap}, 'colorSampling',mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.colormapSpacing,'colorBins',mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.colorBins,'limits', [mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.limitMin mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.limitMax],'inclZero',mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.inclZero,'clusterThresh',mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.clusterThresh,'binarize',mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.binarize,'outline',mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.outline,'binarizeClusters',mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.binarizeClusters,'customColor',mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.customColor,'pMap',mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.pVals,'pThresh',mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.pThresh,'transparencyLimits',mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.transparencyLimits,'transparencyThresholds',mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.transparencyThresholds,'transparencyData',mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.transparencyData,'transparencyPThresh',mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.transparencyPThresh,'invertColor',mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.invertColor,'invertOpacity',mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.invertOpacity,'growROI',mainGuiData.brainMap.Current{mainGuiData.overlaySelection.Value - 1}.growROI);
-
-if isfield(mainGuiData.overlayCopy,'overlayCopy')
-    mainGuiData.overlayCopy.brainMap.overlay.SpecularStrength = mainGuiData.overlayCopy.overlayCopy.SpecularStrength;
-    mainGuiData.overlayCopy.brainMap.overlay.SpecularExponent = mainGuiData.overlayCopy.overlayCopy.SpecularExponent;
-    mainGuiData.overlayCopy.brainMap.overlay.SpecularColorReflectance =  mainGuiData.overlayCopy.overlayCopy.SpecularColorReflectance;
-    mainGuiData.overlayCopy.brainMap.overlay.DiffuseStrength = mainGuiData.overlayCopy.overlayCopy.DiffuseStrength;
-    mainGuiData.overlayCopy.brainMap.overlay.AmbientStrength =  mainGuiData.overlayCopy.overlayCopy.AmbientStrength;
-end
-
-if replot == 1
-    mainGuiData.brainMap.colorbar = cbar;
-    mainGuiData.brainMap.colorbar.TickLength = [0 0];
-    imh = mainGuiData.brainMap.colorbar.Children(1);
-    imh.AlphaData = mainGuiData.opts.transparencyData;
-    imh.AlphaDataMapping = 'direct';
+    mainGuiData = guidata(h(mainGuiNum));
     
-    if mainGuiData.colormapSpacing.Value == 4 || mainGuiData.colormapSpacing.Value == 3
-        mainGuiData.brainMap.colorbar.YTick = mainGuiData.opts.ticks;
-        mainGuiData.brainMap.colorbar.YTickLabel = mainGuiData.opts.tickLabels;
-    end
+    lims(1,1) = str2num(handles.dim1Min.String);
+    lims(1,2) = str2num(handles.dim2Min.String);
+    lims(2,1) = str2num(handles.dim1Max.String);
+    lims(2,2) = str2num(handles.dim2Max.String);
+    
+    allData(:,1) = mainGuiData.brainMap.Current{handles.listbox.Value(1) - 1}.Data;
+    allData(:,2) = mainGuiData.brainMap.Current{handles.listbox.Value(2) - 1}.Data;
+    
+    [handles.underlay, handles.overlay] = plot2dOverlay(allData, handles.cMapImageHMulti.CData, lims, size(handles.cMapImageHMulti.CData,1));
+    handles.overlay.FaceAlpha = str2double(handles.opacity.String);
+    
+    guidata(h(mainGuiNum), mainGuiData);
 end
-
-guidata(h(mainGuiNum), mainGuiData);
 guidata(hObject, handles);
 
-h = get(0,'Children');
-% find transparencyFig
-for hi = 1:length(h)
-    if strcmp(h(hi).Name,'colormap editor') == 1
-        close(h(hi))
-    end
-end
 
 % --- Executes on button press in applyButton.
 function applyButton_Callback(hObject, eventdata, handles)
@@ -1046,6 +1002,308 @@ axes(handles.allColor)
 handles.cMapImage = reshape(handles.cMap,[size(handles.cMap,1),1,3]);
 handles.cMapImageR = imrotate(handles.cMapImage,90);
 handles.cMapImageH = image(handles.cMapImageR);
+
+set(handles.allColor,'xtick',[])
+set(handles.allColor,'xticklabel',[])
+set(handles.allColor,'ytick',[])
+set(handles.allColor,'yticklabel',[])
+
+guidata(hObject, handles);
+
+
+% --- Executes on button press in setLeft.
+function setLeft_Callback(hObject, eventdata, handles)
+% hObject    handle to setLeft (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles = guidata(hObject);
+handles.leftColormap = handles.cMap;
+colorBins = 1000;
+
+if ~isfield(handles,'rightColormap')
+    handles.rightColormap = ones(colorBins,3);
+end
+
+cMap = ones(colorBins,colorBins,3);
+for i = 1:size(handles.leftColormap,1)
+    tmpInterp = customColorMapInterp(vertcat(handles.leftColormap(i,:),handles.rightColormap(i,:)),colorBins);
+    cMap(i,:,:) = tmpInterp;
+end
+
+axes(handles.axes3)
+handles.cMapImageHMulti = image(cMap);
+set(handles.axes3,'xtick',[])
+set(handles.axes3,'xticklabel',[])
+set(handles.axes3,'ytick',[])
+set(handles.axes3,'yticklabel',[])
+
+guidata(hObject, handles);
+
+% --- Executes on button press in setRight.
+function setRight_Callback(hObject, eventdata, handles)
+% hObject    handle to setRight (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles = guidata(hObject);
+handles.rightColormap = handles.cMap;
+colorBins = 1000;
+
+if ~isfield(handles,'leftColormap')
+    handles.leftColormap = ones(colorBins,3);
+end
+
+cMap = ones(colorBins,colorBins,3);
+for i = 1:size(handles.rightColormap,1)
+    tmpInterp = customColorMapInterp(vertcat(handles.leftColormap(i,:),handles.rightColormap(i,:)),colorBins);
+    cMap(i,:,:) = tmpInterp;
+end
+
+axes(handles.axes3)
+handles.cMapImageHMulti = image(cMap);
+set(handles.axes3,'xtick',[])
+set(handles.axes3,'xticklabel',[])
+set(handles.axes3,'ytick',[])
+set(handles.axes3,'yticklabel',[])
+
+guidata(hObject, handles);
+
+
+% --- Executes on button press in pushbutton7.
+function pushbutton7_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton7 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in pushbutton8.
+function pushbutton8_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton8 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on selection change in listbox.
+function listbox_Callback(hObject, eventdata, handles)
+% hObject    handle to listbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns listbox contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from listbox
+handles = guidata(hObject);
+handles.output = hObject;
+h = get(0,'Children');
+% find brain surfer
+for hi = 1:length(h)
+    if strcmp(h(hi).Name,'Brain Surfer') == 1
+        mainGuiNum = hi;
+    end
+end
+mainGuiData = guidata(h(mainGuiNum));
+
+if length(handles.listbox.Value) == 2 && sum(handles.listbox.Value ~= 1) == 2
+    handles.dim1Min.String = num2str(min(mainGuiData.brainMap.Current{handles.listbox.Value(1) - 1}.Data));
+    handles.dim2Min.String = num2str(min(mainGuiData.brainMap.Current{handles.listbox.Value(2) - 1}.Data));
+    handles.dim1Max.String = num2str(max(mainGuiData.brainMap.Current{handles.listbox.Value(1) - 1}.Data));
+    handles.dim2Max.String = num2str(max(mainGuiData.brainMap.Current{handles.listbox.Value(2) - 1}.Data));
+elseif length(handles.listbox.Value) == 1 && sum(handles.listbox.Value ~= 1) == 1
+    handles.dim1Min.String = num2str(min(mainGuiData.brainMap.Current{handles.listbox.Value - 1}.Data));
+    handles.dim1Max.String = num2str(max(mainGuiData.brainMap.Current{handles.listbox.Value - 1}.Data));
+    handles.dim2Min.String = 'NaN';
+    handles.dim2Max.String = 'NaN';
+end
+    
+guidata(h(mainGuiNum), mainGuiData);
+guidata(hObject, handles);
+
+% --- Executes during object creation, after setting all properties.
+function listbox_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to listbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: listbox controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function dim1Min_Callback(hObject, eventdata, handles)
+% hObject    handle to dim1Min (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of dim1Min as text
+%        str2double(get(hObject,'String')) returns contents of dim1Min as a double
+handles = guidata(hObject);
+guidata(hObject, handles);
+
+% --- Executes during object creation, after setting all properties.
+function dim1Min_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to dim1Min (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function dim1Max_Callback(hObject, eventdata, handles)
+% hObject    handle to dim1Max (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of dim1Max as text
+%        str2double(get(hObject,'String')) returns contents of dim1Max as a double
+handles = guidata(hObject);
+guidata(hObject, handles);
+
+% --- Executes during object creation, after setting all properties.
+function dim1Max_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to dim1Max (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function dim2Min_Callback(hObject, eventdata, handles)
+% hObject    handle to dim2Min (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of dim2Min as text
+%        str2double(get(hObject,'String')) returns contents of dim2Min as a double
+handles = guidata(hObject);
+guidata(hObject, handles);
+
+% --- Executes during object creation, after setting all properties.
+function dim2Min_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to dim2Min (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function dim2Max_Callback(hObject, eventdata, handles)
+% hObject    handle to dim2Max (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of dim2Max as text
+%        str2double(get(hObject,'String')) returns contents of dim2Max as a double
+handles = guidata(hObject);
+guidata(hObject, handles);
+
+% --- Executes during object creation, after setting all properties.
+function dim2Max_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to dim2Max (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit14_Callback(hObject, eventdata, handles)
+% hObject    handle to edit14 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit14 as text
+%        str2double(get(hObject,'String')) returns contents of edit14 as a double
+handles = guidata(hObject);
+if str2double(handles.edit14.String) < 5
+    handles.edit14.String = '5';
+end
+
+F = griddedInterpolant(double(handles.cMapImageHMulti.CData));
+[sx,sy,sz] = size(handles.cMapImageHMulti.CData);
+imRat = size(handles.cMapImageHMulti.CData,1)/str2double(handles.edit14.String);
+
+xq = (0:imRat:sx)';
+yq = (0:imRat:sy)';
+zq = (1:sz)';
+%vq = uint8(F({xq,yq,zq}));
+vq = (F({xq,yq,zq}));
+
+axes(handles.axes3)
+handles.cMapImageHMulti = image(vq);
+
+set(handles.axes3,'xtick',[])
+set(handles.axes3,'xticklabel',[])
+set(handles.axes3,'ytick',[])
+set(handles.axes3,'yticklabel',[])
+
+guidata(hObject, handles);
+
+
+% --- Executes during object creation, after setting all properties.
+function edit14_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit14 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function opacity_Callback(hObject, eventdata, handles)
+% hObject    handle to opacity (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of opacity as text
+%        str2double(get(hObject,'String')) returns contents of opacity as a double
+handles = guidata(hObject);
+try 
+    handles.overlay.FaceAlpha = str2double(handles.opacity.String);
+catch
+    
+end
+guidata(hObject, handles);
+
+% --- Executes during object creation, after setting all properties.
+function opacity_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to opacity (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in invert.
+function invert_Callback(hObject, eventdata, handles)
+% hObject    handle to invert (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of invert
+handles = guidata(hObject);
+% update images
+axes(handles.allColor)
+
+handles.cMapImage = flipud(handles.cMapImage);
+handles.cMapImageH = image((imrotate(handles.cMapImage,90)));
+handles.cMap = flipud(handles.cMap);
+%handles.cMapImageH = image(fliplr(imrotate(handles.cMapImage,90)));
 
 set(handles.allColor,'xtick',[])
 set(handles.allColor,'xticklabel',[])
