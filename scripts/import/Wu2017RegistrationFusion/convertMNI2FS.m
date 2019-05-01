@@ -26,11 +26,11 @@ end
 input = MRIread(inFile);
 [lh_proj_data, rh_proj_data] = CBIG_RF_projectVol2fsaverage(inFile,'linear',[toolboxPath slash 'final_warps_FS5.3' slash 'lh.' defaultWarp],[toolboxPath slash 'final_warps_FS5.3' slash 'rh.' defaultWarp]); 
 input.vol = permute(lh_proj_data, [4 2 3 1]);  
-MRIwrite(input,[outFolder slash 'MNI_' inFileName '_RF_ANTs_MNI152_to_fsaverage_LH.nii.gz']);                                          
+MRIwrite(input,[outFolder slash inFileName '_RF_ANTs_MNI152_to_fsaverage_LH.nii.gz']);                                          
 input.vol = permute(rh_proj_data, [4 2 3 1]);                                          
-MRIwrite(input,[outFolder slash 'MNI_' inFileName '_RF_ANTs_MNI152_to_fsaverage_RH.nii.gz']);
+MRIwrite(input,[outFolder slash inFileName '_RF_ANTs_MNI152_to_fsaverage_RH.nii.gz']);
 
-outFiles{1} = [outFolder slash 'MNI_' inFileName '_RF_ANTs_MNI152_to_fsaverage_LH.nii.gz'];
-outFiles{2} = [outFolder slash 'MNI_' inFileName '_RF_ANTs_MNI152_to_fsaverage_RH.nii.gz'];
+outFiles{1} = [outFolder slash inFileName '_RF_ANTs_MNI152_to_fsaverage_LH.nii.gz'];
+outFiles{2} = [outFolder slash inFileName '_RF_ANTs_MNI152_to_fsaverage_RH.nii.gz'];
 
 end
