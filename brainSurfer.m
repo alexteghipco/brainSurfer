@@ -225,15 +225,42 @@ if isfield(handles, 'underlay') % only allow for button to work if there's an un
             % Figure out which hemisphere the file belongs to...
             % it's a problem if the file either references both hemispheres
             % or neither hemisphere so lets check for that first
-            if (contains(lower(handles.brainMap.Current{storedFileNum}.name),lower({'left', 'lh'})) && contains(lower(handles.brainMap.Current{storedFileNum}.name),lower({'right', 'rh'}))) || (~contains(lower(handles.brainMap.Current{storedFileNum}.name),lower({'left', 'lh'})) && ~contains(lower(handles.brainMap.Current{storedFileNum}.name),lower({'right', 'rh'})))
-                % if the file is name is ambiguous ask user to confirm which hemisphere this
-                % overlay should be plotted over
-                handles.brainMap.Current{storedFileNum}.hemi = questdlg(['Which hemisphere should ' handles.brainMap.Current{storedFileNum}.name ' be overlayed on?'], 'Your file name does not clearly reference one hemisphere','left','right','left');
-                % otherwise check for right or left hemisphere
-            elseif contains(lower(handles.brainMap.Current{storedFileNum}.name),lower({'left', 'lh'}))
-                handles.brainMap.Current{storedFileNum}.hemi = 'left';
-            elseif contains(lower(handles.brainMap.Current{storedFileNum}.name),lower({'right', 'rh'}))
-                handles.brainMap.Current{storedFileNum}.hemi = 'right';
+
+            % on older versions of matlab, contains function does not
+            % search strings :( so we must implement a different approach
+            % just in case
+            try
+                if (contains(lower(handles.brainMap.Current{storedFileNum}.name),lower({'left', 'lh'})) && contains(lower(handles.brainMap.Current{storedFileNum}.name),lower({'right', 'rh'}))) || (~contains(lower(handles.brainMap.Current{storedFileNum}.name),lower({'left', 'lh'})) && ~contains(lower(handles.brainMap.Current{storedFileNum}.name),lower({'right', 'rh'})))
+                    % if the file is name is ambiguous ask user to confirm which hemisphere this
+                    % overlay should be plotted over
+                    handles.brainMap.Current{storedFileNum}.hemi = questdlg(['Which hemisphere should ' handles.brainMap.Current{storedFileNum}.name ' be overlayed on?'], 'Your file name does not clearly reference one hemisphere','left','right','left');
+                    % otherwise check for right or left hemisphere
+                elseif contains(lower(handles.brainMap.Current{storedFileNum}.name),lower({'left', 'lh'}))
+                    handles.brainMap.Current{storedFileNum}.hemi = 'left';
+                elseif contains(lower(handles.brainMap.Current{storedFileNum}.name),lower({'right', 'rh'}))
+                    handles.brainMap.Current{storedFileNum}.hemi = 'right';
+                end
+                
+            catch
+                ss = {'left', 'lh', 'rh', 'right'};
+                fun = @(s)~cellfun('isempty',strfind(lower({handles.brainMap.Current{storedFileNum}.name}),s));
+                out = cellfun(fun,ss,'UniformOutput',false);
+                
+                if sum(horzcat(out{:})) > 1
+                    if sum(horzcat(out{1:2})) == 2 || sum(horzcat(out{3:4})) == 2
+                        if sum(horzcat(out{1:2})) == 2
+                            handles.brainMap.Current{storedFileNum}.hemi = 'left';
+                        elseif sum(horzcat(out{3:4})) == 2
+                            handles.brainMap.Current{storedFileNum}.hemi = 'right';
+                        end
+                    else
+                        handles.brainMap.Current{storedFileNum}.hemi = questdlg(['Which hemisphere should ' handles.brainMap.Current{storedFileNum}.name ' be overlayed on?'], 'Your file name does not clearly reference one hemisphere','left','right','left');
+                    end
+                elseif sum(horzcat(out{1:2})) == 1
+                    handles.brainMap.Current{storedFileNum}.hemi = 'left';
+                elseif sum(horzcat(out{3:4})) == 1
+                    handles.brainMap.Current{storedFileNum}.hemi = 'right';
+                end
             end
         end
         
@@ -246,6 +273,7 @@ if isfield(handles, 'underlay') % only allow for button to work if there's an un
     
     guidata(hObject, handles);
 end
+
 
 %% Import an overlay
 function importOverlay_Callback(hObject, eventdata, handles)
@@ -318,15 +346,37 @@ if isfield(handles, 'underlay') && (exist('convertMNI2FS.m','file') && exist('co
                 % Figure out which hemisphere the file belongs to...
                 % it's a problem if the file either references both hemispheres
                 % or neither hemisphere so lets check for that first
-                if (contains(lower(handles.brainMap.Current{storedFileNum}.name),lower({'left', 'lh'})) && contains(lower(handles.brainMap.Current{storedFileNum}.name),lower({'right', 'rh'}))) || (~contains(lower(handles.brainMap.Current{storedFileNum}.name),lower({'left', 'lh'})) && ~contains(lower(handles.brainMap.Current{storedFileNum}.name),lower({'right', 'rh'})))
-                    % if the file is name is ambiguous ask user to confirm which hemisphere this
-                    % overlay should be plotted over
-                    handles.brainMap.Current{storedFileNum}.hemi = questdlg(['Which hemisphere should ' handles.brainMap.Current{storedFileNum}.name ' be overlayed on?'], 'Your file name does not clearly reference one hemisphere','left','right','left');
-                    % otherwise check for right or left hemisphere
-                elseif contains(lower(handles.brainMap.Current{storedFileNum}.name),lower({'left', 'lh'}))
-                    handles.brainMap.Current{storedFileNum}.hemi = 'left';
-                elseif contains(lower(handles.brainMap.Current{storedFileNum}.name),lower({'right', 'rh'}))
-                    handles.brainMap.Current{storedFileNum}.hemi = 'right';
+                try
+                    if (contains(lower(handles.brainMap.Current{storedFileNum}.name),lower({'left', 'lh'})) && contains(lower(handles.brainMap.Current{storedFileNum}.name),lower({'right', 'rh'}))) || (~contains(lower(handles.brainMap.Current{storedFileNum}.name),lower({'left', 'lh'})) && ~contains(lower(handles.brainMap.Current{storedFileNum}.name),lower({'right', 'rh'})))
+                        % if the file is name is ambiguous ask user to confirm which hemisphere this
+                        % overlay should be plotted over
+                        handles.brainMap.Current{storedFileNum}.hemi = questdlg(['Which hemisphere should ' handles.brainMap.Current{storedFileNum}.name ' be overlayed on?'], 'Your file name does not clearly reference one hemisphere','left','right','left');
+                        % otherwise check for right or left hemisphere
+                    elseif contains(lower(handles.brainMap.Current{storedFileNum}.name),lower({'left', 'lh'}))
+                        handles.brainMap.Current{storedFileNum}.hemi = 'left';
+                    elseif contains(lower(handles.brainMap.Current{storedFileNum}.name),lower({'right', 'rh'}))
+                        handles.brainMap.Current{storedFileNum}.hemi = 'right';
+                    end
+                catch
+                    ss = {'left', 'lh', 'rh', 'right'};
+                    fun = @(s)~cellfun('isempty',strfind(lower({handles.brainMap.Current{storedFileNum}.name}),s));
+                    out = cellfun(fun,ss,'UniformOutput',false);
+                    
+                    if sum(horzcat(out{:})) > 1
+                        if sum(horzcat(out{1:2})) == 2 || sum(horzcat(out{3:4})) == 2
+                            if sum(horzcat(out{1:2})) == 2
+                                handles.brainMap.Current{storedFileNum}.hemi = 'left';
+                            elseif sum(horzcat(out{3:4})) == 2
+                                handles.brainMap.Current{storedFileNum}.hemi = 'right';
+                            end
+                        else
+                            handles.brainMap.Current{storedFileNum}.hemi = questdlg(['Which hemisphere should ' handles.brainMap.Current{storedFileNum}.name ' be overlayed on?'], 'Your file name does not clearly reference one hemisphere','left','right','left');
+                        end
+                    elseif sum(horzcat(out{1:2})) == 1
+                        handles.brainMap.Current{storedFileNum}.hemi = 'left';
+                    elseif sum(horzcat(out{3:4})) == 1
+                        handles.brainMap.Current{storedFileNum}.hemi = 'right';
+                    end
                 end
             end
             
@@ -926,7 +976,7 @@ handles.overlayThresholdNegDynamic.String = '0';
 handles.pSlider.Value = 1;
 handles.pText.String = '1';
 handles.clusterThreshSlider.Value = 0;
-handles.clusterThreshText = '0';
+handles.clusterThreshText.String = '0';
 
 handles.colormap.Value = 1;
 handles.invertColorButton.Value = 0;
