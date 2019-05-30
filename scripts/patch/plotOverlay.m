@@ -193,17 +193,40 @@ if length(options.limits) == 1
     end
 end
 
-% Figure out which hemisphere the overlay should be plotted on
-if contains(lower(options.hemisphere),lower({'left', 'lh'})) == 1
-    options.hemisphere = 'left';
-elseif contains(lower(options.hemisphere),lower({'right', 'rh'})) == 1
-    options.hemisphere = 'right';
-elseif (contains(lower(options.hemisphere),lower({'left', 'lh'})) == 1) && (contains(lower(options.hemisphere),lower({'right', 'rh'})) == 1)
-    options.hemisphere = inputdlg('It looks like your file contains reference to both hemispheres...which hemisphere should I associate with this file? (type left or right)' ,'Could not find hemisphere');
-elseif (contains(lower(options.hemisphere),lower({'left', 'lh'})) == 0) && (contains(lower(options.hemisphere),lower({'right', 'rh'})) == 0)
-    options.hemisphere = inputdlg('It looks like your file does not contain reference to either hemisphere...which hemisphere should I associate with this file? (type left or right)' ,'Could not find hemisphere');
+% Figure out which hemisphere the overlay should be plotted on...because
+% contains was updated to work with cells in later versions of matlab,
+% implement a backup solution
+try
+    if contains(lower(options.hemisphere),lower({'left', 'lh'})) == 1
+        options.hemisphere = 'left';
+    elseif contains(lower(options.hemisphere),lower({'right', 'rh'})) == 1
+        options.hemisphere = 'right';
+    elseif (contains(lower(options.hemisphere),lower({'left', 'lh'})) == 1) && (contains(lower(options.hemisphere),lower({'right', 'rh'})) == 1)
+        options.hemisphere = inputdlg('It looks like your file contains reference to both hemispheres...which hemisphere should I associate with this file? (type left or right)' ,'Could not find hemisphere');
+    elseif (contains(lower(options.hemisphere),lower({'left', 'lh'})) == 0) && (contains(lower(options.hemisphere),lower({'right', 'rh'})) == 0)
+        options.hemisphere = inputdlg('It looks like your file does not contain reference to either hemisphere...which hemisphere should I associate with this file? (type left or right)' ,'Could not find hemisphere');
+    end
+catch
+    ss = {'left', 'lh', 'rh', 'right'};
+    fun = @(s)~cellfun('isempty',strfind(lower({options.hemisphere}),s));
+    out = cellfun(fun,ss,'UniformOutput',false);
+    
+    if sum(horzcat(out{:})) > 1
+        if sum(horzcat(out{1:2})) == 2 || sum(horzcat(out{3:4})) == 2
+            if sum(horzcat(out{1:2})) == 2
+                options.hemisphere = 'left';
+            elseif sum(horzcat(out{3:4})) == 2
+                options.hemisphere = 'right';
+            end
+        else
+            options.hemisphere = questdlg(['Which hemisphere should this file be overlayed on?'], 'Your file name does not clearly reference one hemisphere','left','right','left');
+        end
+    elseif sum(horzcat(out{1:2})) == 1
+        options.hemisphere = 'left';
+    elseif sum(horzcat(out{3:4})) == 1
+        options.hemisphere = 'right';
+    end
 end
-
 %% 2.Setup colormap
 % Setup colormap
 % If you did not provide an overlay structure, then map all of the provided data onto the colorMap you have
