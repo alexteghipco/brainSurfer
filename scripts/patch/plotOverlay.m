@@ -880,8 +880,6 @@ if isfield(options,'modulate')
     end
   
      if (min(options.transparencyData) < 0 && max(options.transparencyData) > 0) || (min(options.transparencyData) > 0 && max(options.transparencyData) < 0)
-         %options.transparencyData = abs(options.transparencyData);
-%      end
         dataModSpace1 = linspace(xLim,0,6);
         dataModSpace1(end) = [];
         dataModSpace2 = linspace(0,yLim,6);
@@ -892,22 +890,21 @@ if isfield(options,'modulate')
         rangeNeg = max(dataModSpace1) - 0;%min(dataModSpace1);
         idxPos = find(options.transparencyData > 0);
         idxNeg = find(options.transparencyData < 0);
-        %options.transparencyData(idxPos) = (options.transparencyData(idxPos) - min(dataModSpace2)) / rangePos;
         options.transparencyData(idxPos) = (options.transparencyData(idxPos) - 0) / rangePos;
         options.transparencyData(idxNeg) = abs(options.transparencyData(idxNeg));
-        %options.transparencyData(idxNeg) = (options.transparencyData(idxNeg) - min(dataModSpace1)) / rangeNeg;
         options.transparencyData(idxNeg) = (options.transparencyData(idxNeg) -0) / rangeNeg;
-        %options.transparencyData = (options.transparencyData - min(dataModSpace)) / max(dataModSpace) - min(dataModSpace);
+        
+        % user-specified limits can be lower than actual range so check for
+        % values greater than 1 (ie outside rangePos / rangeNeg) and
+        % set them to max
+        idx1 = find(options.transparencyData > 1);
+        options.transparencyData(idx1) = 1;
         
     else
         dataModSpace = linspace(xLim,yLim,10);
         range = max(options.transparencyData) - min(options.transparencyData);
         options.transparencyData = (options.transparencyData - min(options.transparencyData)) / range;
-    %dataModSpace = linspace(min(options.transparencyData),max(options.transparencyData),10);
     end
-    
-    %range = max(options.transparencyData) - min(options.transparencyData);
-    %options.transparencyData = (options.transparencyData - min(options.transparencyData)) / range;
     
      switch options.invertOpacity
         case 'true'
@@ -934,7 +931,6 @@ if isfield(options,'modulate')
     meanT = [];
     for i = 1:length(cData)
         idx = find(cDataIdx == i); % vertices that map onto colormap bin i
-        %select = find(~isnan(meanT));
         meanT(i,1) = mean(options.transparencyData(idx));
     end   
     
@@ -947,9 +943,7 @@ if isfield(options,'modulate')
     cSpaceImg = image(flipud(B));
     truesize(cSpaceFig,[1000 1000])
 
-    %alpha = repmat([linspace(0,1,10)],size(cMap,1),1,1);
     alpha = repmat([linspace(options.transparencyLimits(1),options.transparencyLimits(2),10)],size(cMap,1),1,1);
-    %alphaT = alpha * 62;
     
     set(cSpaceImg, 'AlphaData', alpha);
     cSpaceImg.AlphaDataMapping = 'none';
@@ -964,16 +958,11 @@ if isfield(options,'modulate')
         cSpaceFig.CurrentAxes.YTickLabel = num2cell(flipud(cData));
     else
         cSpaceFig.CurrentAxes.YTick = 0:20:length(flipud(cData));
-        %cSpaceFig.CurrentAxes.YTick = fliplr(cSpaceFig.CurrentAxes.YTick);
         cSpaceFig.CurrentAxes.YTickLabel = num2cell(fliplr([min(cData) cData(cSpaceFig.CurrentAxes.YTick(2:end))]));
     end
     ylabel('exact data bins from primary overlay (max of 100 displayed ticks)')
 
     % now draw boxes around the values for current cluster
-%     if exist('dataModSpace1','var')
-%         idx = (size(opacityColorbar,1)/2)+1;
-%         max(opacityColorbar(1:idx))
-%     end
     if exist('dataModSpace1','var')
         for i = 1:length(opacityColorbar)
             if i < (length(opacityColorbar)/2)+1
@@ -1041,13 +1030,11 @@ if isfield(options,'modulate')
         ax2.XTickLabel = num2cell(dataModSpace2);
         ax2.XTickLabelRotation = 60;
         ax2.TickLength = [0 0];
-        %set(get(gca,'title'),'Position',ax1_pos)
         th = get(titlePos , 'position');
         th(2) = th(2) - 90;
         set( titlePos , 'position' , th);
         ax2.XLabel.String = 'transparency bins for positive values';
         ax2.YTickLabel = {};
-        %ax2.XLabel.FontWeight = 'bold';
     else
         cSpaceFig.CurrentAxes.XTickLabel = num2cell(dataModSpace);
         xlabel('approximate (average) value of data used to modulate transparency for vertices falling within each data bin from overlay')
