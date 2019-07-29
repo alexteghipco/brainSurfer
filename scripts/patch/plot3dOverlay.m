@@ -17,6 +17,20 @@ function [underlay, overlay] = plot3dOverlay(inData, n, w, limits, plotSwitch, b
 % from brainSurfer will be loaded.
 defaultBrain = 'left';
 
+% get OS
+if ispc == 0
+    sl = '/';
+else
+    sl = '\';
+end
+
+% Setup paths for files we need
+guiPath = which(mfilename);
+[guiPath, ~] = fileparts(guiPath);
+id = strfind(guiPath,sl);
+guiPath = guiPath(1:id(end-1)); % this assumes script is nested within two subfolders of main brainSurfer directory
+brainPaths = [guiPath 'brains']; % contains lh and rh fsaveraged brains
+
 if nargin < 2
     n = 8;
 end
@@ -36,14 +50,14 @@ end
 if nargin < 7
     try
         if strcmp(defaultBrain,'left')
-            brainFile = '/Users/ateghipc/MATLAB-Drive/brainSurfer/brains/lh.inflated';
+            brainFile = [brainPaths sl 'lh.inflated'];
             [vert1,face1] = read_surf(brainFile);
-            brainCurvFile = '/Users/ateghipc/MATLAB-Drive/brainSurfer/brains/lh.curv';
+            brainCurvFile = [brainPaths '/lh.curv'];
             curv1 = read_curv(brainCurvFile);
         else
-            brainFile = '/Users/ateghipc/MATLAB-Drive/brainSurfer/brains/rh.inflated';
+            brainFile = [brainPaths sl 'rh.inflated'];
             [vert1,face1] = read_surf(brainFile);
-            brainCurvFile = '/Users/ateghipc/MATLAB-Drive/brainSurfer/brains/rh.curv';
+            brainCurvFile = [brainPaths sl 'rh.curv'];
             curv1 = read_curv(brainCurvFile);
         end
     catch
