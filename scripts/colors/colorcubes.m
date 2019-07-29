@@ -34,8 +34,9 @@ function [rgb_out, data_out, data_rgb_out] = colorcubes(n, w, inData, plotSwitch
         limits(1,3) = min(inData(:,3));
         limits(2,3) = max(inData(:,3));
     end    
-    
-    initgraphics(n)
+    if strcmp(plotSwitch,'true')
+        initgraphics(n)
+    end
     [x,y,z] = cube(w);
     m = n-1;
     
