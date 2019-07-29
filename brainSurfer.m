@@ -131,6 +131,9 @@ function varargout = brainSurfer_OutputFcn(hObject, eventdata, handles)
 function surfaceSelection_Callback(hObject, eventdata, handles)
 % get handles
 handles = guidata(hObject);
+if isfield(handles,'brainFig')
+    handles.lastAct = 'new';
+end
 
 % if you selected both hemispheres of included fsaverage brain
 if hObject.Value == 2
@@ -416,20 +419,42 @@ if isfield(handles,'brainMap')
     
     % now turn off any overlays that might exist and delete them
     % multioverlays are in a cell
-    if isfield(handles.brainMap,'overlay') %if there is an overlay field (i.e., not your first click)
-        if iscell(handles.brainMap.overlay) % check if overlay is a cell (i.e., multioverlay)
-            for celli = 1:length(handles.brainMap.overlay)
-                try
-                    handles.brainMap.overlay{celli}.FaceAlpha = 0;
-                catch
-                    delete(handles.brainMap.overlay{celli});
+    if isfield(handles,'lastAct')
+        if ~strcmp(handles.lastAct,'new')
+            if isfield(handles.brainMap,'overlay') %if there is an overlay field (i.e., not your first click)
+                if iscell(handles.brainMap.overlay) % check if overlay is a cell (i.e., multioverlay)
+                    for celli = 1:length(handles.brainMap.overlay)
+                        try
+                            handles.brainMap.overlay{celli}.FaceAlpha = 0;
+                        catch
+                            delete(handles.brainMap.overlay{celli});
+                        end
+                    end
+                    handles.brainMap = rmfield(handles.brainMap,'overlay');
+                elseif isvalid(handles.brainMap.overlay)
+                    handles.overlayCopy = handles.brainMap.overlay;
+                    handles.brainMap.overlay.FaceAlpha = 0;
+                    handles.brainMap = rmfield(handles.brainMap,'overlay');
                 end
             end
-            handles.brainMap = rmfield(handles.brainMap,'overlay');
-        elseif isvalid(handles.brainMap.overlay)
-            handles.overlayCopy = handles.brainMap.overlay;
-            handles.brainMap.overlay.FaceAlpha = 0;
-            handles.brainMap = rmfield(handles.brainMap,'overlay');
+            handles.lastAct = 'not new';
+        end
+    else
+        if isfield(handles.brainMap,'overlay') %if there is an overlay field (i.e., not your first click)
+            if iscell(handles.brainMap.overlay) % check if overlay is a cell (i.e., multioverlay)
+                for celli = 1:length(handles.brainMap.overlay)
+                    try
+                        handles.brainMap.overlay{celli}.FaceAlpha = 0;
+                    catch
+                        delete(handles.brainMap.overlay{celli});
+                    end
+                end
+                handles.brainMap = rmfield(handles.brainMap,'overlay');
+            elseif isvalid(handles.brainMap.overlay)
+                handles.overlayCopy = handles.brainMap.overlay;
+                handles.brainMap.overlay.FaceAlpha = 0;
+                handles.brainMap = rmfield(handles.brainMap,'overlay');
+            end
         end
     end
     
@@ -903,7 +928,7 @@ if length(handles.overlaySelection.Value) == 1 % deleting only works if you don'
         handles.pSlider.Value = 1;
         handles.pText.String = '1';
         handles.clusterThreshSlider.Value = 0;
-        handles.clusterThreshText = '0';
+        handles.clusterThreshText.String = '0';
         
         handles.colormap.Value = 1;
         handles.invertColorButton.Value = 0;
