@@ -425,7 +425,7 @@ if isfield(handles,'brainMap')
                 if iscell(handles.brainMap.overlay) % check if overlay is a cell (i.e., multioverlay)
                     for celli = 1:length(handles.brainMap.overlay)
                         try
-                            handles.brainMap.overlay{celli}.FaceAlpha = 0;
+                             handles.brainMap.overlay{celli}.FaceAlpha = 0;
                         catch
                             delete(handles.brainMap.overlay{celli});
                         end
