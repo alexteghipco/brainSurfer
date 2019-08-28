@@ -6,8 +6,8 @@ brainSurfer is a MATLAB toolbox for visualizing brain data in surface space that
 Please email me if you run into any bugs or problems @ alex.teghipco@uci.edu!
 
 # Getting started
-1) Download and place all the toolbox into any directory. 
-2) Open matlab and navigate to this directory (or add it to your path).
+1) Download and place the toolbox into any directory. 
+2) Open matlab and navigate to this directory or add it to your path.
 2) Type 'brainSurfer' into the matlab command window to display the main GUI. Most functionality is contained within the plotUnderlay.m and plotOverlay.m functions in the ./scripts directory so you can use these to write your own scripts without relying on the GUI. 
 
 # FAQ
