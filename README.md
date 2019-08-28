@@ -1,13 +1,13 @@
 # brainSurfer
-brainSurfer is a useful MATLAB toolbox for visualizing brain data in surface space that places emphasis on customization. It features the ability to create and visualize 3D or 2D statistical brain maps, to modulate the transparency of statistical maps using other statistical maps, to overlay multiple surface maps on top of each other, and a host of other tools that include a powerful cluster editor and colormap editor. 
+brainSurfer is a MATLAB toolbox for visualizing brain data in surface space that places emphasis on customization. It features the ability to create and visualize 3D or 2D statistical brain maps, to modulate the transparency of statistical maps using other statistical maps, to overlay multiple surface maps on top of each other, and a host of other tools that include cluster and colormap editors. Currently, brainSurfer assumes the files you would like to visualize on a surface are encoded in NIFTI format. brainSurfer can also help you to transform volume space files into surface space. It achieves this using the registration fusion approach documentated in: Wu J, Ngo GH, Greve DN, Li J, He T, Fischl B, Eickhoff SB, Yeo BTT. Accurate nonlinear mapping between MNI volumetric and FreeSurfer surface coordinate systems, Human Brain Mapping 39:3793–3808, 2018. Code for this procedure is redistributed with brainSurfer, and the original code can be found here: https://github.com/ThomasYeoLab/CBIG. 
 
-*NOTE* This software is provided as is with no guarantee of any kind. I built it to display some brains for me, and while I've tried to make it as user-friendly as possible, it's still in the process of  being updated, and may not work on your machine/setup. While the code has been updated to (in theory) suppport Windows OS, it has only been debugged on macOS Mojave and in MATLAB (2016 - 2018).
+*NOTE* This software is provided as is with no guarantee of any kind. We built it to display some brains for us, and while we've tried to make it as user-friendly as possible, it's still in the early stages of being updated, and may not work with your particular machine/setup. The code has been updated to (theoretically) support Windows OS, but so far it has only been tested on macOS mojave using MATLAB 2016-2018. Please see the bugs section for a full list of problems we are currently working on fixing. 
 
-Report all bugs to Alex Teghipco @ alex.teghipco@uci.edu!
+Please email me if you run into any bugs or problems @ alex.teghipco@uci.edu!
 
 # Getting started
-1) Plop all of these files in any directory you want. 
-2) Open matlab and navigate to the brainSurfer folder.
+1) Download and place all the toolbox into any directory. 
+2) Open matlab and navigate to this directory (or add it to your path).
 2) Type 'brainSurfer' into the matlab command window to display the main GUI. Most functionality is contained within the plotUnderlay.m and plotOverlay.m functions in the ./scripts directory so you can use these to write your own scripts without relying on the GUI. 
 
 # FAQ
@@ -15,7 +15,7 @@ Report all bugs to Alex Teghipco @ alex.teghipco@uci.edu!
 
 If you need to convert between various spaces in volume space (i.e., importing requires data to be in MNI_152_2mm space), our niftiManip repository can help with that. Brainsurfer should be able to do this soon. 
 
-2) *Help! I don't have any data!*
+2) *I don't have any data to play around with*
 
 Check out some of the example maps provided in ./brainMapsforTesting
 
@@ -39,7 +39,7 @@ This guide will get you on your way to using brainSurfer.
 
 (forthcoming)
 
-*Followup note* Load your own surface file as long as it's a NIFTI file that follows the conventions used by Freesurfer/freeview. If you're a brainVoyager-er you may convert a volume space NIFTI file from TAL space to MNI space from inside brainSurfer (see the conversion menu tab). You can them import this file into surface space and manipulate it in brainSurfer. 
+*Followup note* Load your own surface file as long as it's a NIFTI file that follows the conventions used by Freesurfer/freeview. If you're a brainVoyager-er you may convert a volume space NIFTI file from TAL space to MNI space from inside brainSurfer (see the conversion menu tab). You can them "import" or transform this file into surface space and manipulate it in brainSurfer. 
 
 2) Edit your underlay
 - You can always come back to this later, but now that you have an underlay loaded, you can change some of its properties. One thing we can do, is edit the color of sulci and gyri. Navigate to the surface tab in the menu and select edit sulci/gyri colors. The first color you select wil correspond to the gyri and the second to the sulci (you can see this referenced in the title of the colorpicker GUI that pops up).
@@ -89,7 +89,7 @@ This guide will get you on your way to using brainSurfer.
 
 (forthcoming)
 
-*MOST IMPORTANT NOTE* if there is ever an error in patching (for instance, you click something too fast and the patch happens to get applied to the colorbar), then just close the window containing the messed up patch and reselect the same map. brainSurfer saves all of your settings in case this ever happens. 
+*MOST IMPORTANT NOTE* if there is ever an error in patching (for instance, you click something in the middle of the patching process, and the patch happens to get applied to the colorbar), then just close the window containing the messed up patch and reselect the same map. brainSurfer saves all of your settings in case this ever happens. 
 
 ![](https://media.giphy.com/media/U7zZN1VkKDArj3R7mH/giphy.gif)
 
@@ -192,19 +192,35 @@ This guide will get you on your way to using brainSurfer.
 
 12) Changing lighting of underlay and overlays
 
+(forthcoming)
+
 13) Deleting overlays from workspace
+
+(forthcoming)
 
 14) Applying overlay settings to other overlay
 
+(forthcoming)
+
 15) Saving overlay thresholds
+
+(forthcoming)
 
 16) Duplicating overlays
 
+(forthcoming)
+
 17) Information about overlay
+
+(forthcoming)
 
 18) Masking currently selected overlay
 
+(forthcoming)
+
 19) Convert volume space images
+
+(forthcoming)
 
 # What's new in this version?
 - A new toolbar for settings
@@ -234,15 +250,25 @@ There is also now functionality from within the brainSurfer GUI to generate 2D a
 # Warnings and bugs
 These are some current issues that will be fixed in the future
 
+- GUI size is wonky on lower resolution displays
+
+All GUIs are resizeable but some are organized in such a way that on lower-resolution displays some buttons get scrunched up together creating a mess. We are working on this.
+
+- 2D colormaps lack axes
+
+It's hard to tell how the colormap maps onto the brain. In reality, the colormap needs to be translated across the x-axis (and labeled).
+
 - modulate transparency has some bugs 
 
-Should work fine unless you have a map with both positive and negative values, in which case the transparency modulated 2D colormap that is generated is inaccurate. The real data plotted over that colormap should be translated across the x-axis.
+Under some circumstances, modulating transparencies fails and the colormap that is generated is inaccurate (mostly when the statistical map contains both positive and negative values). Opacity thresholds are not always applied.
 
-- some options in the menu are not ready yet
+- p-value thresholds have not yet been tested
+
+- some options available in the menu are not yet ready
 
 Cluster correction is not supported yet. Statistical analysis is not yet supported. volume viewer is not yet supported. 
 
-# Full list of features
+# Full list of features 
 *Support for native space*
 - Use either fsaverage brains that come with the toolbox, or render your own surface files. Then, overlay any data that fits the dimensions of your files (in .nii format). *see 'select a surface'*
 
@@ -255,7 +281,7 @@ Cluster correction is not supported yet. Statistical analysis is not yet support
 - left hemisphere and right hemisphere loading is not handled by seperate buttons, load them all in at once! *see load button*
 
 *Import unthresholded NIFTI maps from MNI volume space*
-- Moving from MNI space to fsaverage surface space is tricky. A new, more accurate method is implemented using scripts released by Ngo et al (see TL;DR for references). *see import button and select 'unthresholded map'*
+- Moving from MNI space to fsaverage surface space is tricky. A new, more accurate method is implemented using scripts released by Ngo et al (see dependencies and intro blurb for references). *see import button and select 'unthresholded map'*
 
 *Import ROIs from NIFTI MNI volume space*
 - Because we are downsampling when we move from MNI space to surface space, transforming ROIs is tricky. Whole integers become decimals that may represent overlaps between various different combinations of volume space clusters. Obviously, it would be best to create ROIs from stastical maps *in* surface space. However, that is not always possible. In that case, we can get at the problem by transforming every ROI seperately, and then comparing how well each of them maps onto a given vertex in surface space. Every whole integer in your input volume space file is treated as a seperate map, binarized (i.e., all values are changed to 1) and then transformed. The cluster with the highest value for a given vertex is then associated with that vertex. We can also get confidence maps for every vertex. If a single cluster wins at a particular vertex by a large amount, then we are much more confident that that vertex should be assigned to that particular cluster). *see import button and select 'ROIs map'*
@@ -287,21 +313,20 @@ Cluster correction is not supported yet. Statistical analysis is not yet support
 
 *Dynamic colorbar*
 - Colorbar updates with opacity of overlay (and with thresholds).
-- This is basic, why is it not already a standard feature?! 
 
 *Flexible colormap options* 
 - Gone are the days of being forced to choose between perceptually ambiguous 'jet' plus a handful of other lackluster  colormaps. Now you can use colormaps that people don't get upset about (https://jakevdp.github.io/blog/2014/10/16/how-bad-is-your-colormap/)! *see appearance subsection of adjustments menu and select from 'colormap' options*
-- Creating your own colormaps is a breeze and saving/preloading them is automated so the next time you start matlab and fire up brainSurfer, everything will be preloaded. *from the appearance settings select colormap 'custom 1' for single color colormap or 'custom 2+' for an interpolated colormap between 2 or more clusters; saving is performed automatically after selection*
+- Creating your own colormaps is a breeze and saving/preloading them is automated so the next time you start matlab and fire up brainSurfer, everything will be preloaded. *use the edit colorbar button*
 - Control the number of bins in your colormap! Ever thought of providing less information about your overlay? Now you can decrease the resolution of the colorbar/colormap by removing the number of data bins that constitute it. *type an integer into the text box 'data bins' in the appearance settings*
 
 *Quick colormap inverter*
 - Why go through the hassle of creating a whole new colormap from scratch?  *tick 'invert' in appearance settings*
 
 *Native binarization of overlays*
-- Confused as to why this simple operation is not standard in visualization software! Assign all vertices meeting threshold in the current overlay a whole integer value of 1. *tick binarize*
+Assign all vertices meeting threshold in the current overlay a whole integer value of 1. *tick binarize*
 
 *Native masking of overlays*
-- Another simple operation that should be standard in visualization software! Use one loaded overlay to mask another loaded overlay. *click the 'mask' button*
+Use one loaded overlay to mask another loaded overlay. *click the 'mask' button*
 
 *Transform overlays into contour maps*
 - Draws contours around clusters in your overlay. Really useful if you want to clearly delineate different maps while unimpeding a view of the anatomy underlying those maps! *tick 'outline' in appearance settings*
@@ -313,13 +338,14 @@ Cluster correction is not supported yet. Statistical analysis is not yet support
 - Are you tired of being unable to retrieve information about a cluster? Now you can do it with one click. This GUI will give you all the stats you could want about a cluster in your currently selected overlay. It will also let you edit the colors of clusters individually. Where else can you do that?! *click the 'edit clusters' button in appearance settings then click 'cluster size' or 'mean data' buttons; table on the far right contains spatial information about clusters that can be copied into excel; overlay can be saved as presented (either including or excluding any color changes)*
 
 *Remove individual clusters*
-- You made a functional ROI at the most liberal threshold you could stomach, but you know how there's that pesky 3-voxel cluster in the frontal lobe that keeps showing up? Use the cluster GUI to delete specific clusters from your overlays! *'delete' deletes the currently selected cluster shown in teal, 'delete all except' deletes all clusters except the currently selected one; 'change color' allows you to change the color of the selected cluster.*
+- Use the cluster GUI to delete specific clusters from your overlays! *'delete' deletes the currently selected cluster shown in teal, 'delete all except' deletes all clusters except the currently selected one; 'change color' allows you to change the color of the selected cluster.*
 
-*Robust smoothing options*
+*Smoothing options*
 - You can smooth your overlay using a number of different options. You can try smoothing exclusively the borders of clusters in your overlay, although this often produces little perceptual difference. Alternatively, you can smooth all thresholded values in your overlay. In either case, smoothing can be applied either to those values only, and therefore not extent the borders of the overlay, or it can be applied to the neighborhood of every vertex, which would include vertices outside the current cluster boundaries, producing a 'bleeding' of the overlay into new vertices. *see smoothing options. Tick either values OR neighborhood; tick either border OR thresholded; choose the area that will be smoothed in terms of the number of surrounding vertices per vertex, and the steps (# of times averaging will be repeated)*
 
 *Flexible screenshot options*
-- Tired of only being able to take screenshots of predetermined rotations of your brain? Me too! Take a screenshot at the current location of the brain, or take a number of screenshots at predetermined locations that will be put into one tidy folder. No more screenshot mess. *click screenshot to take a single screenshot at current camera position; click screenshots to take several screenshots at predetermined camera positions and put them in a directory within the current working directory*
+- Tired of only being able to take screenshots of predetermined rotations of your brain? Me too! Take a screenshot at the current location of the brain, or take a number of screenshots at predetermined locations that will be put into one tidy folder. No more screenshot mess. *click screenshot to take a single screenshot at current camera position; click screenshots to take several screenshots at predetermined camera positions and put them in a directory within the current working directory* 
+- You can also take screenshots of all overlays that you've loaded (automatically, one by one) *see batch screenshots in the settings menu options*
 
 *Modulate transparency of a subset of data in the overlay*
 - Tired of not being able to show "less significant" results? What's a p-value, anyway?! Use a third threshold to generate an opacity gradient between values surviving this threshold but not passing the other thresholds you've already set. Then, apply a linear opacity gradient to this range of data. Note, technically you can choose a more stringent threshold here, in which case an opacity gradient will be applied to values between this threshold and the limits of the map. 
@@ -329,17 +355,17 @@ Cluster correction is not supported yet. Statistical analysis is not yet support
 - You can also change the opacity of vertices in your currently selected overlay, based on data from a different overlay. For example, lets say we've used our ROI transformation method from MNI volume space to surface space. This also generated some confidence maps. We can i) load in our surface space ROI maps, ii) select them as our current overlay, iii) load our confidence maps in the transparency modulation menu, and iv) use the values in the confidence map to change the opacity of our the ROIs in our current overlay so that vertices we are really confident belong to a specific ROI are more opaque. *click the 'load alternate data' button to do this*
 
 *'Clusterize' an overlay*
-- convert an overlay into a file of ROIs with the 'Make ROIs' button. Each cluster is assigned an integer value between 1 and the number of clusters in the overlay. *click the 'make ROIs' button to do this*
+- convert an overlay into ROIs. Each cluster is assigned an integer value between 1 and the number of clusters in the overlay. *use the roi menu button*
 
 *Control rendering properties*
 - Create and save your own 'scenes' that combine camera lights, reflectivity, and all sorts of other rendering properties. *click the 'lighting' button to do this*
 
 *Control sucli/gyri properties*
-- Change sulci-gyri boundaries *make a selection from the 'edit surface properties' menu*
-- Change the colors of sulci and gyri to anything you want *make a selection from the 'edit surface properties' menu*
+- Change sulci-gyri boundaries
+- Change the colors of sulci and gyri to anything you want *use the Surface menu options*
 
-*3D colormaps*
-- Only available via scripting. Allows for the construction of a colormap that is based on a 3d colorcube of any size. Maps your overlay data directly onto this colorcube. *use the script plotOverlay3D also see plotOverlay2D*
+*2D and 3D colormaps*
+- Allows for the construction of a colormap that is based on a 3d colorcube or 2D colormap of any size. Maps your overlay data directly onto colorcube/colormap. *use multidim menu option*
 
 # Dependencies and organization
 
