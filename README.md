@@ -27,9 +27,85 @@ You can also install this toolbox as an easier to use matlab app [here](https://
 
 Please email me if you run into any bugs or problems @ alex.teghipco@uci.edu!
 
-## Quick tutorial for actually getting started
+## How to use brainSurfer
+This guide will get you on your way to using brainSurfer. There are 2 main steps: loading an "underlay" or surface, and loading an "overlay" or statistical map that will cover the surface. An intermediary but optional step is loading in some sulcal/gyral information, which is treated as being part of the "underlay". 
+
+### Loading an underlay
+You can select a template surface to load in automatically from the file menu. 
+
+Note that this took some time. That's because when you load in a template, brainSurfer will automatically load in an atlas as well. The default atlas for both templates is the MMP 1.0. Patching maps usually doesn't take this long, but to make later operations on the atlas data more efficient, we are taking the time now to identify the boundaries of every ROI in the atlas. 
+
+### Inspecting underlay information
+The datacursor will now display information about any vertex you click on. 
+
+You can also look at the distribution of values in your underlay. What this really refers to is any sulci/gyri information that you have chosen to load. This histogram will be empty if you have only loaded a surface. 
+
+Navigate using the rotate tool. 
+
+You can also change the view, using either prespecified options or your own angle (access this menu either using the top menu, or right clicking one of the brains in the overlay selection section. Each button in the GUI has a tooltip that shows up if you hover over it. If you see a note about right clicking the button, it means there is a contextual menu that is triggered by a right click.
+
+### Manually loading a surface
+This is pretty simple. You can load in up to two files.
+
+It's important to make a note here about proper file names. BrainSurfer will determine whether your file is a left hemisphere or a right hemisphere brain by analyzing the filename. For surfaces, each file should have a clear reference to a hemisphere: 'left', 'lh', '.l.','_l.','_l_','right', 'rh','.r.','_r.','_r_'. The same generally goes for statistical brain maps/overlays, although if you are loading a CIFTI file, it is possible that it contains information on both hemispheres. To ensure brainSurfer knows this, avoid referencing a specific hemisphere (e.g., use 'LR' or something along those lines to mark these kinds of files). If you have a file with reference to both hemispheres, or no hemispheres (i.e., not cifti), brainSurfer will ask you which hemisphere to patch that file onto. 
+
+Note, hemispheres don't have to have the same shape. 
+
+### Manually adding sulci and gyri
 
 
+### Restarting ...
+And despite what I said about file names, you can load in two of the same hemispheres. However, the second file will be assigned to the wrong hemisphere in the end, and atlas/overlay information will be broken for that hemisphere. 
+
+If you make a mistake, just open a new figure. 
+
+### Replacing and adding
+You can also replace just one hemisphere within a figure, or add a hemisphere to a figure in case you loaded up only one
+
+### Changing the color of the surface
+
+### Loading or projecting an overlay 
+You can select as many files as you want here. You can even select files that do not match your current underlay. That's okay though, brainSurfer will automatically prevent you from patching those files. Even if you select multiple overlays, it will remove the ones that can't be patched and continue with your command. 
+
+Overlay projection occurs automatically when you load in a 3D file. Note, projection currently works onto the fsaverage template. That means that if you have the s900 template loaded, you will be unable to patch any projected/imported overlay. However, the projection/import process will be successful and you'll have a new file in the same folder, appended with "_"..
+
+### Thresholding the underlay/overlay
+
+### Changing the limits of the underlay/overlay
+The limits refer to your colormap, or colorbar, which will determine what color is assigned to each vertex of the brain. If you extend the limits, there will be bins in your colormap that don't map on any of the data in the map you are trying to patch.
+
+### Underlay/overlay histogram gets updated with the thresholds and limits
+Limits are the dark red lines and the bright red lines are the thresholds.
+
+### Changing the values of the underlay and overlay
+
+Positive values can be turned off from the patch. Same for negative values. You can also choose whether zeros in your map will be ignored (i.e., become transparent). It doesn't make too much sense to ignore them for sulcal/gyral information, but it does make sense for overlays, where zeros might be statistically insignificant.
+
+### Reloading the underlay and overlay
+
+
+### Binarizing the sulci and gyri 
+
+
+### Changing the opacity of the whole brain and just the sulci/gyri
+
+
+### Hiding hemispheres
+
+### Thresholding overlays by cluster size
+
+### Using a secondary p-value based threshold on overlays
+
+### Selecting an overlay
+
+### Rearranging overlays
+
+### Deleting
+Overlays
+
+Hemispheres
+
+## Atlas
 
 
 
