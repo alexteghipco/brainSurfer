@@ -21,9 +21,9 @@ if your atlas is a nifti file since only cifti and .annot files contain label in
 ## Getting started
 1) Download and place this toolbox into any directory. 
 2) Open matlab and navigate to the directory you've chosen, or add it to your path.
-3) Type 'brainSurfer' into the matlab command window to display the main GUI. 
+3) Type 'brainSurfer' into the matlab command window to display the main GUI. If any of the buttons in the overlay selection panel are missing icons, just open up brainSurfer.mlapp in matlab and click the green play button in the matlab app GUI. You will only have to do this once.
 
-You can also install this toolbox as an easier to use matlab app [here](https://www.mathworks.com/matlabcentral/fileexchange/91485-brainsurfer_1 "Mathworks File Exchange"). Be warned though, it's a little bit more buggy. 
+You can also install this toolbox as an easier to use matlab app [here](https://www.mathworks.com/matlabcentral/fileexchange/91485-brainsurfer_1 "Mathworks File Exchange"). Be warned though, it's a little bit more buggy at the moment.
 
 Please email me if you run into any bugs or problems @ alex.teghipco@uci.edu!
 
