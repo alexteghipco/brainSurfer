@@ -32,37 +32,45 @@ This guide will get you on your way to using brainSurfer. There are 2 main steps
 
 ### Loading an underlay
 You can select a template surface to load in automatically from the file menu. 
+![](https://thumbs.gfycat.com/SpanishJadedHammerheadbird-size_restricted.gif)
 
 Note that this took some time. That's because when you load in a template, brainSurfer will automatically load in an atlas as well. The default atlas for both templates is the MMP 1.0. Patching maps usually doesn't take this long, but to make later operations on the atlas data more efficient, we are taking the time now to identify the boundaries of every ROI in the atlas. 
 
 ### Inspecting underlay information
-The datacursor will now display information about any vertex you click on. 
+The datacursor will now display information about any vertex you click on. Note how atlas information is being displayed both in the datacursor box and in the atlas section of the GUI.
+![]()
 
-You can also look at the distribution of values in your underlay. What this really refers to is any sulci/gyri information that you have chosen to load. This histogram will be empty if you have only loaded a surface. 
+You can also look at the distribution of values in your underlay. What this really refers to is any sulci/gyri information that you have chosen to load. This histogram will be empty if you have only loaded a surface. Note the tabs on the left hand side for underlay and overlay. Each appearance settings panel is broken up into settings for the underlay, and settings for the overlay. 
+![]()
 
 Navigate using the rotate tool. 
+![]()
 
 You can also change the view, using either prespecified options or your own angle (access this menu either using the top menu, or right clicking one of the brains in the overlay selection section. Each button in the GUI has a tooltip that shows up if you hover over it. If you see a note about right clicking the button, it means there is a contextual menu that is triggered by a right click.
+![]()
 
 ### Manually loading a surface
-This is pretty simple. You can load in up to two files.
+This is pretty simple. You can load in up to two files. If you ever want to restart (e.g., you've made a mistake), you can just load in a new surface and everything will get patched to the new figure.
+![]()
 
 It's important to make a note here about proper file names. BrainSurfer will determine whether your file is a left hemisphere or a right hemisphere brain by analyzing the filename. For surfaces, each file should have a clear reference to a hemisphere: 'left', 'lh', '.l.','_l.','_l_','right', 'rh','.r.','_r.','_r_'. The same generally goes for statistical brain maps/overlays, although if you are loading a CIFTI file, it is possible that it contains information on both hemispheres. To ensure brainSurfer knows this, avoid referencing a specific hemisphere (e.g., use 'LR' or something along those lines to mark these kinds of files). If you have a file with reference to both hemispheres, or no hemispheres (i.e., not cifti), brainSurfer will ask you which hemisphere to patch that file onto. 
 
-Note, hemispheres don't have to have the same shape. 
+Note, hemispheres don't have to have the same shape.
+![]()
+
+You can also replace just one hemisphere within a figure, or add a hemisphere to a figure (in case you loaded up only one) by following the file --> load surface --> existing figure menu.
 
 ### Manually adding sulci and gyri
+You can now add sulci and gyri to one or more hemispheres that you've loaded. If you've loaded in two hemispheres, you can still add sulcal/gyral information for just one hemisphere now. 
+![]()
 
-
-### Restarting ...
-And despite what I said about file names, you can load in two of the same hemispheres. However, the second file will be assigned to the wrong hemisphere in the end, and atlas/overlay information will be broken for that hemisphere. 
-
-If you make a mistake, just open a new figure. 
-
-### Replacing and adding
-You can also replace just one hemisphere within a figure, or add a hemisphere to a figure in case you loaded up only one
+Here, I am showing addition of this kind of information to the fsaverage surface to illustrate that it will look different than if you automatically loaded in this template. That's because higher values in the curv files mean sulci, and typically we will assume that higher values in your file will map onto gyri. There is an easy way to fix this color scheme though. Just go into the Colormap settings tab and toggle invert colors to on. This will flip the colormap associated with the patch that contains sulcal/gyral information.
+![]()
 
 ### Changing the color of the surface
+
+You can change the color of the surface from grey to anything else using the topmost Settings menu --> Colors --> Change default surface color
+![]()
 
 ### Loading or projecting an overlay 
 You can select as many files as you want here. You can even select files that do not match your current underlay. That's okay though, brainSurfer will automatically prevent you from patching those files. Even if you select multiple overlays, it will remove the ones that can't be patched and continue with your command. 
