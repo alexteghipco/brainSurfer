@@ -1,4 +1,8 @@
-# brainSurfer-v2
+# BrainSurfer-v2
+
+
+<img align="left" width="250" height="166" src="https://i.imgur.com/4HJODwo.png">
+
 BrainSurfer is a MATLAB toolbox for visualizing brain surfaces and showing statistical maps on top of them. It exists only because when left to my own devices I will invariably fall back on MATLAB to analyze brain data. I got tired of having to switch from MATLAB for data analysis to other software for visualization, so I decided to build some software to visualize brains for me directly in MATLAB. I know that there are other packages out there that will visualize brains in MATLAB as well but they tend to emphasize analysis and are sometimes not too intuitive to use for visualizing surface space data (e.g., BrainNet, SPM). The sole purpose of brainSurfer is to facilitate the process of quickly making some pretty figures of data you have already analyzed. If you work with volume space data, that will be no problem. By default, brainSurfer will give you some strategies for projecting any volume space data onto an fsaverage brain using the fancy nonlinear registration transformations recently published by folks at the Thomas Yeo Lab (see dependencies below for more information). This toolbox was built and more thoroughly tested on mac OS (mostly Big Sur), but will work in Windows also. 
 
 ### So what's changed from the older version of brainSurfer? 
