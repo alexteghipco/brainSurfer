@@ -55,18 +55,22 @@ You can also change the view, using either prespecified viewing angles or your o
 
 ### Manually loading a surface
 This is pretty simple. You can load in up to two files. BrainSurfer will assume one file is for the left hemisphere and one file is for the right hemisphere. You can technically load two left or two right hemispheres, but it will break the way overlays work (i.e., one of the brains will be assumed to be right hemisphre and you might be patching left hemisphere data onto a right hemisphere, etc).
+
 ![](https://thumbs.gfycat.com/DearestWelcomeFlies-size_restricted.gif)
 
 It's important to make a note here about proper file names. BrainSurfer will determine whether your file is a left hemisphere or a right hemisphere brain by analyzing the filename. For surfaces, each file should have a clear reference to a hemisphere: 'left', 'lh', '.l.','_l.','_l_','right', 'rh','.r.','_r.','_r_' are all acceptable. The same generally goes for statistical brain maps/overlays, although if you are loading a CIFTI file, it is possible that it contains information on both hemispheres. To ensure brainSurfer knows this, avoid referencing a specific hemisphere in these cases (e.g., use 'LR' or something along those lines to mark these kinds of files). If you have a file with reference to both hemispheres, or no hemispheres (i.e., not a cifti), brainSurfer should ask you which hemisphere to patch that file onto. 
 
 Note, hemispheres don't have to have the same shape and you can load in overlays with different shapes (i.e., number of vertices). 
+
 ![](https://thumbs.gfycat.com/UnevenShadowyCowbird-size_restricted.gif)
 
 ### Manually adding sulci and gyri
 You can now add sulci and gyri to one or more hemispheres that you've loaded. If you've loaded in two hemispheres, you can still add sulcal/gyral information for just one hemisphere if you want. 
+
 ![](https://thumbs.gfycat.com/ScientificBraveHectorsdolphin-size_restricted.gif)
 
 Here, I am showing addition of this kind of information to the fsaverage surface to illustrate that it will look different than if you automatically loaded in this template. That's because higher values in the curv files mean sulci (they're curves!), and typically we will assume that higher values in your sulcal/gyral file will map onto gyri. There is an easy way to fix this color scheme though. Just go into the Colormap settings tab and toggle invert colors to on. This will flip the colormap associated with the patch that contains sulcal/gyral information.
+
 ![](https://thumbs.gfycat.com/CriminalJoyousGrub-size_restricted.gif)
 
 ## This is as far as I've gotten in the tutorial today--stay tuned for the full thing!
