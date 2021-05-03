@@ -51,7 +51,10 @@ Navigate the surface patch using the rotate tool.
 ![](https://thumbs.gfycat.com/ThoughtfulSoftHyena-size_restricted.gif)
 
 You can also change the view, using either prespecified viewing angles or your own angle (access this menu either using the top view menu, or right clicking one of the brain buttons in the overlay selection section. Each button in the GUI has a tooltip that shows up if you hover over it. If you see a note about right clicking the button, it means there is a contextual menu that is triggered by a right click. On the topic of viewing angles, brainSurfer for the most part assumes your brains are not flat, and will automatically adjust the viewing angle based on the hemisphere you are editing the patch for. This is convenient unless you have a flat map loaded. If you're working with flat maps, you will notice after clicking some buttons the flat maps will sometimes "dissapear". To get them "back", just manually select the inferior view. 
+
 ![](https://thumbs.gfycat.com/ObedientRectangularKawala-size_restricted.gif)
+
+Related to views, the goal is to eventually let you change lighting angles using a GUI (like old brainSurfer). The current lighting you see in the patch is based on some default settings I like. If you don't like them, there is still a trivial way to change them. Just find the ./scripts/defaultLights.txt file and change that to the angles at which you'd like to add lights. You can have as many as you want. Note that brainSurfer reads this in when you first start it up, so if you change this, you will need to restart brainSurfer. 
 
 ### Manually loading a surface
 This is pretty simple. You can load in up to two files. BrainSurfer will assume one file is for the left hemisphere and one file is for the right hemisphere. You can technically load two left or two right hemispheres, but it will break the way overlays work (i.e., one of the brains will be assumed to be right hemisphre and you might be patching left hemisphere data onto a right hemisphere, etc).
