@@ -27,13 +27,13 @@ You can also install this toolbox as an easier to use matlab app [here](https://
 
 Please email me if you run into any bugs or problems @ alex.teghipco@uci.edu!
 
-# Quick tutorial for actually getting started
+## Quick tutorial for actually getting started
 
 
 
 
 
-# Dependencies, organization, standalone scripts
+## Dependencies, organization, standalone scripts
 
 BrainSurfer has a number of dependencies that are packaged with it thanks to the generosity of the original authors (more on that shortly). To the extent of my knowledge, all of this software is free to modify and distribute, and the original licenses are provided along with the code. 
 
