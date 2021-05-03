@@ -32,18 +32,22 @@ This guide will get you on your way to using brainSurfer. There are 2 main steps
 
 ### Loading an underlay
 You can select a template surface to load in automatically from the file menu. This will generate a new figure that contains the patches you've asked for. The file menu allows you to patch a surface to an existing figure, or to make a new figure. If you make a new figure, all actions you perform will only be executed on the new figure. This is handy for when you've messed something up and just want to restart without having to reload all of your overlays and reprogram your overlay settings. Adding a surface will either add or replace a surface in an existing figure.
+
 ![](https://thumbs.gfycat.com/SpanishJadedHammerheadbird-size_restricted.gif)
 
 Note that loading up this template took some time. That's because when you load in a template, brainSurfer will automatically load in an atlas as well. The default atlas for both templates is the MMP 1.0. Patching maps usually doesn't take this long, but to make later operations on the atlas highly efficient, we are taking the time now to identify the boundaries of every ROI in the atlas. The script that does this on its own is getClusterBoundary.m.
 
 ### Inspecting underlay information
 The datacursor will now display information about any vertex you click on. This will include the coordinate and the vertex you've clicked at the bare mininmum. I find this super useful since I can write down a vertex and then inspect it in a map I load into the matlab workspace, etc. Note how atlas information is being displayed both in the datacursor box and in the atlas section of the GUI. There, you will also find the atlas name.
+
 ![](https://thumbs.gfycat.com/FirstHighHornet-size_restricted.gif)
 
 You can also look at the distribution of values in your underlay. What this really refers to is any sulci/gyri information that you have chosen to load. This histogram will be empty if you have only loaded a surface. Note the tabs on the left hand side for underlay and overlay. Each appearance settings panel is broken up into settings for the underlay, and settings for the overlay. In lots of places you will see the same settings/buttons/options so make sure you are clicked on the right tab before pressing anything! Note that for now, if you open a new surface (without sulci/gyri), this histogram will display the old sulcal/gyral file. Only by loading in a new file can you update it. 
+
 ![](https://thumbs.gfycat.com/TimelyPhysicalArabianwildcat-size_restricted.gif)
 
 Navigate the surface patch using the rotate tool. 
+
 ![](https://thumbs.gfycat.com/ThoughtfulSoftHyena-size_restricted.gif)
 
 You can also change the view, using either prespecified viewing angles or your own angle (access this menu either using the top view menu, or right clicking one of the brain buttons in the overlay selection section. Each button in the GUI has a tooltip that shows up if you hover over it. If you see a note about right clicking the button, it means there is a contextual menu that is triggered by a right click. On the topic of viewing angles, brainSurfer for the most part assumes your brains are not flat, and will automatically adjust the viewing angle based on the hemisphere you are editing the patch for. This is convenient unless you have a flat map loaded. If you're working with flat maps, you will notice after clicking some buttons the flat maps will sometimes "dissapear". To get them "back", just manually select the inferior view. 
