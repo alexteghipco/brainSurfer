@@ -227,12 +227,14 @@ if ischar(options.colormap)
             cMap = distinguishable_colors(options.colorBins);
     end
 else
-    tmpMap = options.colormap';
+    %tmpMap = options.colormap';
+    tmpMap = options.colormap;
     if size(tmpMap,1) < options.colorBins % only need to interpolate colors if there are more bins of data than there are colors
-        cMap = customColorMapInterp(tmpMap,options.colorBins);
+        cMap = customColorMapInterp(tmpMap',options.colorBins);
     else
         cMap = tmpMap;
     end
+        
     % if # bins requested does not match provided colormap, downsample
     % or upsample colormap image
     if size(cMap,1) ~= options.colorBins
@@ -276,7 +278,6 @@ switch options.colorSpacing
         % half.
         ticks = linspace(min(options.limits),max(options.limits),11);
         tickLabels = ticks;
-        %tickLabels = [min(options.limits):(max(options.limits)-min(options.limits))/11:max(options.limits)]; % tick labels
         
     case 'center on zero'
         cbMapPos = cMap((1:floor(length(cMap)/2)),:);
@@ -299,19 +300,6 @@ switch options.colorSpacing
         posTest = find(options.limits > 0);
         negTest = find(options.limits < 0);
         
-        %         if (isempty(posTest) && ~isempty(negTest)) || (~isempty(posTest) && isempty(negTest))
-        %             if options.thresh(1) == 0 && options.thresh(2) == 0
-        %                 options.thresh = [mean(options.limits) mean(options.limits)];
-        %             end
-        %             if ~isempty(posTest) && isempty(negTest)
-        %                 cbData = linspace(max(options.thresh),max(options.limits),options.colorBins);
-        %                 ticks = linspace(max(options.thresh),max(options.limits),10);
-        %             end
-        %             if isempty(posTest) && ~isempty(negTest)
-        %                 cbData = linspace(min(options.limits),min(options.thresh),options.colorBins);
-        %                 ticks = linspace(min(options.limits),min(options.thresh),10);
-        %             end
-        %         else
         cbMapPos = cMap((1:floor(length(cMap)/2)),:);
         cbMapNeg = cMap(floor((length(cMap))/2):end,:);
         cMap = vertcat(cbMapPos,cbMapNeg);
@@ -333,7 +321,6 @@ switch options.colorSpacing
             tickLabels(6) = [];
         end
 end
-
 
  dec = floor(log10(max(abs(options.limits)))); % decade of largest abs value
  if dec<1

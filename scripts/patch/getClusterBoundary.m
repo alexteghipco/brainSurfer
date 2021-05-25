@@ -1,3 +1,4 @@
+
 function [clusters] = getClusterBoundary(clusters, allFaces)
 % This script will determine all vertices that are at the bounadry of clusters provided in 'clusters'. 'clusters' is a cell array with vertices. Additionally a matrix of all faces in your underlay must be passed in allFaces.
 % Alex Teghipco // alex.teghipco@uci.edu // 11/28/18

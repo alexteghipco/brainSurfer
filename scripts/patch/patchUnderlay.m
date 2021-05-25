@@ -157,13 +157,11 @@ else
 end
 
 if isfield(brain, 'left')
-    %cdata1 = ones([size(brain.left.vert,1),1])./2;
     cdata1(:,1) = repmat(surfC(1),size(brain.left.vert,1),1);
     cdata1(:,2) = repmat(surfC(2),size(brain.left.vert,1),1);
     cdata1(:,3) = repmat(surfC(3),size(brain.left.vert,1),1);
 end
 if isfield(brain, 'right')
-    %cdata2 = ones([size(brain.right.vert,1),1])./2;
     cdata2(:,1) = repmat(surfC(1),size(brain.right.vert,1),1);
     cdata2(:,2) = repmat(surfC(2),size(brain.right.vert,1),1);
     cdata2(:,3) = repmat(surfC(3),size(brain.right.vert,1),1);
@@ -183,6 +181,8 @@ else
     rh_offset = 0;
 end
 
+
+            
 switch add
     case 'off'
         brainFig = figure;
@@ -221,7 +221,6 @@ switch add
             
             tmp2 = patch('Faces',brain.right.face,'Vertices',brain.right.vert,'FaceVertexCData',[cdata2],'facealpha',1,'CDataMapping','direct','facecolor','interp','edgecolor','none','FaceLighting','gouraud');
             underlay.right = tmp2;
-            
         end
         
         % some default settings
@@ -229,8 +228,13 @@ switch add
         material dull
     case 'on'
         addedHemi = [];
-        figure(brainFig)
         newFig = 'false';
+        
+        figure(brainFig)
+        tm = findall(brainFig.Children,'Type','Axes');
+        if length(tm) > 1
+            tm = tm(end);
+        end
         
         if strcmp(hemi, 'left')
             addedHemi = [addedHemi 'left'];
@@ -239,7 +243,8 @@ switch add
             end
             underlay.right.Vertices(:,1) = underlay.right.Vertices(:,1)+rh_offset;
             hold on
-            tmp = patch('Faces',brain.left.face,'Vertices',brain.left.vert,'FaceVertexCData',[cdata1],'facealpha',1,'CDataMapping','direct','facecolor','interp','edgecolor','none','FaceLighting','gouraud');
+            
+            tmp = patch(tm,'Faces',brain.left.face,'Vertices',brain.left.vert,'FaceVertexCData',[cdata1],'facealpha',1,'CDataMapping','direct','facecolor','interp','edgecolor','none','FaceLighting','gouraud');
             hold off
             underlay.left = tmp;
         elseif strcmp(hemi,'right')
@@ -249,7 +254,8 @@ switch add
             end
             brain.right.vert(:,1) = brain.right.vert(:,1)+rh_offset;
             hold on
-            tmp2 = patch('Faces',brain.right.face,'Vertices',brain.right.vert,'FaceVertexCData',[cdata2],'facealpha',1,'CDataMapping','direct','facecolor','interp','edgecolor','none','FaceLighting','gouraud');
+            
+            tmp2 = patch(tm,'Faces',brain.right.face,'Vertices',brain.right.vert,'FaceVertexCData',[cdata2],'facealpha',1,'CDataMapping','direct','facecolor','interp','edgecolor','none','FaceLighting','gouraud');
             hold off
             underlay.right = tmp2;
         end

@@ -243,14 +243,14 @@ end
 % smooth data
 if ~isempty(options.lh)
     if sum(underlays.left.Vertices(:,3)) ~= 0
-        los = smoothVertData(lo, underlays.left.Vertices, underlays.left.Faces, 'smoothSteps', options.smoothSteps, 'smoothArea', options.smoothArea, 'smoothThreshold', options.smoothThreshold,'toAssign',options.smoothToAssign);
+        los = smoothVertData(lo, underlays.left.Vertices, underlays.left.Faces, 'smoothSteps', options.smoothSteps, 'smoothArea', options.smoothArea,'toAssign',options.smoothToAssign);
     else
         los = lo;
     end
 end
 if ~isempty(options.rh)
     if sum(underlays.right.Vertices(:,3)) ~= 0
-        ros = smoothVertData(ro, underlays.right.Vertices, underlays.right.Faces, 'smoothSteps', options.smoothSteps, 'smoothArea', options.smoothArea, 'smoothThreshold', options.smoothThreshold,'toAssign',options.smoothToAssign);
+        ros = smoothVertData(ro, underlays.right.Vertices, underlays.right.Faces, 'smoothSteps', options.smoothSteps, 'smoothArea', options.smoothArea,'toAssign',options.smoothToAssign);
     else
         ros = ro;
     end

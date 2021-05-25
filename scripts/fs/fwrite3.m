@@ -1,16 +1,10 @@
-function [retval] = fd3(fid)
-% [retval] = fd3(fid)
-% read a 3 byte integer out of a file
+function fwrite3(fid, val)
 
 
 %
-% fread3.m
+% fwrite3.m
 %
 % Original Author: Bruce Fischl
-% CVS Revision Info:
-%    $Author: nicks $
-%    $Date: 2011/03/02 00:04:12 $
-%    $Revision: 1.3 $
 %
 % Copyright © 2011 The General Hospital Corporation (Boston, MA) "MGH"
 %
@@ -23,8 +17,13 @@ function [retval] = fd3(fid)
 % Reporting: freesurfer@nmr.mgh.harvard.edu
 %
 
-b1 = fread(fid, 1, 'uchar') ;
-b2 = fread(fid, 1, 'uchar') ;
-b3 = fread(fid, 1, 'uchar') ;
-retval = bitshift(b1, 16) + bitshift(b2,8) + b3 ;
+% write a 3 byte integer out of a file
+%fwrite(fid, val, '3*uchar') ;
+b1 = bitand(bitshift(val, -16), 255) ;
+b2 = bitand(bitshift(val, -8), 255) ;
+b3 = bitand(val, 255) ; 
+fwrite(fid, b1, 'uchar') ;
+fwrite(fid, b2, 'uchar') ;
+fwrite(fid, b3, 'uchar') ;
+
 

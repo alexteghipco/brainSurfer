@@ -41,7 +41,8 @@ function [sData] = smoothVertData(data, verts, faces, varargin)
 % [sData] = smoothPatch(data, verts, faces, 'smoothSteps', 1, 'smoothArea', 1, 'smoothThreshold', 'above', 'smoothType', 'neighbors','clusterData',clustData)
 
 % Defaults
-options = struct('smoothSteps', 1, 'smoothArea', 5, 'smoothThreshold', 'above', 'toAssign', 'all','clusterData',[]);
+%options = struct('smoothSteps', 1, 'smoothArea', 5, 'smoothThreshold', 'above', 'toAssign', 'all','clusterData',[]);
+options = struct('smoothSteps', 1, 'smoothArea', 5, 'toAssign', 'all','clusterData',[]);
 optionNames = fieldnames(options);
 
 % Check number of arguments passed
