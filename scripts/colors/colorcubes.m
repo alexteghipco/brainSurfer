@@ -1,4 +1,4 @@
-function [rgb_out, data_out, data_rgb_out] = colorcubes(n, w, inData, plotSwitch, limits)
+function [rgb_out, data_out, data_rgb_out, ticks, stmp] = colorcubes(n, w, inData, plotSwitch, limits, ax, cmapIn, mapData)
 % Creates a cube of cubes in the RGB color space.
 %   COLORCUBES, with no arguments, shows 5^3 = 125 cubes with
 %      colors equally spaced in the RGB color space.
@@ -26,16 +26,24 @@ function [rgb_out, data_out, data_rgb_out] = colorcubes(n, w, inData, plotSwitch
     if nargin < 2, w = 0.85; end
     if nargin < 3, inData = []; end
     if nargin < 4, plotSwitch = 'true'; end
-    if nargin < 5
+    if nargin < 5, limits = []; end    
+    if nargin < 6, ax = []; end
+    if nargin < 7, cmapIn = []; end
+    if nargin < 8, mapData = 'no'; end
+
+    if isempty(limits) & strcmpi(mapData,'yes')
         limits(1,1) = min(inData(:,1));
         limits(2,1) = max(inData(:,1));
         limits(1,2) = min(inData(:,2));
         limits(2,2) = max(inData(:,2));
         limits(1,3) = min(inData(:,3));
         limits(2,3) = max(inData(:,3));
-    end    
+    end
+    
     if strcmp(plotSwitch,'true')
-        initgraphics(n)
+        if isempty(ax)
+            initgraphics(n)
+        end
     end
     [x,y,z] = cube(w);
     m = n-1;
@@ -48,85 +56,113 @@ function [rgb_out, data_out, data_rgb_out] = colorcubes(n, w, inData, plotSwitch
     r_out = zeros([length(iLen),length(jLen),length(kLen)]);
     
     for i = iLen
-      for j = jLen
-         for k = kLen
-            r = k/m;
-            r_out(i+1,j+1,k+1) = r;
-            g = 1-j/m;
-            g_out(i+1,j+1,k+1) = g;
-            b = 1-i/m;
-            b_out(i+1,j+1,k+1) = b;
-            switch plotSwitch
-                case 'true'
-                    surface(i+x,j+y,k+z, ...
-                        'facecolor',[r g b], ...
-                        'facelighting','gouraud');
-                    drawnow
-            end
-         end %k
-      end %j
+        for j = jLen
+            for k = kLen
+                if isempty(cmapIn)
+                    r = k/m;
+                    r_out(i+1,j+1,k+1) = r;
+                    g = 1-j/m;
+                    g_out(i+1,j+1,k+1) = g;
+                    b = 1-i/m;
+                    b_out(i+1,j+1,k+1) = b;
+                else
+                    r = cmapIn(i+1,j+1,k+1,1);
+                    g = cmapIn(i+1,j+1,k+1,2);
+                    b = cmapIn(i+1,j+1,k+1,3);
+                end
+                switch plotSwitch
+                    case 'true'
+                        if ~isempty(ax)
+                            stmp{i+1,j+1,k+1} = surface(ax,i+x,j+y,k+z, ...
+                                'facecolor',[r g b], ...
+                                'facelighting','gouraud','EdgeAlpha',0);
+                        else
+                            stmp{i+1,j+1,k+1} = surface(i+x,j+y,k+z, ...
+                                'facecolor',[r g b], ...
+                                'facelighting','gouraud','EdgeAlpha',0);
+                        end
+                        drawnow
+                end
+            end %k
+        end %j
     end %i
     
+    if ~strcmpi(plotSwitch,'true')
+        stmp = [];
+    end
+    
     % combine
-    rgb_out = cat(4, r_out, g_out, b_out);
+    if isempty(cmapIn)
+        rgb_out = cat(4, r_out, g_out, b_out);
+    else
+        rgb_out = cmapIn;
+    end
     
     % now we will map the data you provided onto your colorcube
     % first create a linear scale for each of your 3 coordinates that is
     % the length of your cube. These are your 3d bins.
-    if size(limits,1) == 1
-       limits = [limits; limits; limits];
+    if strcmpi(mapData,'yes')
+        if size(limits,1) == 1
+            limits = [limits; limits; limits];
+        end
+        
+        xLinSpace = linspace(limits(1,1),limits(2,1),n);
+        yLinSpace = linspace(limits(1,2),limits(2,2),n);
+        zLinSpace = linspace(limits(1,3),limits(2,3),n);
+        
+        ticks(:,1) = xLinSpace;
+        ticks(:,2) = yLinSpace;
+        ticks(:,3) = zLinSpace;
+        
+        idx1 = xLinSpace >= inData(:,1);
+        [~,idx1] = max(idx1,[],2);
+        xbin = find(idx1 == 0);
+        if ~isempty(xbin)
+            for i = 1:length(xbin)
+                if inData(xbin(i),1) > limits(2,1)
+                    idx1(xbin(i)) = length(xLinSpace);
+                elseif inData(xbin(i),1) < limits(1,1)
+                    idx1(xbin(i)) = 1;
+                end
+            end
+        end
+        
+        idx2 = yLinSpace >= inData(:,2);
+        [~,idx2] = max(idx2,[],2);
+        ybin = find(idx2 == 0);
+        if ~isempty(ybin)
+            for i = 1:length(ybin)
+                if inData(ybin(i),2) > limits(2,2)
+                    idx2(ybin(i)) = length(yLinSpace);
+                elseif inData(ybin(i),2) < limits(1,2)
+                    idx2(ybin(i)) = 1;
+                end
+            end
+        end
+        
+        idx3 = zLinSpace >= inData(:,3);
+        [~,idx3] = max(idx3,[],2);
+        zbin = find(idx3 == 0);
+        if ~isempty(zbin)
+            for i = 1:length(zbin)
+                if inData(zbin(i),3) > limits(2,3)
+                    idx3(zbin(i)) = length(zLinSpace);
+                elseif inData(zbin(i),3) < limits(1,3)
+                    idx3(zbin(i)) = 1;
+                end
+            end
+        end
+        
+        
+        for i = 1:length(inData)
+            data_rgb_out(i,:) = rgb_out(idx1(i),idx2(i),idx3(i),:);
+        end
+    else
+        data_out = [];
+        data_rgb_out = [];
+        ticks = [];
     end
     
-    xLinSpace = linspace(limits(1,1),limits(2,1),n);
-    yLinSpace = linspace(limits(1,2),limits(2,2),n);
-    zLinSpace = linspace(limits(1,3),limits(2,3),n);
-
-    % for each data point in overlay, find closest 3d bin 
-    for i = 1:length(inData)
-        disp(['Mapping data onto colorcube...' num2str((i/length(inData))* 100) '%'])
-        % get closest bin in the x dim
-        idx1 = find(xLinSpace <= inData(i,1));
-        if isempty(idx1)
-            xbin = 1;
-        else
-            % Bins need to be adjusted if closest value is negative
-            xbin = idx1(end);
-        end
-        if xLinSpace(xbin) < 0
-            xbin = xbin+1;
-        end
-        
-        % Repeat for y dim
-        idx2 = find(yLinSpace <= inData(i,2));
-        if isempty(idx2)
-            ybin = 1;
-        else
-            ybin = idx2(end);
-        end
-        if yLinSpace(ybin) < 0
-            ybin = ybin+1;
-        end
-       
-        % Repeat for z dim
-        idx3 = find(zLinSpace <= inData(i,3));
-        if isempty(idx3)
-            zbin = 1;
-        else
-            zbin = idx3(end);
-        end
-        if zLinSpace(zbin) < 0
-            zbin = zbin+1;
-        end
-       
-        % get coordinate on colorcube
-        data_out(i,1) = xbin;
-        data_out(i,2) = ybin;
-        data_out(i,3) = zbin;
-        
-        % get color directly
-        data_rgb_out(i,:) = rgb_out(xbin,ybin,zbin,:);
-    end
-        
     
     % ------------------------
     
