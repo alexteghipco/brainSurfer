@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GIFTI xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="http://brainvis.wustl.edu/caret6/xml_schemas/GIFTI_Caret.xsd"
+       Version="1"
+       NumberOfDataArrays="1">
+   <MetaData>
+      <MD>
+         <Name><![CDATA[AnatomicalStructurePrimary]]></Name>
+         <Value><![CDATA[CortexLeft]]></Value>
+      </MD>
+      <MD>
+         <Name><![CDATA[ParentProvenance]]></Name>
+         <Value><![CDATA[/Users/alex/matlab/MATLAB-Drive/brainSurfer-app/scripts/HCP/resample_fsaverage/fs_LR-deformed_to-fsaverage.L.sphere.32k_fs_LR.surf.gii:
+wb_command -surface-sphere-project-unproject /media/myelin/tim/pipelinedevel/Pipelines/global/templates/standard_mesh_atlases/L.sphere.32k_fs_LR.surf.gii /media/myelin/tim/vertareascratch/data/base.sphere.surf.gii /media/myelin/tim/vertareascratch/data/MSMAll-to-fsaverage.L.sphere.surf.gii /media/myelin/tim/pipelinedevel/Pipelines/global/templates/standard_mesh_atlases/fs_LR-deformed_to-fsaverage.L.sphere.32k_fs_LR.surf.gii
+
+]]></Value>
+      </MD>
+      <MD>
+         <Name><![CDATA[ProgramProvenance]]></Name>
+         <Value><![CDATA[Connectome Workbench
+Type: Command Line Application
+Version: 1.4.2
+Qt Compiled Version: 5.7.0
+Qt Runtime Version: 5.7.0
+Commit: 092b7f2f7dfab0f9ea7cbb6c1db2e5dffd2c1045
+Commit Date: 2020-01-07 17:24:23 -0600
+Compiled with OpenMP: YES
+Compiler: clang++ (/usr/local/clang/4.0.0/bin)
+Compiler Version: 4.0.0
+Compiled Debug: NO
+Operating System: Apple OSX
+]]></Value>
+      </MD>
+      <MD>
+         <Name><![CDATA[Provenance]]></Name>
+         <Value><![CDATA[/Applications/workbench/bin_macosx64/../macosx64_apps/wb_command.app/Contents/MacOS/wb_command -label-resample /Users/alex/matlab/MATLAB-Drive/brainSurfer-app/brainMapsforTesting//Visuospatial_network_binarized_IMPORT_ME_FROM_MNI_to_FSAVERAGE_CombinedClusters_FSSpace_LH.gii /Users/alex/matlab/MATLAB-Drive/brainSurfer-app/scripts/HCP/resample_fsaverage/fsaverage_std_sphere.L.164k_fsavg_L.surf.gii /Users/alex/matlab/MATLAB-Drive/brainSurfer-app/scripts/HCP/resample_fsaverage/fs_LR-deformed_to-fsaverage.L.sphere.32k_fs_LR.surf.gii ADAP_BARY_AREA /Users/alex/matlab/MATLAB-Drive/brainSurfer-app/brainMapsforTesting//Visuospatial_network_binarized_IMPORT_ME_FROM_MNI_to_FSAVERAGE_CombinedClusters_FSSpace_LH_to_fs_LR.label.gii -area-metrics /Users/alex/matlab/MATLAB-Drive/brainSurfer-app/scripts/HCP/resample_fsaverage/fsaverage.L.midthickness_va_avg.164k_fsavg_L.shape.gii /Users/alex/matlab/MATLAB-Drive/brainSurfer-app/scripts/HCP/resample_fsaverage/fs_LR.L.midthickness_va_avg.32k_fs_LR.shape.gii]]></Value>
+      </MD>
+      <MD>
+         <Name><![CDATA[WorkingDirectory]]></Name>
+         <Value><![CDATA[/Users/alex/matlab/MATLAB-Drive/brainSurfer-app/GUIs]]></Value>
+      </MD>
+   </MetaData>
+   <LabelTable>
+      <Label Key="0" Red="1" Green="1" Blue="1" Alpha="0"><![CDATA[???]]></Label>
+   </LabelTable>
+<DataArray Intent="NIFTI_INTENT_LABEL"
+           DataType="NIFTI_TYPE_INT32"
+           ArrayIndexingOrder="RowMajorOrder"
+           Dimensionality="1"
+           Dim0="32492"
+           Encoding="GZipBase64Binary"
+           Endian="LittleEndian"
+           ExternalFileName=""
+           ExternalFileOffset="0">
+   <MetaData>
+      <MD>
+         <Name><![CDATA[Name]]></Name>
+         <Value><![CDATA[deformed_Atlas_Cortex_ROI]]></Value>
+      </MD>
+   </MetaData>
+   <Data>eJzt3dFuozAQBdDk/396tQ+REILEFIzvmHMktFUTmDtOCjTg7usFAAAAAAAAAAAAAAAAAAAAAAAAAAAAwJXeq+Xb4yOs8+3l+dVHT60Z188dne3XOKZkaxnXu3NVydQj15ksV+dJyVI9x5WeWDu5bi937wPXdQF4lrPnWqPOTc6onv9j1tdu1r72zNbbjK/XLH28NrJU7KN6D5Wzr1XKX3Hc1zXTc2/VSc77TaW8s+UcKTlfarbUXB9pmSrkGZll6+snSviZHlUbAGAp5VwVAAAAAACAZ3FtCgBgfkn30v9SJSfAE70X/46eCzQiw+j5zKPrqnddrZ41R7xPnbcB3OPI39lI/VsIM5j5NZixp48Z+3pyP+kqZ1+atYeqKmeHairsL5IzJu9zK2RLkpopRVIWAAAA+Kby77DVP+OvfJ2i8nWintmv2NZ79XXrtdEztf86DmfuIbiy5t15W+seWefqbGdzHn0f9sp7d22LxWKxWJ62LN1Ro8XWuj3qtGboVWOrHgAAAAAAAABcoed1/ZFm6qv3/Rd3m62f/2boYy9npR4A1tb3FibbOm4kZq5wnPt1PB6dN/kcaMS9wD1z9STP+Sy9ja6/l2GExH01AP0tz3+PHAfWv0e1rvvX823HqO9SzicqM2bAGTPsQ6ofQyofB6sex6vl3sqZlnsrW1LGlM/zWqRnTfmMtmK+WbKlZbpTUp6E8Ul4T7fW7ZFhVO9Hx/2q+k+qm1rrbL07as1Qo9f2e2w3fZuJ27pzGynr9lin93PPPOfb43uPbfUPAAAAAAAAAAAAAAAAAE8323y7Gfo5Mj832dG5xola5tUma50TnGiW7C3fT7DMdWTO9kgtc/bTVckq5zVS86X/nCdmS8uUNk4pWVLGJSUDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAW/88RAAAAAABwtX9tfQg1</Data>
+</DataArray>
+</GIFTI>
