@@ -79,8 +79,13 @@ if(strcmpi(ext,'.gz'))
     niftifile = new_niftifile ;
   else
     %cmd = sprintf('zcat ''%s'' > ''%s''', niftifile, new_niftifile);
-    gunzip(niftifile)
-    niftifile=niftifile(1:end-3);
+    
+    try
+        gunzip(niftifile)
+        niftifile=niftifile(1:end-3);
+    catch
+        niftifile = niftifile(1:end-3);
+    end
   end
   
 else

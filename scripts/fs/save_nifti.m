@@ -175,10 +175,12 @@ if(npix ~= nitemswritten)
 end
 
 if(gzip_needed)
-  cmd = sprintf('gzip -f %s', niftifile);
+  %cmd = sprintf('gzip -f %s', niftifile);
   %fprintf('Compressing with\n');
   %fprintf('   %s\n',cmd);
-  unix(cmd);
+  %unix(cmd);
+  gzip(niftifile)
+  delete(niftifile)
 end
 
 
