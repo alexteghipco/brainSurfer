@@ -278,13 +278,7 @@ if zlims(1) == 0 && zlims(2) == 0
 else
     v = 'on';
 end
-%set(gca,'xlim',xlims,'ylim',ylims,'zlim',zlims)
-figure(brainFig)
-tm = findall(brainFig.Children,'Type','Axes');
-if length(tm) > 1
-    tm = tm(end);
-end
-set(tm,'xlim',xlims,'ylim',ylims,'zlim',zlims)
+set(gca,'xlim',xlims,'ylim',ylims,'zlim',zlims)
 
 % some default settings
 brain.view_angle = [-90 0];
@@ -300,7 +294,7 @@ end
 
 if ~strcmp(li,'off')
     for i = 1:size(li,1)
-        camlight(tm,li(i,1),li(i,2));
+        camlight(li(i,1),li(i,2));
     end
 end
 
