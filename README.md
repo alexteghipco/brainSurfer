@@ -444,7 +444,7 @@ The colors in the GUI itself can be changed as well. BrainSurfer can be set to a
 ![](https://thumbs.gfycat.com/DarlingBleakEyra-size_restricted.gif)
 
 ## Dependencies, organization, standalone scripts
-This section will be update with more information soon, including how to use the scripts brainSurfer calls on without the GUI (i.e., to make patches in matlab, etc).
+This section will be update with more information soon, including how to use the scripts brainSurfer calls on without the GUI (i.e., to make patches in matlab, etc). Note that some script-level documentation is currently outdated but will be updated to reflect changes since brainSurfer v1 soon. 
 
 BrainSurfer has a number of dependencies that are packaged with it thanks to the generosity of the original authors (more on that shortly). To the extent of my knowledge, all of this software is free to modify and distribute, and the original licenses are provided along with the code. 
 
