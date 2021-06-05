@@ -25,7 +25,7 @@ To install brainSurfer:
 </p>
 
 3) Type "brainSurfer" into the command window to summon the GUI. 
-4) Provide a path to the connectome workbench bash scripts that you have previously downloaded if you would like to be able to project data from fsaverage or volume space onto the fs_LR template (and in the other directions). 
+4) Provide a path to the connectome workbench bash scripts that you have previously downloaded if you would like to be able to project data from fsaverage or volume space onto the fs_LR template (this will work on Windows too). 
 
 BrainSurfer will only ask you for a path to the connectome workbench the first time it is opened (see video below), but you can provide the path manually later. If no path is provided, all other brainSurfer features will still work. The path you provide is stored in ./scripts/pathToWorkBench.txt. If you did not provide any path to brainSurfer the first time you opened it, this text file will appear empty but contains a single space. If this text file is ever empty, brainSurfer will prompt you for the path again. So if you would like to update the connectome workbench path you can open this text file and delete everything in it, or just manually type the path before saving.
 
@@ -550,9 +550,9 @@ If you ever find colors in your map too ambiguous, there are a few things you ca
   <kbd><img width="1000" height="300" src="https://thumbs.gfycat.com/WhirlwindIdenticalBorer-size_restricted.gif"/></kbd>
 </p>
 
-You could also play with the two buttons in this tab. You might have noticed that the 2D colormap is formed by interpolating between the two colorbars of the selected overlays if they were positioned vertically (i.e., along the y-axis). This generates the least muddy 2D colormaps, but it means the colors associated with the second map become detached from the colorbar that was set up for that map. An alternative to interpolating between the two colorbars, is to place the 2nd colorbar horizontally (along the x-axis) and average the colors of the two colorbars. In most cases, I find the default option in brainSurfer to work best because it is more likely to create 4 distinct quadrants in the 2D colormap, enhancing interpretability. But in some cases placing that 2nd colorbar on the x-axis can help with visualization. Note that this is a state button and you can "unpress" it to return the colormap to normal. 
+But you could also tinker with the two buttons in this tab to improve interpretability. You might have noticed that the 2D colormap is formed by interpolating between the two colorbars of the selected overlays if they were positioned vertically (i.e., along the y-axis). This generates the least muddy 2D colormaps, but it means the colors associated with the second map become detached from the colorbar that was set up for that map. An alternative to interpolating between the two colorbars, is to place the 2nd colorbar horizontally (along the x-axis) and average the colors of the two colorbars. In most cases, I find the default option in brainSurfer to work best because it is more likely to create 4 distinct quadrants in the 2D colormap, enhancing interpretability. But in some cases placing that 2nd colorbar on the x-axis can give better results. Note that this is a state button and you can "unpress" it to return the colormap to normal. 
 
-You might also try rotating the colormap. Press the rotate color to move the colormap clockwise by 90 degrees. If none of this works, I recommend changing the colorbars associated with the two maps you've selected to set up a 2D colormap. 
+You might also try rotating the colormap. Press "rotate color" to move the colormap clockwise by 90 degrees. If none of this helps you find clear patterns in the data, I recommend changing the colorbars associated with the two maps you've selected to set up a 2D colormap. 
 
 <p align="center">
   <kbd><img width="1000" height="300" src="https://thumbs.gfycat.com/InsidiousDarkAsp-size_restricted.gif"/></kbd>
@@ -565,9 +565,9 @@ One final feature here that I won't get into too much but will just mention is t
 </p>
 
 ### iii. 3D overlays <a name="3D"></a>
-3D overlays are setup just like 2D overlays, by selecting the three overlays that will be used to generate the complex overlay. Notice that the buttons in the 3D overlay are greyed out since we just setup a 2D overlay. To make them available, we should remove our complex overlay by setting one of the drop down menus to "No overlay". Doing so, repatches the non-complex overlay that has been selected (i.e., reverts the patch to what we saw before we setup the 2D overlay). 
+3D overlays are setup just like 2D overlays, by selecting the three overlays that will be used to generate the complex overlay. Notice that the buttons in the 3D overlay are greyed out since we just setup a 2D overlay. To make them available, we should remove our complex overlay by setting one of the drop down menus to "No overlay" in the 2D tab. Doing so repatches the original non-complex overlay that had been selected in the listbox (i.e., reverts the patch to what we saw before we setup the 2D overlay). 
 
-After you chose your 3 overlays, you may have noticed that brainSurfer launched a figure with a bunch of cubes, and that this figure ended up being transfered into the colormap area of the 3D complex overlay tab. Each of these cubes represents a point in the 3D space we've created using the three overlays. The values of these points are based on the colorbars you've set up for each of the overlays separately. Each cube has a different color that is interpolated between the colors that are set at its edges: R,G,B,C,M,Y,K. You can't change the colors on this colorcube because the colors here have already been selected to maximize interpretability by making each edge as distinct as possible. Generally, 3D colormaps look better the more "cubes" or bins you have per dimension. The problem is that we have to patch each of these cubes as a separate object, so creating a colormap with 8+ cubes takes forever. I've noticed 8 cubes seems to be the sweet spot, and pregenerated a 3D colormap using that many cubes. This colormap gets loaded into brainSurfer whenever you select 8 cubes to save time. 
+After you chose your 3 overlays, you may have noticed that brainSurfer launched a figure with a bunch of cubes, and that this figure ended up being transfered into the colormap area of the 3D complex overlay tab. Each of these cubes represents a point in the 3D space we've created using the three overlays. The values of these points are based on the colorbars you've set up for each of the overlays separately. Each cube has a different color that is interpolated between the colors that are set at its edges: R,G,B,C,M,Y,K. You can't change the colors on this colorcube because they've already been carefully selected to maximize interpretability by making each edge as distinct as possible (it's easy to produce duplicated colors when trying to setup your own colors for each edge). Generally, 3D colormaps look better the more "cubes" or bins you have per dimension. The problem is that we have to patch each of these cubes as a separate object, so creating a colormap with 8+ cubes takes a minute. I've noticed that 8 cubes seems to be the sweet spot, and so pregenerated a 3D colormap that gets loaded into brainSurfer whenever you set the colormap to have 8 cubes. 
 
 <p align="center">
   <kbd><img width="1000" height="300" src="https://thumbs.gfycat.com/TestyMeatyFirebelliedtoad-size_restricted.gif"/></kbd>
@@ -606,6 +606,7 @@ The colors in the GUI itself can be changed as well. BrainSurfer can be set to a
   <kbd><img width="1000" height="300" src="https://thumbs.gfycat.com/CrazyMatureCub-size_restricted.gif"/></kbd>
 </p>
 
+Changing to dark mode, etc will take a little while. 
 <p align="center">
   <kbd><img width="1000" height="300" src="https://thumbs.gfycat.com/DarlingBleakEyra-size_restricted.gif"/></kbd>
 </p>
