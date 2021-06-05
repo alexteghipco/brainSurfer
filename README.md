@@ -40,9 +40,7 @@ Please email me if you run into any bugs or problems @ alex.teghipco@uci.edu!
 *NOTE: This software is provided as is with no guarantee of any kind.*
 
 # The brainSurfer manual-tutorial thing
-This is a more in-depth guide to using brainSurfer that includes lots of documentation about what goes on under the hood. It's organized like a tutorial with "videos" (gifs) that show how various actions are performed using data that is packaged with brainSurfer so that you can follow along yourself. Some of the longer videos are a bit more compressed and blurry, but the idea is that you are generating the same figures in the video on your own. The more tutorial-like portion of this manual starts on [section 4](#loadingUnderlayTemplates).
-
-The end of this readme contains a section about [scripts and dependencies](#scriptsDependencies) in case you are looking for that sort of thing (it will be updated pretty soon with more information).
+This is a more in-depth guide to using brainSurfer that includes lots of documentation about what goes on under the hood. It's organized like a tutorial with "videos" (gifs) that show how various actions are performed using data that is packaged with brainSurfer so that you can follow along yourself. Some of the longer videos are a bit more compressed and blurry, but the idea is that you are generating the same figures in the videos on your own. The more tutorial-like portion of this manual starts on [section 4](#loadingUnderlayTemplates). If the videos look poorly proportioned in github make sure you've clicked on the readme file itself.
 
 ## Table of contents
 1. [File compatibility](#filetypes)
@@ -72,7 +70,7 @@ The end of this readme contains a section about [scripts and dependencies](#scri
     2. [2D overlays](#2D)
     3. [3D overlays](#3D)
 25. [Changing the GUI appearance](#modes)
-26. [Scripts and dependencies](#scriptsDependencies)
+26. [Scripts and dependencies (will be updated with more info soon)](#scriptsDependencies)
 
 ## 1. What file types does brainSurfer work with? <a name="filetypes"></a>
 Files loaded into brainSurfer are organized into the following categories: surfaces, morphological data, statistical maps (referred to as overlays), and atlases.
@@ -115,7 +113,7 @@ From this section on, we'll focus on how to perform specific actions in brainSur
 We can quickly summon a template surface with its associated morphological data using the file menu. For now, let's load the fsaverage template as shown in the video below. 
 
 <p align="center">
-  <kbd><img width="1000" height="250" src="https://thumbs.gfycat.com/ClumsyGlumDodobird-size_restricted.gif"/></kbd>
+  <kbd><img width="1000" height="300" src="https://thumbs.gfycat.com/ClumsyGlumDodobird-size_restricted.gif"/></kbd>
 </p>
 
 You may have noticed a few things as you did this. First, the file menu contains lots of other menu options. We'll go through these in more detail later, but it's worth remembering that this is the place you'll probably need to go if you need to save or load data. 
