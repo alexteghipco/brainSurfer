@@ -115,7 +115,7 @@ From this section on, we'll focus on how to perform specific actions in brainSur
 We can quickly summon a template surface with its associated morphological data using the file menu. For now, let's load the fsaverage template as shown in the video below. 
 
 <p align="center">
-  <kbd><img width="1000" height="300" src="https://thumbs.gfycat.com/ClumsyGlumDodobird-size_restricted.gif"/></kbd>
+  <kbd><img width="1000" height="250" src="https://thumbs.gfycat.com/ClumsyGlumDodobird-size_restricted.gif"/></kbd>
 </p>
 
 You may have noticed a few things as you did this. First, the file menu contains lots of other menu options. We'll go through these in more detail later, but it's worth remembering that this is the place you'll probably need to go if you need to save or load data. 
