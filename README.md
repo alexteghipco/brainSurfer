@@ -40,7 +40,9 @@ Please email me if you run into any bugs or problems @ alex.teghipco@uci.edu!
 *NOTE: This software is provided as is with no guarantee of any kind.*
 
 # The brainSurfer manual-tutorial thing
-This is a more in-depth guide to using brainSurfer that includes lots of documentation about what goes on under the hood. It's organized like a tutorial with "videos" (gifs) that show how various actions are performed using data that is packaged with brainSurfer so that you can follow along yourself. Some of the longer videos are a bit more compressed and blurry, but the idea is that you are generating the same figures in the videos on your own. The more tutorial-like portion of this manual starts on [section 4](#loadingUnderlayTemplates). If the videos look poorly proportioned in github make sure you've clicked on the readme file itself.
+This is a more in-depth guide to using brainSurfer that includes lots of documentation about what goes on under the hood. It's organized like a tutorial with "videos" (gifs) that show how various actions are performed using data that is packaged with brainSurfer so that you can follow along yourself. Some of the longer videos are a bit more compressed and blurry, but the idea is that you are generating the same figures in the videos on your own. The more tutorial-like portion of this manual starts on [section 4](#loadingUnderlayTemplates). 
+
+**If the videos look poorly proportioned in github make sure you've clicked on the readme file itself.**
 
 ## Table of contents
 1. [File compatibility](#filetypes)
