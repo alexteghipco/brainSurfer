@@ -50,6 +50,7 @@ This is a more in-depth guide to using brainSurfer that includes lots of documen
 5. [Inspecting patches](#inspectingPatches)
 6. [Manually loading a surface mesh](#manualSurface)
 7. [Manually adding morphological data to a surface mesh](#manualMorph)
+8. [Loading overlays](#loadingOverlays)
 9. [Projecting volume space data](#projectVolume)
 10. [Value-based thresholding of underlays/overlays](#threshold)
 11. [Changing values in underlays/overlays](#values)
@@ -207,7 +208,7 @@ Here, I am showing addition of this kind of information to the fsaverage surface
   <kbd><img width="1000" height="300" src="https://thumbs.gfycat.com/WeakBigheartedLhasaapso-size_restricted.gif"/></kbd>
 </p>
 
-## 8. Loading overlays <a name="scriptsDependencies"></a>
+## 8. Loading overlays <a name="loadingOverlays"></a>
 Loading overlays is as simple as choosing load overlays in the file menu, then selecting as many overlays as you'd like to load into brainSurfer's listbox. When you load overlays, morphological files, or atlases you'll notice brainSurfer printing some text to the MATLAB command window. You can ignore it, this is mostly for catching file loading errors in case you are running into issues. BrainSurfer uses process of elimination to determine your file type through a serious of catch statements. When loading a CIFTI file that contains information on both hemispheres, you'll notice brainSurfer will separate the hemispheres and generate two overlays for the listbox. Each of these overlay names will be appeneded "(? HEMI)" like shown in the video below (I am using the fs_LR very inflated template here)
 
 <p align="center">
