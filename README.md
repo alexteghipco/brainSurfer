@@ -1,4 +1,4 @@
-# BrainSurfer-v2
+# BrainSurfer
 
 
 <img align="left" width="250" height="300" src="https://i.imgur.com/Q0AJWcn.png">
