@@ -9,7 +9,7 @@ BrainSurfer is a MATLAB toolbox for visualizing brain surfaces and showing stati
 It serves to quickly create pretty figures from data you have already processed and analyzed elsewhere. It supports projecting data from volume space onto freesurfer's fsaverage and connectome workbench's fs_LR (s900) spaces. It's also compatible with a wide range of file types that store surface data (cifti, nifti, gifti, and freesurfer's label, annotation and morphology formats lilke .curv), and can be easily used to convert files between these formats. BrainSurfer can also perform lots of operations on surface maps (e.g., thresholding based on ranges of values, cluster sizes, and p-values, but also outlining clusters, smoothing, combining, masking, and averaging maps, and lots of other stuff) and can take automated standardized screenshots of large numbers of surface maps. Its visualization capabilities include the ability to modulate the transparency of surface maps by other maps, and to represent two to three surface maps on one mesh using 2-D (square) and 3-D (cube) colormaps. It contains a GUI for creating your own colormaps and supports saving GUI states so that you can share surface data visualizations with other users exactly as you've set them up in BrainSurfer, even if those users don't have the files you used to generate the visualizations. 
 
 ## Installation
-Most testing was performed on MATLAB 2021a so it is recommended that you upgrade to the newest MATLAB release. MATLAB 2020a and MATLAB 2020b should work as well though have not been as thoroughly tested. Windows 10 or mac OS (big sur) are required (although BrainSurfer should work just as well with catalina). 
+Most testing was performed on MATLAB 2021a so it is recommended that you upgrade to the newest MATLAB release. MATLAB 2020a and MATLAB 2020b should work as well but have not been as thoroughly tested. Windows 10 or mac OS (big sur) are required (catalina should be okay). 
 
 Being able to project data from volume space and fsaverage space onto fs_LR surfaces requires downloading the [connectome workbench](https://www.humanconnectome.org/software/get-connectome-workbench).
 
@@ -17,7 +17,7 @@ Note: Only I have been using this software so it's likely you will break things 
 
 To install BrainSurfer:
 1) Download and place this toolbox into any directory. 
-2) Add the BrainSurfer directory and its subfolders to your MATLAB path as shown below.
+2) Add the BrainSurfer directory and its subfolders to your MATLAB path as shown in the photos below. 
 
 <p align="center">
 <kbd><img src="https://i.imgur.com/5sScNeU.png"/></kbd>
@@ -28,7 +28,7 @@ To install BrainSurfer:
 </p>
 
 3) Type "brainSurfer" into the command window to summon the GUI. If you ignore step 2, some of the buttons in the GUI will be missing icons.
-4) Provide a path to the connectome workbench bash scripts that you have previously downloaded if you would like to be able to project data from fsaverage or volume space onto the fs_LR template (this will work on Windows too). 
+4) Provide a path to the connectome workbench scripts that you have previously downloaded if you would like to be able to project data from fsaverage or volume space onto the fs_LR template (the path needs to point to the system-specific directory name that contains "wb_command" and a few other scripts).
 
 BrainSurfer will only ask you for a path to the connectome workbench the first time it is opened (see video below), but you can provide the path manually later. If no path is provided, all other BrainSurfer features will still work. The path you provide is stored in ./scripts/pathToWorkBench.txt. If you did not provide any path to BrainSurfer the first time you opened it, this text file will appear empty but contains a single space. If this text file is ever actually empty, BrainSurfer will prompt you for the path again. So if you would like to update the connectome workbench path you can open this text file and delete everything in it, or just manually type the path before saving.
 
@@ -36,14 +36,14 @@ BrainSurfer will only ask you for a path to the connectome workbench the first t
   <kbd><img width="680" height="400" src="https://thumbs.gfycat.com/OpenFlusteredAyeaye-size_restricted.gif"/></kbd>
 </p>
 
-A matlab app file is in the works for easier installation in the future. For now, the version of BrainSurfer that exists as an app file is missing some important functionality (2D, 3D statistical maps, transparency modulation by other maps, projecting fsaverage or volume space maps onto fs_LR) and various bug fixes. If you don't care about these features, you can find the app [here](https://www.mathworks.com/matlabcentral/fileexchange/91485-BrainSurfer_1 "Mathworks File Exchange") but I would recommend you use this more stable release. 
+A matlab app file is in the works for easier installation in the future. For now, the version of BrainSurfer that exists as an app file is missing some important functionality (2D, 3D statistical maps, transparency modulation by other maps, projecting fsaverage or volume space maps onto fs_LR) and various bug fixes. You can find the app [here](https://www.mathworks.com/matlabcentral/fileexchange/91485-BrainSurfer_1 "Mathworks File Exchange") but I would strongly recommend you use this more stable release instead.
 
 *NOTE: This software is provided as is with no guarantee of any kind.*
 
 # The BrainSurfer manual-tutorial thing
 This is a more in-depth guide to using BrainSurfer that includes lots of documentation about what goes on under the hood. It's organized like a tutorial with "videos" (gifs) that show how various actions are performed using data that is packaged with BrainSurfer so that you can follow along yourself. Some of the longer videos are a bit more compressed and blurry, but the idea is that you are generating the same figures in the videos on your own. The more tutorial-like portion of this manual starts on [section 4](#loadingUnderlayTemplates).
 
-**If the videos look poorly proportioned in github make sure you've clicked on the readme file itself.**
+**If the videos look poorly proportioned in github make sure you've clicked/opened the readme file.**
 
 ## Table of contents
 1. [File compatibility](#filetypes)
