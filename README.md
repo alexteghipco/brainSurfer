@@ -89,7 +89,7 @@ Atlas files can be .annot files, nifti files, or cifti files. You can also load 
 
 Support for cifti files is currently limited in the following ways: i) because of the way BrainSurfer handles left and right hemisphere data, a cifti file containing two hemispheres cannot be saved (there is a button that lets you combine left and right cifti files manually; see [saving data](#saving)), ii) BrainSurfer will not know what to do with any file that contains surface data shaped n x p where p is greater than 1 and n is any number of vertices. This means it can't handle timeseries data or multiple surface maps (the exception being a cifti file that contains just one surface map for the left hemisphere and one surface map for the right hemisphere). The second limitation broadly applies to other files too so, for example, you can't load a 4-D nifti file and expect it to be projected onto the surface, or a 2-D nifti file with multiple surface maps. 
 
-Note that there is currently no support for .ascii or .vtk files. 
+Note that there is currently no support for .ascii, .mgh, or .vtk files. 
 
 ## 2. Introduction and layout overview <a name="layout"></a>
 BrainSurfer is designed around the idea that when visualizing a brain surface, you would want to patch up to four sources of data at once and in the following order: 
