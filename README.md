@@ -27,7 +27,7 @@ To install BrainSurfer:
 <kbd><img width="450" height="300" src="https://i.imgur.com/seYSZTq.png"/></kbd>
 </p>
 
-3) Type "BrainSurfer" into the command window to summon the GUI. If you ignore step 2, some of the buttons in the GUI will be missing icons.
+3) Type "brainSurfer" into the command window to summon the GUI. If you ignore step 2, some of the buttons in the GUI will be missing icons.
 4) Provide a path to the connectome workbench bash scripts that you have previously downloaded if you would like to be able to project data from fsaverage or volume space onto the fs_LR template (this will work on Windows too). 
 
 BrainSurfer will only ask you for a path to the connectome workbench the first time it is opened (see video below), but you can provide the path manually later. If no path is provided, all other BrainSurfer features will still work. The path you provide is stored in ./scripts/pathToWorkBench.txt. If you did not provide any path to BrainSurfer the first time you opened it, this text file will appear empty but contains a single space. If this text file is ever actually empty, BrainSurfer will prompt you for the path again. So if you would like to update the connectome workbench path you can open this text file and delete everything in it, or just manually type the path before saving.
