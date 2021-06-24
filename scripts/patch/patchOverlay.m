@@ -451,7 +451,11 @@ for di = 1:length(dataTS)
             end
             options.limits{di} = [min(dataTS{di}) max(dataTS{di})];
             atv = vertcat(dataClust{:});
-            [c, ia] = setdiff([1:dataTS{di}],atv);
+            try
+                [c, ia] = setdiff([1:dataTS{di}],atv);
+            catch
+                [c, ia] = setdiff([1:length(dataTS{di})],atv);
+            end
             dataTS{di}(c) = 0;
     end
 end
