@@ -230,7 +230,19 @@ else
     %tmpMap = options.colormap';
     tmpMap = options.colormap;
     if size(tmpMap,1) < options.colorBins % only need to interpolate colors if there are more bins of data than there are colors
-        cMap = customColorMapInterp(tmpMap',options.colorBins);
+        % if you do need to interpolate, you need to find out if the
+        % original colormap used 2 or 3 colors...to do this, first
+        % interpolate between edges of colormap, then see if middle lines
+        % up.
+        ends = customColorMapInterp([tmpMap(1,:) ; tmpMap(end,:)],size(tmpMap,1));
+        mdpt = ends(round(size(ends,1)/2),:);
+        if isequal(tmpMap(round(size(ends,1)/2),1),mdpt(1)) & isequal(tmpMap(round(size(ends,1)/2),2),mdpt(2)) & isequal(tmpMap(round(size(ends,1)/2),3),mdpt(3))
+            cMap = customColorMapInterp([tmpMap(1,:) ; tmpMap(end,:)],options.colorBins);
+        else
+            cMap1 = customColorMapInterp([tmpMap(1,:) ; tmpMap(round(size(ends,1)/2),:)],round(options.colorBins/2));
+            cMap2 = customColorMapInterp([tmpMap(round(size(ends,1)/2),:) ; tmpMap(end,:)],options.colorBins - round(options.colorBins/2));
+            cMap = [cMap1; cMap2];
+        end
     else
         cMap = tmpMap;
     end
