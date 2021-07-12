@@ -474,7 +474,7 @@ The button on the bottom right deletes all of the overlays that have been select
 
 The camera button on the bottom left takes screenshots. If you left click the button you'll take a single screenshot of the figure with your patches, exactly as you see it now. After the screenshot is taken, another matlab script will be used used to generate a cropped image of just the brain portion of the patch (e.g., tight crop on the brain and excluding the colorbar). This file will be appended with the "CROPPED". Right clicking the camera button brings up more useful ways to take screenshots. For example, you can have BrainSurfer go to each of the viewing locations in the view settings and take a screenshot of each view (you'll get to choose the file name but each screenshot will be appended "lateral", etc; cropped images will still be generated). You can also have BrainSurfer perform these kinds of standardized screenshots of each view for every single overlay that you have loaded, or just a select number of overlays (selection occurs by secondary listbox).
 
-Note that for now there appears to be a bug such that if you have a horizontal colorbar visible, cropped images will not look right. 
+Note that for now there appears to be a bug such that if you have a horizontal colorbar visible, cropped images may not always look right. Note also that if you are visualizing atlas outlines it is possible that cropping will fail because the outlines can break the largest connected component (i.e., the brain).
 
 <p align="center">
   <kbd><img width="1000" height="300" src="https://thumbs.gfycat.com/LoneRedDikkops-size_restricted.gif"/></kbd>
