@@ -28,7 +28,7 @@ function [rgb_out, data_out, data_rgb_out, ticks, stmp] = colorcubes(n, w, inDat
     if nargin < 4, plotSwitch = 'true'; end
     if nargin < 5, limits = []; end    
     if nargin < 6, ax = []; end
-    if nargin < 7, cmapIn = []; end
+    if nargin < 7, cmapIn = []; end 
     if nargin < 8, mapData = 'no'; end
 
     if isempty(limits) & strcmpi(mapData,'yes')

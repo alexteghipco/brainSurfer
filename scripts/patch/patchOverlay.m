@@ -237,7 +237,7 @@ for di = 1:size(allData,2)
 end
 
 % Get clusters if they are needed
-if options.clusterThresh ~= 0 | options.grow ~= 0 | strcmpi(options.outline,'map') | strcmpi(options.binarize,'clusters') == 1
+if options.clusterThresh ~= 0 | options.grow ~= 0 | strcmpi(options.outline,'map') | strcmpi(options.binarize,'clusters') == 1 | ~isempty(options.priorClusters)
     if ~isempty(options.UI)
         d.Message = ['Finding blobs...this may take some time if you have large blobs in your map'];
         d.Value = 0.1;
@@ -245,7 +245,6 @@ if options.clusterThresh ~= 0 | options.grow ~= 0 | strcmpi(options.outline,'map
     
     if isempty(options.priorClusters)
         atv = find(all(horzcat(dataT{:}) == 0,2)==0);
-        
         [dataClust, clusterLen] = getClusters(atv, underlays.(hemi).Faces);
     else
         dataClust = options.priorClusters;
