@@ -111,9 +111,9 @@ else
     % hemispheres
     if isempty(vert2) == 1
         if sum(vert1(:,3)) ~= 0
-            %             if mean(vert1(:,1)) < 0
+            if mean(vert1(:,1)) < 0
             %if mean(vert1(:,1)) > mean(vert2(:,1))
-            if mean(vert1(:,3)) < mean(vert2(:,3))
+            %if mean(vert1(:,3)) < mean(vert2(:,3))
                 brain.left.vert = vert1;
                 brain.left.face = face1;
             else
