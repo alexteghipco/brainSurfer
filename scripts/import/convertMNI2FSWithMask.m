@@ -35,9 +35,14 @@ verbose = 0;
 
 % import file and seperate empty vs nonempty voxels
 [path, file, ext] = fileparts(inFile);
+if isempty(path)
+    path = pwd;
+end
+
+ext = '.nii.gz';
 if strfind(file,'.nii') ~= 0
     file = file(1:end-4);
-    ext = '.nii.gz';
+    %ext = '.nii.gz';
 end
 
 inNifti = load_nifti(inFile); % load inFile
@@ -57,7 +62,7 @@ save_nifti(inNifti,[path slash file '_VALS_MASK.nii']);
 % files)
 convertMNI2FS([path slash file '_EMPTY_MASK.nii'],[]);
 convertMNI2FS([path slash file '_VALS_MASK.nii'],[]);
-convertMNI2FS([path, file, ext],[]);
+convertMNI2FS(inFile,[]);
 
 if verbose == 0
     delete([path slash file '_EMPTY_MASK.nii'])
@@ -68,7 +73,7 @@ end
 % closely associated with empty voxels
 emptyMask = load_nifti([path slash file '_EMPTY_MASK_RF_ANTs_MNI152_to_fsaverage_LH.nii.gz']);
 valMask = load_nifti([ path slash file '_VALS_MASK_RF_ANTs_MNI152_to_fsaverage_LH.nii.gz']);
-vals = load_nifti([path, file ,'_RF_ANTs_MNI152_to_fsaverage_LH', ext]);
+vals = load_nifti([path slash file '_RF_ANTs_MNI152_to_fsaverage_LH.nii.gz']); %, ext ]);
 
 for i = 1:length(emptyMask.vol) % compare masks at each vertex
     if emptyMask.vol(i) > valMask.vol(i)
@@ -85,7 +90,7 @@ outFiles{1} = [path slash file '_SURFACE_MASKED_RF_ANTs_MNI152_to_fsaverage_LH.n
 % repeat all of the same steps for right hemisphere now
 emptyMask = load_nifti([path slash file '_EMPTY_MASK_RF_ANTs_MNI152_to_fsaverage_RH.nii.gz']);
 valMask = load_nifti([ path slash file '_VALS_MASK_RF_ANTs_MNI152_to_fsaverage_RH.nii.gz']);
-vals = load_nifti([path, file ,'_RF_ANTs_MNI152_to_fsaverage_RH', ext]);
+vals = load_nifti([path slash file '_RF_ANTs_MNI152_to_fsaverage_RH.nii.gz']);
 
 for i = 1:length(emptyMask.vol) % compare masks at each vertex
     if emptyMask.vol(i) > valMask.vol(i)

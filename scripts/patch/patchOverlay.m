@@ -1,12 +1,12 @@
 function [varargout] = patchOverlay(brainFig, allData, underlays, hemi, varargin)
-% This function will patch curvature onto an existing surface. It will
-% require you to pass in left and right hemisphere curvature data
-% separately (either both, or only one) and specify the hemisphere. There
+% This function will patch data onto an existing surface. It will
+% require you to pass in left and right hemisphere data
+% separately (either both, or only one) and specify the hemisphere on which to patch the data. There
 % are a number of optional arguments that may be passed as well. The
-% arguments that affect cruvature data values will be processed in the
+% arguments will be processed in the
 % following order: i) if positive or negative values are set to 'off' they
 % will be removed from the passed in curvature data, ii) 'vls' will be
-% processed in order to scale, normalize, or convert data to percentiles,
+% processed to scale, normalize, or convert data to percentiles,
 % iii) a threshold will be applied to the resulting data.
 %
 % Remaining optional arguments deal with the way in which data is plotted,
@@ -431,7 +431,7 @@ for di = 1:length(dataTS)
         case 'map'
             id = find(dataTS{di} ~= 0);
             dataTS{di}(id) = 1;
-            options.limits{di} = [0 1];
+            %options.limits{di} = [0 1];
         case 'clusters'
             % one problem is that smaller clusters will predominantly map onto
             % one end of the spectrum unless they are shuffled so lets do that

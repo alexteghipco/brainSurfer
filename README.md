@@ -36,7 +36,7 @@ BrainSurfer will only ask you for a path to the connectome workbench the first t
   <kbd><img width="680" height="400" src="https://thumbs.gfycat.com/OpenFlusteredAyeaye-size_restricted.gif"/></kbd>
 </p>
 
-A matlab app file is in the works for easier installation in the future. For now, the version of BrainSurfer that exists as an app file is missing some important functionality (2D, 3D statistical maps, transparency modulation by other maps, projecting fsaverage or volume space maps onto fs_LR) and various bug fixes. You can find the app [here](https://www.mathworks.com/matlabcentral/fileexchange/91485-BrainSurfer_1 "Mathworks File Exchange") but I would strongly recommend you use this more stable release instead.
+A matlab app file is available [here](https://drive.google.com/file/d/1b7xkmFlznRkx9OuOciWmBuS4X7XY4Ev1/view?usp=sharing) as well. Although this may be easier to install, you will not have access to all functionality in this package. 
 
 *NOTE: This software is provided as is with no guarantee of any kind.*
 
