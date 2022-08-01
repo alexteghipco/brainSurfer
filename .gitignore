@@ -42,3 +42,5 @@ colormaps/StarkSummerSpring.mat
 colormaps/TealBlue2.mat
 colormaps/tealBlue3.mat
 colormaps/tealBlue4.mat
+scripts/patch/patchOverlay.asv
+colormaps/modality_colormap_ct.mat
