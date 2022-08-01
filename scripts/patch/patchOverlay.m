@@ -268,7 +268,7 @@ if options.clusterThresh ~= 0 | options.grow ~= 0 | strcmpi(options.outline,'map
 end
 
 % Roi-based clusters are a little different so convert here...
-if strcmpi(options.outline,'roi') & isempty(options.priorClusters)
+if strcmpi(options.outline,'roi') %& isempty(options.priorClusters)
     if ~isempty(options.UI)
         d.Message = ['Finding ROI blobs...this may take some time if you have large blobs in your map'];
         d.Value = 0.1;
