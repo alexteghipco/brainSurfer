@@ -309,8 +309,14 @@ if ~strcmpi(options.outline,'none') | options.grow ~= 0
         d.Value = 0.2;
     end
         dataClust_all = dataClust;
-        dataClust = getClusterBoundary(dataClust, underlays.(hemi).Faces);
+        if strcmpi(options.outline,'roi')
+            dataClust2 = getClusterBoundary(dataClust, underlays.(hemi).Faces);
+            dataClust = cellfun(@(x,y) setdiff(x,intersect(vertcat(dataClust2{:}),x)),dataClust,dataClust2, 'UniformOutput', false);
+        end
+
+        dataClust = getClusterBoundary(dataClust, underlays.(hemi).Faces);       
         hz = horzcat(dataT{:});
+
     for clusteri = 1:length(dataClust)
         % if you are doing an outline we need to get mean value for
         % each cluster
