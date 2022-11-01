@@ -1,5 +1,6 @@
-# BrainSurfer
+[![DOI](https://zenodo.org/badge/363765458.svg)](https://zenodo.org/badge/latestdoi/363765458)
 
+# BrainSurfer
 
 <img align="left" width="250" height="300" src="https://i.imgur.com/Q0AJWcn.png">
 BrainSurfer is a MATLAB toolbox for visualizing brain surfaces and showing statistical maps on top of them. 
