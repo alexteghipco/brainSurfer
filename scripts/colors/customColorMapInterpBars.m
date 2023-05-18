@@ -10,15 +10,22 @@ switch interpDir
         colorMapInterp(:,colorBins,:) = colorMap(:,:,2);
         
         for beti = 1:size(colorMapInterp,1)
-            r(beti,:) = linspace(colorMap(beti,1,1), colorMap(beti,1,2),colorBins-2);
-            g(beti,:) = linspace(colorMap(beti,2,1), colorMap(beti,2,2),colorBins-2);
-            b(beti,:) = linspace(colorMap(beti,3,1), colorMap(beti,3,2),colorBins-2);
+%             r(beti,:) = linspace(colorMap(beti,1,1), colorMap(beti,1,2),colorBins-2);
+%             g(beti,:) = linspace(colorMap(beti,2,1), colorMap(beti,2,2),colorBins-2);
+%             b(beti,:) = linspace(colorMap(beti,3,1), colorMap(beti,3,2),colorBins-2);
+            r(beti,:) = linspace(colorMap(beti,1,1), colorMap(beti,1,2),colorBins);
+            g(beti,:) = linspace(colorMap(beti,2,1), colorMap(beti,2,2),colorBins);
+            b(beti,:) = linspace(colorMap(beti,3,1), colorMap(beti,3,2),colorBins);
         end
-        
-        colorMapInterp(:,2:end-1,1) = r;
-        colorMapInterp(:,2:end-1,2) = g;
-        colorMapInterp(:,2:end-1,3) = b;
-        
+%         
+%         colorMapInterp(:,2:end-1,1) = r;
+%         colorMapInterp(:,2:end-1,2) = g;
+%         colorMapInterp(:,2:end-1,3) = b;
+
+        colorMapInterp(:,:,1) = r;
+        colorMapInterp(:,:,2) = g;
+        colorMapInterp(:,:,3) = b;
+
         %figure; imshow(colorMapInterp);
         
     case 'different'

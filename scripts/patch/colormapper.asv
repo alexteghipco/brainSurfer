@@ -352,8 +352,8 @@ switch options.colorSpacing
         %tickLabels = cbData;
         tickLabels = [cbDataNeg cbDataPos];
         %tickLabels = [linspace(min(options.limits),0,5) linspace(0,max(options.limits),5)];
-        %idx = find(tickLabels == 0);
-        %tickLabels(idx(end)) = [];
+        idx = find(tickLabels == 0);
+        tickLabels(idx(end)) = [];
         
 %         tf = cbData >= data;
 %         [~,m] = max(tf,[],2);
