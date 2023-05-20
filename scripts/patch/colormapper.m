@@ -339,8 +339,8 @@ switch options.colorSpacing
         cbData = horzcat(cbDataNeg,cbDataPos);
         %cData(round((length(cMap)/2)+1)) = [];
         %cbData(round((length(cbData)/2)+1)) = [];
-        idx = find(cbData == 0);
-        cbData(idx) = [];
+        %idx = find(cbData == 0);
+        %cbData(idx) = [];
         
         cData(idx1,:) = cMap(m1,:);
         cData(idx2,:) = cMap(m2,:);
@@ -350,8 +350,9 @@ switch options.colorSpacing
         %ticks = linspace(min(options.limits),max(options.limits),length(cbData));
         ticks = linspace(min(options.limits),max(options.limits),10); % was 9
         %tickLabels = cbData;
-        tickLabels = [cbDataNeg cbDataPos];
-        %tickLabels = [linspace(min(options.limits),0,5) linspace(0,max(options.limits),5)];
+        %tickLabels = [cbDataNeg cbDataPos];
+        tickLabels = [linspace(min(options.limits),0,6) linspace(0,max(options.limits),6)];
+        tickLabels([6 7]) = [];
         %idx = find(tickLabels == 0);
         %tickLabels(idx(end)) = [];
         
@@ -367,11 +368,35 @@ switch options.colorSpacing
         cbMapPos = cMap((1:floor(length(cMap)/2)),:);
         cbMapNeg = cMap(floor((length(cMap))/2):end,:);
         cMap = vertcat(cbMapPos,cbMapNeg);
-        cbDataNeg = linspace(min(options.limits),min(options.thresh),(options.colorBins/2)+1);
+        cbDataNeg = linspace(min(options.limits),min(options.thresh),(options.colorBins/2));
         cbDataPos = linspace(max(options.thresh),max(options.limits),options.colorBins/2);
         cbData = horzcat(cbDataNeg,cbDataPos);
         cbData(round((length(cMap)/2)+1)) = [];
         cMap(floor((length(cMap)/2)+1),:) = [];
+        
+        idx1 = find(data < options.thresh(1));
+        idx2 = find(data >= options.thresh(2));
+        
+        tf1 = cbDataNeg >= data(idx1);
+        tf2 = cbDataPos <= data(idx2);
+        [~,m1] = max(tf1,[],2);
+        
+        m1 = m1-1;
+        idx = find(m1 == 0);
+        m1(idx) = length(cbDataNeg);
+        %         idx = find(m1 > size(tf1,2));
+        %         m1(idx) = size(tf1,2);
+        
+        [~,m2] = min(tf2,[],2);
+        %m2 = m2-1;
+        m2 = m2+length(cbDataNeg);
+        
+        %cbDataPos = linspace(0,max(options.limits),options.colorBins/2);
+        cbData = horzcat(cbDataNeg,cbDataPos);
+        %cbData(round((length(cMap)/2)+1)) = [];
+        
+        cData(idx1,:) = cMap(m1,:);
+        cData(idx2,:) = cMap(m2,:);
         
         if (isempty(posTest) && ~isempty(negTest)) || (~isempty(posTest) && isempty(negTest))
             ticks = linspace(min(options.limits),max(options.limits),10);

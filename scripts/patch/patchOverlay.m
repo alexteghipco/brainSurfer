@@ -508,9 +508,11 @@ if length(dataTS) > 1
         tf = options.multiCbData(:,di)' >= dataTS{di};
         [~,m] = max(tf,[],2);
         ma(:,di) = m;
-        id = find(options.multiCbData(:,di) > max(options.multiCmapTicks(:,di)));
+        id = find(dataTS{di} > max(options.multiCmapTicks(:,di)));
+        %id = find(options.multiCbData(:,di) > max(options.multiCmapTicks(:,di)));
         ma(id,di) = size(options.multiCbData(:,di),1);
-        id = find(options.multiCbData(:,di) < min(options.multiCmapTicks(:,di)));
+        %id = find(options.multiCbData(:,di) < min(options.multiCmapTicks(:,di)));
+        id = find(dataTS{di} < min(options.multiCmapTicks(:,di)));
         ma(id,di) = 1;
     end
     clear cData
