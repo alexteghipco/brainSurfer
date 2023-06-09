@@ -1,4 +1,4 @@
-function [cMap,cData,cbData,ticks,tickLabels] = colormapper(data,varargin)
+function [cMap,cData,cbData,ticks,tickLabels,m] = colormapper(data,varargin)
 % This function generates a colormap using various specifications.
 %
 % Mandatory arguments------------------------------------------------------ 
@@ -50,6 +50,7 @@ function [cMap,cData,cbData,ticks,tickLabels] = colormapper(data,varargin)
 % [cMap,cData,cbData,ticks,tickLabels] = colormapGenerator(data,'colormap','delta','colorSpacing','even','colorBins',1000,'colorSpecial','randomizeClusterColors','invertColors','false')
 
 % Defaults
+m = [];
 options = struct('colormap', 'jet','colorSpacing','even','colorBins',1000,'colorSpecial','none','invertColors','false','limits',[min(data) max(data)],'sulci',[],'gyri',[],'thresh',[]);
 optionNames = fieldnames(options);
 
@@ -80,6 +81,8 @@ switch options.colorSpacing
             warning('Colormap is adjusted...if centering on zero must have even number of color bins')
             options.colorBins=options.colorBins-1;
         end
+    case 'even'
+        %options.colorBins = options.colorBins+1;
 end
 
 % create colormap if a string is passed in...otherwise interpolate colors
@@ -293,15 +296,23 @@ switch options.colorSpacing
     % this is the default option. All values between limits will get a
     % color from your colormap.
     case 'even'
-        cbData = linspace(min(options.limits),max(options.limits),options.colorBins);
+        cbData = linspace(min(options.limits),max(options.limits),options.colorBins+1);
         % this will split your colormap into negative and positive values.
         % Negative stuff gets half the colormap. positive stuff gets the other
         % half.
-        ticks = linspace(min(options.limits),max(options.limits),11);
-        tickLabels = ticks;
+        if length(cbData) <= 21
+            ticks = cbData;
+        else
+            ticks = linspace(min(options.limits),max(options.limits),21);
+            warning('Colorbar labels are in the correct position but may not match the location of each bin on the colormap because you have too many bins in your colormap and we cannot display ticks for all of them')
+        end
         
+        tickLabels = ticks;
         tf = cbData >= data;
-        [~,m] = max(tf,[],2);
+        [~,m] = min(fliplr(tf), [], 2);
+        m = size(tf, 2) - m + 1;
+        id = find(m > options.colorBins);
+        m(id) = options.colorBins; % we need to clip everything above the limit to the last colorbin
         cData = cMap(m,:);
 
     case 'center on zero'

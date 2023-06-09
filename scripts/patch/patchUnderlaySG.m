@@ -226,12 +226,18 @@ if ~isempty(options.binarize)
        id2 = find(lo < options.binarize);
        lo(id1) = 1;
        lo(id2) = 0.01;
+       options.colorBins = 2;
+       [~,mi] = min(options.limits);
+       options.limits(mi) = 0;
     end
     if ~isempty(options.rh)
         id1 = find(ro >= options.binarize);
         id2 = find(ro < options.binarize);
         ro(id1) = 1;
         ro(id2) = 0.01;
+        options.colorBins = 2;
+        [~,mi] = min(options.limits);
+        options.limits(mi) = 0;
     end
 end
 
@@ -270,13 +276,19 @@ end
 if isempty(options.limits) || ~isempty(options.binarize)
     if ~isempty(options.lh) && ~isempty(options.rh)
         tmp = [los; ros];
-        options.limits(1,1) = min(tmp);
+        if isempty(options.binarize)
+            options.limits(1,1) = min(tmp);
+        end
         options.limits(1,2) = max(tmp);
     elseif ~isempty(options.lh) && isempty(options.rh)
-        options.limits(1,1) = min(options.lh);
+        if isempty(options.binarize)
+            options.limits(1,1) = min(options.lh);
+        end
         options.limits(1,2) = max(options.lh);
     elseif isempty(options.lh) && ~isempty(options.rh)
-        options.limits(1,1) = min(options.rh);
+        if isempty(options.binarize)
+            options.limits(1,1) = min(options.rh);
+        end
         options.limits(1,2) = max(options.rh);
     end
 end

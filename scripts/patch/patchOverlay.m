@@ -237,7 +237,7 @@ for di = 1:size(allData,2)
 end
 
 % Get clusters if they are needed
-if options.clusterThresh ~= 0 | options.grow ~= 0 | strcmpi(options.outline,'map') | strcmpi(options.binarize,'clusters') == 1 | ~isempty(options.priorClusters)
+if options.clusterThresh ~= 0 | options.grow ~= 0 | strcmpi(options.outline,'map') | strcmpi(options.outline,'bins') | strcmpi(options.binarize,'clusters') == 1 | ~isempty(options.priorClusters)
     if ~isempty(options.UI)
         d.Message = ['Finding blobs...this may take some time if you have large blobs in your map'];
         d.Value = 0.1;
@@ -302,20 +302,35 @@ if strcmpi(options.outline,'roi') %& isempty(options.priorClusters)
     options.clusters = dataClust;
 end
   
+% Bin-based outlines are a little different too...we will turn bins into
+% clusters...
+if strcmpi(options.outline,'bins')
+   % other outline functions have to occur before colormapping so this is
+   % temporary...
+   warning('This option is still under development!!! It may break lots of things.')
+   [colormapMapTmp,cDataTmp,colormapdataMapTmp,ticksTicksTmp,tickslabelsTmp,m] = colormapper(dataT{:},'colormap',options.colormap{1},'colorSpacing',options.colorSpacing{1},'colorBins',options.colorBins{1},'colorSpecial',options.colorSpecial{1},'invertColors',options.invertColors{1},'limits',[min(options.limits{1}) max(options.limits{1})],'thresh',options.thresh{1});
+   un = unique(m);
+   clear dataClust
+   for i = 1:length(un)
+       dataClust{i} = find(m == un(i));
+   end
+end
+
 % Turn clusters into boundaries if necessary
 if ~strcmpi(options.outline,'none') | options.grow ~= 0
     if ~isempty(options.UI)
         d.Message = ['Fetching boundary vertices...'];
         d.Value = 0.2;
     end
-        dataClust_all = dataClust;
-        if strcmpi(options.outline,'roi')
-            dataClust2 = getClusterBoundary(dataClust, underlays.(hemi).Faces);
-            dataClust = cellfun(@(x,y) setdiff(x,intersect(vertcat(dataClust2{:}),x)),dataClust,dataClust2, 'UniformOutput', false);
-        end
-
-        dataClust = getClusterBoundary(dataClust, underlays.(hemi).Faces);       
-        hz = horzcat(dataT{:});
+    
+    dataClust_all = dataClust;
+    if strcmpi(options.outline,'roi')
+        dataClust2 = getClusterBoundary(dataClust, underlays.(hemi).Faces);
+        dataClust = cellfun(@(x,y) setdiff(x,intersect(vertcat(dataClust2{:}),x)),dataClust,dataClust2, 'UniformOutput', false);
+    end
+    
+    dataClust = getClusterBoundary(dataClust, underlays.(hemi).Faces);
+    hz = horzcat(dataT{:});
 
     for clusteri = 1:length(dataClust)
         % if you are doing an outline we need to get mean value for
@@ -474,7 +489,9 @@ end
 for di = 1:length(dataTS)
     %if length(dataTS) == 1 | (length(dataTS) > 1  & (isempty(options.multiCmap) | isempty(options.multiCmapTicks) | isempty(options.multiCbData)))
     if length(dataTS) == 1 | length(dataTS) > 1 | isempty(options.multiCmapTicks) | isempty(options.multiCbData)
-        [colormapMapTmp,cDataTmp,colormapdataMapTmp,ticksTicksTmp,tickslabelsTmp] = colormapper(dataTS{di},'colormap',options.colormap{di},'colorSpacing',options.colorSpacing{di},'colorBins',options.colorBins{di},'colorSpecial',options.colorSpecial{di},'invertColors',options.invertColors{di},'limits',[min(options.limits{di}) max(options.limits{di})],'thresh',options.thresh{di});
+        if  ~strcmpi(options.outline,'bins')
+            [colormapMapTmp,cDataTmp,colormapdataMapTmp,ticksTicksTmp,tickslabelsTmp] = colormapper(dataTS{di},'colormap',options.colormap{di},'colorSpacing',options.colorSpacing{di},'colorBins',options.colorBins{di},'colorSpecial',options.colorSpecial{di},'invertColors',options.invertColors{di},'limits',[min(options.limits{di}) max(options.limits{di})],'thresh',options.thresh{di});
+        end
         colormap{di}.map = colormapMapTmp;
         cData{di} = cDataTmp;
         colormap{di}.dataMap = colormapdataMapTmp;
@@ -625,10 +642,15 @@ end
 % find alpha mapping for each "color" here. transp.map will be this.
 % transp.vals can be alph from below.
 try
-    transp.map = ones(size(colormap{1}.dataMap))*options.opacity;
+    if strcmpi(options.colorSpacing,'even')
+        transp.map = ones(1,length(colormap{1}.dataMap)-1)*options.opacity;
+    else
+        transp.map = ones(size(colormap{1}.dataMap))*options.opacity;
+    end
 catch
     transp.map = ones(size(options.multiCbData,1),1)*options.opacity;
 end
+
 
 % if strcmpi(options.inclZero,'off') & isempty(s)
 %    id = find(all(horzcat(dataTS{:}) == 0,2)==1);
