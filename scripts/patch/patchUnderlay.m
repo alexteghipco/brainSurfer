@@ -121,12 +121,17 @@ else
                 brain.right.face = face1;
             end
         else
-            if mean(vert1(:,3)) < mean(vert2(:,3))
-            %if mean(vert1(:,1)) > mean(vert2(:,1))
-                %             if mean(vert1(:,1)) < 0
-                brain.right.vert = vert1;
-                brain.right.face = face1;
-            else
+            try
+                if mean(vert1(:,3)) < mean(vert2(:,3))
+                    %if mean(vert1(:,1)) > mean(vert2(:,1))
+                    %             if mean(vert1(:,1)) < 0
+                    brain.right.vert = vert1;
+                    brain.right.face = face1;
+                else
+                    brain.left.vert = vert1;
+                    brain.left.face = face1;
+                end
+            catch
                 brain.left.vert = vert1;
                 brain.left.face = face1;
             end
@@ -147,19 +152,19 @@ else
                 brain.left.face = face2;
             end
         else
-            if mean(vert1(:,3)) < mean(vert2(:,3))
+            %if mean(vert1(:,3)) < mean(vert2(:,3))
             %if mean(vert1(:,1)) > mean(vert2(:,1))
                 %             if mean(vert1(:,1)) < 0
-                brain.right.vert = vert1;
-                brain.right.face = face1;
-                brain.left.vert = vert2;
-                brain.left.face = face2;
-            else
+%                 brain.right.vert = vert1;
+%                 brain.right.face = face1;
+%                 brain.left.vert = vert2;
+%                 brain.left.face = face2;
+%             else
                 brain.left.vert = vert1;
                 brain.left.face = face1;
                 brain.right.vert = vert2;
                 brain.right.face = face2;
-            end
+            %end
         end
     end
 end
@@ -211,7 +216,8 @@ switch add
             
         elseif isfield(brain, 'left') && ~isfield(brain, 'right')
             if min(min(brain.left.face)) <= 0
-                brain.left.face = 1+brain.left.face;
+                min(min(brain.left.face))
+                brain.left.face = -1*(min(min(brain.left.face)))+1+brain.left.face;
             end
             
             tmp = patch('Faces',brain.left.face,'Vertices',brain.left.vert,'FaceVertexCData',[cdata1],'facealpha',1,'CDataMapping','direct','facecolor','interp','edgecolor','none','FaceLighting','gouraud');
@@ -219,7 +225,7 @@ switch add
             
         elseif isfield(brain, 'right') && ~isfield(brain, 'left')
             if min(min(brain.right.face)) <= 0
-                brain.right.face = 1+brain.right.face;
+                brain.right.face = -1*(min(min(brain.left.face)))+1+brain.right.face;
             end
             brain.right.vert(:,1) = brain.right.vert(:,1)+rh_offset;
             
