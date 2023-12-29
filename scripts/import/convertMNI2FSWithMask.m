@@ -50,11 +50,11 @@ emptVox = find(inNifti.vol == 0); % get empty voxels
 valsVox = find(inNifti.vol ~= 0); % get nonempty voxels
 
 % write out both empty and nonempty voxels as new nifti files
-inNifti.vol = zeros(91,109,91);
+inNifti.vol = zeros(size(inNifti.vol));
 inNifti.vol(emptVox) = 1;
 save_nifti(inNifti,[path slash file '_EMPTY_MASK.nii']);
 
-inNifti.vol = zeros(91,109,91);
+inNifti.vol = zeros(size(inNifti.vol));
 inNifti.vol(valsVox) = 1;
 save_nifti(inNifti,[path slash file '_VALS_MASK.nii']);
 
