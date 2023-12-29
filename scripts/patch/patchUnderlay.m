@@ -207,20 +207,19 @@ switch add
             end
             brain.right.vert(:,1) = brain.right.vert(:,1)+rh_offset;
             
-            tmp = patch('Faces',brain.left.face,'Vertices',brain.left.vert,'FaceVertexCData',[cdata1],'facealpha',1,'CDataMapping','direct','facecolor','interp','edgecolor','none','FaceLighting','gouraud');
+            tmp = patch('Faces',brain.left.face,'Vertices',brain.left.vert,'FaceVertexCData',cdata1,'facealpha',1,'CDataMapping','direct','facecolor','interp','edgecolor','none','FaceLighting','gouraud');
             hold on
-            tmp2 = patch('Faces',brain.right.face,'Vertices',brain.right.vert,'FaceVertexCData',[cdata2],'facealpha',1,'CDataMapping','direct','facecolor','interp','edgecolor','none','FaceLighting','gouraud');
+            tmp2 = patch('Faces',brain.right.face,'Vertices',brain.right.vert,'FaceVertexCData',cdata2,'facealpha',1,'CDataMapping','direct','facecolor','interp','edgecolor','none','FaceLighting','gouraud');
             
             underlay.left = tmp;
             underlay.right = tmp2;
             
         elseif isfield(brain, 'left') && ~isfield(brain, 'right')
             if min(min(brain.left.face)) <= 0
-                min(min(brain.left.face))
                 brain.left.face = -1*(min(min(brain.left.face)))+1+brain.left.face;
             end
             
-            tmp = patch('Faces',brain.left.face,'Vertices',brain.left.vert,'FaceVertexCData',[cdata1],'facealpha',1,'CDataMapping','direct','facecolor','interp','edgecolor','none','FaceLighting','gouraud');
+            tmp = patch('Faces',brain.left.face,'Vertices',brain.left.vert,'FaceVertexCData',cdata1,'facealpha',1,'CDataMapping','direct','facecolor','interp','edgecolor','none','FaceLighting','gouraud');
             underlay.left = tmp;
             
         elseif isfield(brain, 'right') && ~isfield(brain, 'left')
@@ -229,7 +228,7 @@ switch add
             end
             brain.right.vert(:,1) = brain.right.vert(:,1)+rh_offset;
             
-            tmp2 = patch('Faces',brain.right.face,'Vertices',brain.right.vert,'FaceVertexCData',[cdata2],'facealpha',1,'CDataMapping','direct','facecolor','interp','edgecolor','none','FaceLighting','gouraud');
+            tmp2 = patch('Faces',brain.right.face,'Vertices',brain.right.vert,'FaceVertexCData',cdata2,'facealpha',1,'CDataMapping','direct','facecolor','interp','edgecolor','none','FaceLighting','gouraud');
             underlay.right = tmp2;
         end
         
@@ -254,7 +253,7 @@ switch add
             underlay.right.Vertices(:,1) = underlay.right.Vertices(:,1)+rh_offset;
             hold on
             
-            tmp = patch(tm,'Faces',brain.left.face,'Vertices',brain.left.vert,'FaceVertexCData',[cdata1],'facealpha',1,'CDataMapping','direct','facecolor','interp','edgecolor','none','FaceLighting','gouraud');
+            tmp = patch(tm,'Faces',brain.left.face,'Vertices',brain.left.vert,'FaceVertexCData',cdata1,'facealpha',1,'CDataMapping','direct','facecolor','interp','edgecolor','none','FaceLighting','gouraud');
             hold off
             underlay.left = tmp;
         elseif strcmp(hemi,'right')
@@ -265,7 +264,7 @@ switch add
             brain.right.vert(:,1) = brain.right.vert(:,1)+rh_offset;
             hold on
             
-            tmp2 = patch(tm,'Faces',brain.right.face,'Vertices',brain.right.vert,'FaceVertexCData',[cdata2],'facealpha',1,'CDataMapping','direct','facecolor','interp','edgecolor','none','FaceLighting','gouraud');
+            tmp2 = patch(tm,'Faces',brain.right.face,'Vertices',brain.right.vert,'FaceVertexCData',cdata2,'facealpha',1,'CDataMapping','direct','facecolor','interp','edgecolor','none','FaceLighting','gouraud');
             hold off
             underlay.right = tmp2;
         end
@@ -356,7 +355,7 @@ switch add
         end
         
         set(gcf,'color','w');
-        set(gcf,'units','normalized','outerposition',[0 0 wSz(1) wSz(2)])
+        set(gcf,'units','normalized','outerposition',[0 0 wSz(1) wSz(2)]);
 end
 
 if isfield(underlay,'right') && ~isfield(underlay,'left') && strcmp(v,'on')

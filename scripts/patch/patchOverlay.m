@@ -122,7 +122,7 @@ optionNames = fieldnames(options);
 oneDImp = {'pMap';'sclLims';'operation';'inclZero';'opacity';'UI';'clusterThresh';'outline';'grow';'clusterOrder';'growVal';'priorClusters';'modData';'modCmap';'multiCmap';'absMod';'incZeroMod';'minAlphaMod';'maxAlphaMod';'alphaModLims';'scndCbarAxis';'multiCmapTicks';'multiCbData'};
  
 % Check inputs
-if length(varargin) < 3
+if isempty(brainFig) || isempty(hemi) || isempty(underlays) || isempty(allData)
     error('You are missing an argument')
 end
 if length(varargin) > (length(fieldnames(options))*2)
