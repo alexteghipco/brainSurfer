@@ -224,7 +224,7 @@ switch add
             
         elseif isfield(brain, 'right') && ~isfield(brain, 'left')
             if min(min(brain.right.face)) <= 0
-                brain.right.face = -1*(min(min(brain.left.face)))+1+brain.right.face;
+                brain.right.face = -1*(min(min(brain.right.face)))+1+brain.right.face;
             end
             brain.right.vert(:,1) = brain.right.vert(:,1)+rh_offset;
             
