@@ -15,7 +15,7 @@ toolboxPath = which('convertMNI2FS.m');
 defaultWarp = 'avgMapping_allSub_RF_ANTs_MNI152_orig_to_fsaverage.mat';
 [inFilePath,inFileName,ext] = fileparts(inFile);
 %ext = '.nii.gz';
-if strfind(inFileName,'.nii') ~= 0
+if strcmpi(ext,'.gz')
     inFileName = inFileName(1:end-4);
     %ext = '.nii.gz';
 end
