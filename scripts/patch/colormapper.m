@@ -1,53 +1,127 @@
-function [cMap,cData,cbData,ticks,tickLabels,m] = colormapper(data,varargin)
-% This function generates a colormap using various specifications.
+function [cMap, cData, cbData, ticks, tickLabels, m] = colormapper(data, varargin)
+% Generates a customized colormap and maps data points to colors.
 %
-% Mandatory arguments------------------------------------------------------ 
+%   [cMap, cData, cbData, ticks, tickLabels, m] = COLORMAPPER(data)
+%   [cMap, cData, cbData, ticks, tickLabels, m] = COLORMAPPER(data, 'ParameterName', ParameterValue, ...)
 %
-% data: n x 1 data to be mapped onto 
+% **Description**
+% ----------------
+%   COLORMAPPER creates a colormap based on the provided data and optional specifications.
+%   It maps each data point to a corresponding color in the colormap and generates
+%   auxiliary information for visualization purposes, such as colorbar data and tick labels.
 %
-% Output------------------------------------------------------------------- 
+% **Mandatory Arguments**
+% -----------------------
+%   data
+%       - (n x 1 numeric vector) The data to be mapped onto the colormap.
+%       - Each element in `data` is assigned a color from the generated colormap.
 %
-% cMap: b x 3 color associated with each bin
+% **Optional Arguments**
+% -----------------------
+%   'colormap'
+%       - (string or l x 3 numeric matrix) Specifies the colormap to use.
+%       - If a string is provided, it can be any of the following predefined colormaps:
+%         'jet' (default), 'parula', 'hsv', 'hot', 'cool', 'spring', 'summer',
+%         'autumn', 'winter', 'gray', 'bone', 'copper', 'pink', 'lines',
+%         'colorcube', 'prism', 'Spectral', 'RdYlBu', 'RdGy', 'RdBu', 'PuOr',
+%         'PRGn', 'PiYG', 'BrBG', 'YlOrRd', 'YlOrBr', 'YlGnBu', 'YlGn',
+%         'Reds', 'RdPu', 'Purples', 'PuRd', 'PuBuGn', 'PuBu', 'OrRd',
+%         'Oranges', 'Greys', 'Greens', 'GnBu', 'BuPu', 'BuGn', 'Blues',
+%         'Set3', 'Set2', 'Set1', 'Pastel2', 'Pastel1', 'Paired', 'Dark2',
+%         'Accent', 'inferno', 'plasma', 'vega10', 'vega20b', 'vega20c',
+%         'viridis', 'thermal', 'haline', 'solar', 'ice', 'oxy', 'deep',
+%         'dense', 'algae', 'matter', 'turbid', 'speed', 'amp', 'tempo',
+%         'balance', 'delta', 'curl', 'phase', 'perceptually distinct'.
+%       - Alternatively, provide a custom colormap as an l x 3 matrix of RGB values.
 %
-% cData: n x 3 color associated with each data point.1
+%   'colorSpacing'
+%       - (string) Determines how colors are distributed between the colormap limits.
+%       - Options:
+%         'even' (default) - Colors are evenly spaced between the minimum and maximum data values.
+%         'center on zero' - The midpoint of the colorbar is set to zero.
+%         'center on threshold' - The midpoint is set based on specified threshold values.
 %
-% Optional (options.threshold) arguments-------------------------------------------
+%   'colorBins'
+%       - (integer) Number of discrete color bins in the colormap. 
+%       - Default: 1000.
 %
-% 'colormap': an internal matlab colormap, or the name of any other
-%       colormap redistributed with brainSurfer: 'jet', parula, hsv, hot,
-%       cool, spring, summer, autumn, winter, gray, bone, copper, pink,
-%       lines, colorcube, prism, spectral, RdYlBu, RdGy, RdBu, PuOr, PRGn,
-%       PiYG, BrBG, YlOrRd, YlOrBr, YlGnBu, YlGn, Reds, RdPu, Purples,
-%       PuRd, PuBuGn, PuBu, OrRd, oranges, greys, greens, GnBu, BuPu, BuGn,
-%       blues, set3, set2, set1, pastel2, pastel1, paired, dark2, accent,
-%       inferno, plasma, vega10, vega20b, vega20c, viridis, thermal,
-%       haline, solar, ice, oxy, deep, dense, algae, matter, turbid, speed,
-%       amp, tempo, balance, delta, curl, phase, perceptually distinct
-%       (default is jet). 
-%       
-%       colormap can also be an l x 3 matrix of colors specifying a custom
-%       colormap
+%   'colorSpecial'
+%       - (string) Defines special color assignments.
+%       - Options:
+%         'randomizeClusterColors' - Assigns random colors to each cluster in the data.
+%         'none' (default) - No special color assignments.
 %
-% 'colorSpacing': determines how colors are spaced in between the limits. 
-%       'even': evenly spaced between limits (default)
-%       'center on zero': the midpoint of the colorbar is forced to be zero
-%       'center on options.threshold': the midpoint of the colorbar is forced to be
-%       the options.thresholds you've applied to your data
+%   'invertColors'
+%       - (string) Option to invert the colormap.
+%       - Options:
+%         'on' - Inverts the colormap.
+%         'off' (default) - Keeps the colormap as defined.
 %
-% 'colorBins': number of color bins in the colorbar (default: 1000)
-%   
-% 'colorSpecial': this option can assign colors in special ways: 
-%       'randomizeClusterColors': each cluster in data is assigned a random
-%       color on colorbar (default: 'none')
+%   'limits'
+%       - (1x2 numeric vector) Specifies the lower and upper bounds of the colormap.
+%       - Default: [min(data) max(data)].
 %
-% 'invertColors': invert colormap (default: 'false')
+% **Outputs**
+% ----------
+%   cMap
+%       - (colorBins x 3 numeric matrix) The generated colormap, where each row represents an RGB color.
 %
-% 'limits': two numbers that represent the limits of the colormap (default
-%       is: [min(data) max(data)])
+%   cData
+%       - (n x 3 numeric matrix) Colors mapped to each data point in `data`.
+%       - Each row corresponds to the RGB color of the respective data point.
 %
-% Call: 
-% [cMap,cData,cbData,ticks,tickLabels] = colormapGenerator(data)
-% [cMap,cData,cbData,ticks,tickLabels] = colormapGenerator(data,'colormap','delta','colorSpacing','even','colorBins',1000,'colorSpecial','randomizeClusterColors','invertColors','false')
+%   cbData
+%       - (1 x (colorBins + 1) numeric vector) Values corresponding to each color bin for the colorbar.
+%
+%   ticks
+%       - (numeric vector) Positions of ticks on the colorbar.
+%
+%   tickLabels
+%       - (numeric vector) Labels for each tick on the colorbar.
+%
+%   m
+%       - (n x 1 numeric vector) Index of the color bin assigned to each data point.
+%
+% **Function Call Examples**
+% --------------------------
+%   % Example 1: Basic usage with default parameters
+%   data = randn(100, 1);
+%   [cMap, cData, cbData, ticks, tickLabels, m] = colormapper(data);
+%
+%   % Example 2: Using a specific colormap and custom color bins
+%   [cMap, cData, cbData, ticks, tickLabels, m] = colormapper(data, 'colormap', 'viridis', 'colorBins', 500);
+%
+%   % Example 3: Centering the colormap on zero and inverting colors
+%   [cMap, cData, cbData, ticks, tickLabels, m] = colormapper(data, 'colorSpacing', 'center on zero', 'invertColors', 'on');
+%
+%   % Example 4: Using a custom colormap matrix
+%   customMap = [1 0 0; 0 1 0; 0 0 1]; % Red, Green, Blue
+%   [cMap, cData, cbData, ticks, tickLabels, m] = colormapper(data, 'colormap', customMap, 'colorBins', 3);
+%
+%   % Example 5: Randomizing cluster colors
+%   [cMap, cData, cbData, ticks, tickLabels, m] = colormapper(data, 'colorSpecial', 'randomizeClusterColors');
+%
+% **Notes**
+% ----------
+%   - When using 'center on zero' or 'center on threshold' for 'colorSpacing', ensure that the data and limits include the specified center point to achieve balanced color distribution.
+%   - Custom colormaps must be provided as an l x 3 matrix, where each row defines an RGB color. Ensure that the number of rows matches or is compatible with the specified 'colorBins'.
+%   - The function handles data points outside the specified 'limits' by assigning them the nearest color in the colormap (i.e., data below the minimum limit gets the first color, and data above the maximum limit gets the last color).
+%   - Tick labels are automatically adjusted based on the magnitude of the data to provide clear and readable colorbar annotations.
+%   - Input validation checks ensure that parameter names and values are correctly specified. Provide parameters as name-value pairs to avoid errors.
+%
+%   - Dependencies:
+%       - `cbrewer` for certain colormaps.
+%       - `cmocean` for oceanographic colormaps.
+%       - `distinguishable_colors` for generating perceptually distinct colors.
+%       - Ensure these functions are available in your MATLAB path or install the necessary toolboxes/packages.
+%
+% **Author**
+% -------
+%   Alex Teghipco // alex.teghipco@uci.edu // Last Updated: 2024-12-01
+%
+% **See Also**
+% ----------
+%   colormap, interp1, cbrewer, cmocean, distinguishable_colors
 
 % Defaults
 m = [];

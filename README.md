@@ -9,9 +9,9 @@ BrainSurfer is a MATLAB toolbox for visualizing brain surfaces and showing stati
 
 It serves to quickly create pretty figures from data you have already processed and analyzed elsewhere. It supports projecting data from volume space onto freesurfer's fsaverage and connectome workbench's fs_LR (s900) spaces. It's also compatible with a wide range of file types that store surface data (cifti, nifti, gifti, and freesurfer's label, annotation and morphology formats lilke .curv), and can be easily used to convert files between these formats. BrainSurfer can also perform lots of operations on surface maps (e.g., thresholding based on ranges of values, cluster sizes, and p-values, but also outlining clusters, smoothing, combining, masking, and averaging maps, and lots of other stuff) and can take automated standardized screenshots of large numbers of surface maps. Its visualization capabilities include the ability to modulate the transparency of surface maps by other maps, and to represent two to three surface maps on one mesh using 2-D (square) and 3-D (cube) colormaps. It contains a GUI for creating your own colormaps and supports saving GUI states so that you can share surface data visualizations with other users exactly as you've set them up in BrainSurfer, even if those users don't have the files you used to generate the visualizations. 
 
-## NOTICE: If you are using a more recent version of MATLAB on Windows, when generating an outline, you may have to set opacity to anything below 1 (e.g., 0.99) to avoid outline coloring artifacts. You can also right click on the outline dropdown in the overlay tab for colormaps to change line settings.
+#### NOTICE: If you are using a more recent version of MATLAB on Windows, when generating an outline, you may have to set opacity to anything below 1 (e.g., 0.99) to avoid outline coloring artifacts. You can also right click on the outline dropdown in the overlay tab for colormaps to change line settings.
 
-## SECOND NOTICE: brainSurfer should work on Ubuntu and has been used on this OS but there is a current issue with GUIs in matlab and recent releases of ubuntu: https://www.mathworks.com/matlabcentral/answers/1978579-why-do-some-matlab-features-fail-on-ubuntu-23-04-and-debian-12-with-exit-code-127-in-matlab-r2022b-a
+#### SECOND NOTICE: brainSurfer should work on Ubuntu and has been used on this OS but there is a current issue with GUIs in matlab and recent releases of ubuntu: https://www.mathworks.com/matlabcentral/answers/1978579-why-do-some-matlab-features-fail-on-ubuntu-23-04-and-debian-12-with-exit-code-127-in-matlab-r2022b-a
 
 ## Installation
 Most testing was performed on MATLAB 2021a so it is recommended that you upgrade to the newest MATLAB release. MATLAB 2020a and MATLAB 2020b should work as well but have not been as thoroughly tested. Windows 10 or mac OS (big sur) are required (catalina should be okay). If you are using an older version of MATLAB (e.g., 2019) and you encounter an error, you may be able to get brainSurfer to work by opening the .mlapp file and hitting the green run button, which will automatically convert portions of code incompatible with older versions of MATLAB (you only need to do this once). Note, one UI element for manipulating thresholds (slider) relies on the MATLAB imaging toolbox but you will still be able to adjust thresholds if you do not have this toolbox installed. 
@@ -35,7 +35,7 @@ To install BrainSurfer:
 3) Type "brainSurfer" into the command window to summon the GUI. If you ignore step 2, some of the buttons in the GUI will be missing icons.
 4) Provide a path to the connectome workbench scripts that you have previously downloaded if you would like to be able to project data from fsaverage or volume space onto the fs_LR template (the path needs to point to the system-specific directory name that contains "wb_command" and a few other scripts).
 
-BrainSurfer will only ask you for a path to the connectome workbench the first time it is opened (see video below), but you can provide the path manually later. If no path is provided, all other BrainSurfer features will still work. The path you provide is stored in ./scripts/pathToWorkBench.txt. If you did not provide any path to BrainSurfer the first time you opened it, this text file will appear empty but contains a single space. If this text file is ever actually empty, BrainSurfer will prompt you for the path again. So if you would like to update the connectome workbench path you can open this text file and delete everything in it, or just manually type the path before saving.
+BrainSurfer will only ask you for a path to the connectome workbench the first time it is opened (see video below), but you can provide the path manually later. If no path is provided, all other BrainSurfer features will still work. The path you provide is stored in ./scripts/pathToWorkBench.txt (now moved to ./scripts/defaultSettings.json in latest version). If you did not provide any path to BrainSurfer the first time you opened it, this text file will appear empty but contains a single space (now will show /your/path/here). If this text file is ever actually empty, BrainSurfer will prompt you for the path again (now if it is /you/path/here). So if you would like to update the connectome workbench path you can open this text file and delete everything in it (now replace with /your/path/here), or just manually type the path before saving.
 
 <p align="center">
   <kbd><img width="680" height="400" src="https://i.imgur.com/kSZYDzs.gif"/></kbd>
@@ -43,7 +43,11 @@ BrainSurfer will only ask you for a path to the connectome workbench the first t
 
 A matlab app file is available [here](https://drive.google.com/file/d/1b7xkmFlznRkx9OuOciWmBuS4X7XY4Ev1/view?usp=sharing) as well. Although this may be easier to install, you will not have access to all functionality in this package and will be missing some bug fixes.
 
-*NOTE: This software is provided as is with no guarantee of any kind.*
+## Disclaimer
+
+**Important:** This software is designed exclusively for the visualization of brain surfaces for research and educational purposes. It is **not** intended, tested, or approved for use in medical diagnosis, treatment, or any clinical applications.
+
+**Liability Limitation:** The authors and contributors are **not** responsible for any use of this software in medical settings. By using this software, you agree that you are solely responsible for any outcomes resulting from its use. In no event shall the authors or contributors be liable for any damages arising from the use or inability to use this software, even if advised of the possibility of such damages.
 
 # The BrainSurfer manual-tutorial thing
 This is a more in-depth guide to using BrainSurfer that includes lots of documentation about what goes on under the hood. It's organized like a tutorial with "videos" (gifs) that show how various actions are performed using data that is packaged with BrainSurfer so that you can follow along yourself. Some of the longer videos are a bit more compressed and blurry, but the idea is that you are generating the same figures in the videos on your own. The more tutorial-like portion of this manual starts on [section 4](#loadingUnderlayTemplates).
@@ -79,7 +83,9 @@ This is a more in-depth guide to using BrainSurfer that includes lots of documen
     2. [2D overlays](#2D)
     3. [3D overlays](#3D)
 25. [Changing the GUI appearance](#modes)
-26. [Scripts and dependencies (will be updated with more info soon)](#scriptsDependencies)
+26. [Spin Test for Continuous and Parcellated Statistical Maps](#spinTest)
+27. [Scripting](#scripting)
+28. [Dependencies and Notes](#scriptsDependencies)
 
 ## 1. What file types does BrainSurfer work with? <a name="filetypes"></a>
 Files loaded into BrainSurfer are organized into the following categories: surfaces, morphological data, statistical maps (referred to as overlays), and atlases.
@@ -116,7 +122,7 @@ Atlases are the only source of data that can't be loaded in the file menu. Inste
 ![](https://i.imgur.com/2iC4PwF.png)
 
 ## 3. Naming conventions <a name="naming"></a>
-When any kind of data is loaded, BrainSurfer automatically determines the hemisphere to which it belongs based on its file name and proceeds to generate a patch on the surface for that hemisphere. For surfaces, files should have a clear reference to a hemisphere by including one of these strings: 'left', 'lh', '.l.','_l.','_l_','right', 'rh','.r.','_r.','_r_'. The same generally goes for overlays, although if you are loading a CIFTI file it is possible that it contains information on both hemispheres. To ensure BrainSurfer knows this, avoid referencing a specific hemisphere in these cases. The typical naming convention for HCP data is consistent with this, usually only containing 'LR' in reference to the left-right symmetric fs_LR template. If you have a file whose name references both hemispheres, or no hemispheres (and is not a cifti), BrainSurfer should ask you which hemisphere to patch that file onto, like shown in the image below. 
+When any kind of data is loaded, BrainSurfer automatically determines the hemisphere to which it belongs based on its file name and proceeds to generate a patch on the surface for that hemisphere. For surfaces, files should have a clear reference to a hemisphere by including one of these strings: 'left', 'lh', '.l.','_l.','_l_','right', 'rh','.r.','_r.','_r_'. The same generally goes for overlays, although if you are loading a CIFTI file it is possible that it contains information on both hemispheres. To ensure BrainSurfer knows this, avoid referencing a specific hemisphere in these cases. The typical naming convention for HCP data is consistent with this, usually only containing 'LR' in reference to the left-right symmetric fs_LR template. If you have a file whose name references both hemispheres, or no hemispheres (and is not a cifti), BrainSurfer should ask you which hemisphere to patch that file onto, like shown in the image below. Note, in the most recent version of brainSurfer, you can edit your own references to hemispheres by editing defaultSettings.json, which allows for more flexibility in naming conventions.
 
 ![](https://i.imgur.com/uuYIUfa.png)
 
@@ -178,7 +184,7 @@ And you can change the view of the patch, using either prespecified viewing angl
   <kbd><img width="1000" height="300" src="https://i.imgur.com/jjJgr0y.gif"/></kbd>
 </p>
 
-The current lighting you see in the patch is based on some default settings I like. If you don't like them, there is still a trivial way to change them. Just find the ./scripts/defaultLights.txt file and change that to the angles at which you'd like to add lights. You can have as many as you want. Note that BrainSurfer reads this in when you first start it up, so if you change this, you will need to restart BrainSurfer. 
+The current lighting you see in the patch is based on some default settings I like. If you don't like them, there is still a trivial way to change them. Just find the ./scripts/defaultLights.txt file and change that to the angles at which you'd like to add lights (now moved to ./scripts/defaultSettings.json). You can have as many as you want. Note that BrainSurfer reads this in when you first start it up, so if you change this, you will need to restart BrainSurfer. 
 
 If you navigate to the limits section of the appearance settings, you can inspect the distribution of values in your underlay provided that you have loaded in some morphological data. Note the tabs on the left hand side for underlays and overlays. Each appearance settings panel is broken up into settings for the underlay and settings for the overlay. In lots of places you will see the same settings/buttons/options so make sure you are clicked on the right tab before pressing anything! To try to minimize confusion, when an underlay is loaded BrainSurfer defaults to showing underlay settings across all tabs and when an overlay is loaded it defaults to showing overlay settings.
 
@@ -496,7 +502,9 @@ You can also change the font size of the overlay selection listbox, trim the len
 </p>
 
 ## 21. Operations <a name="operations"></a>
-The operations menu adds some more options for manipulating overlays, but mostly adds ways of creating new ones. Pressing any of these buttons will summon a secondary listbox to select all overlays over which you want the operation you've selected performed. The top two operation options can be used to take the absolute value of overlays, and to multiply overlays by -1 in order to flip positive and negative values. The remaining options will create a new overlay and add it to the listbox. The new overlay will be based on adding, averaging, or taking the standard deviation of the overlays you have selected in the secondary listbox.  
+The operations menu adds some more options for manipulating overlays, but mostly adds ways of creating new ones. Pressing any of these buttons will summon a secondary listbox to select all overlays over which you want the operation you've selected performed. The top two operation options can be used to take the absolute value of overlays, and to multiply overlays by -1 in order to flip positive and negative values. The remaining options will create a new overlay and add it to the listbox. The new overlay will be based on adding, averaging, or taking the standard deviation of the overlays you have selected in the secondary listbox.   
+
+More operations have been added since this gif was generated, but they are relatively self-explanatory. You can now subtract maps in succession, multiply maps, divide them, or perform PCA analysis over selected maps.
 
 <p align="center">
   <kbd><img width="1000" height="300" src="https://i.imgur.com/gJYVeJo.gif"/></kbd>
@@ -646,8 +654,38 @@ Changing to dark mode, etc will take a little while.
 <p align="center">
   <kbd><img width="1000" height="300" src="https://i.imgur.com/r16bPxY.gif"/></kbd>
 </p>
+## 26. Spin test for continuous and parcellated statistical maps
+<a name="spinTest"></a>
+Establishing correspondence between surface space maps is tricky due to spatial autocorrelation, which we see across all neuroimaging modalities (i.e., we violate independence assumptions for most statistical testing). There is ongoing [conversation](https://www.biorxiv.org/content/10.1101/2024.12.15.628553v1.article-info) about how to better account for this wrinkle, but a traditional approach is to perform a permutation-based test, where the similarity between two maps is first established, then one map is "spun" on a spherical version of the surface template to break the relationship between the two maps while still respecting the intrinsic spatial relationships and autocorrelation in the data. 
 
-## 26. Scripts and dependencies <a name="scriptsDependencies"></a>
+In other words, it's just a permutation test, but on each permutation we rotate one of the maps on the brain.
+
+Under the operations menu (see top of brainSurfer GUI) you will find the option to perform two kinds of spin tests, both of which will evaluate the Spearman correlation coefficient between two maps. 
+
+If you are interested in evaluating two maps with continuous values, select the continuous test option. This implements the strategy described by [Alexander-Block et al (2018)](https://www.sciencedirect.com/science/article/abs/pii/S1053811918304968) with a few exceptions. First, we apply continuity correction to the p-value estimation from the permutation distribution. This ensures there cannot be a p-value of 0 by adding 1 to the numerator and denominator used to derive the p-value. Second, we apply the approach to a single hemisphere at a time. Therefore, we do not reflect the rotation of one hemisphere to the other hemisphere, and we do not exploit the symmetry of the CIVET (HCP) template. Consider whether you agree with this approach before using this implementation (e.g., you may lose some power). 
+
+If your maps are binned by an atlas (i.e., you have two maps showing region-wise data among the same regions), you should select the parcellation-based spin test menu option. This will implement roughly the same strategy as described by [Vasa et al](https://academic.oup.com/cercor/article/28/1/281/4566607) , with a few small differences. Here too we apply continuity correction during p-value estimation, just like the continuous spin test. Further, the strategy requires aligning parcellations between the spun and original coordinates. We use the well-established Hungarian (munkres) algorithm to accomplish this instead of the heuristic those authors describe. Munkres ensures a mathematically minimal total distance between original and rotated ROIs.
+
+Regardless of which option you select for the spin test you should know:
+1. The test will be a Spearman correlation
+2. There will be 5000 permutations or "spins"
+3. You will need to provide a .nii or .nii.gz file that has a value other than 0 for the medial wall of whatever template you are using (and specific hemisphere of the files you are comparing). We exclude this area from correlation/rotation.
+	a. If you are using the standard fsaverage template in brainSurfer with 32k vertices, I have made you a file in: ./atlases/medialWall_fsaverage_LH.nii and ./atlases/medialWall_fsaverage_RH.nii 
+	
+	b. If you are using the standard HCP template in brainSurfer with 164k vertices, I have made you a file in: ./atlases/medialWall_HCP_LH.nii and ./atlases/medialWall_HCP_RH.nii 
+	
+4. You will need to provide a sphere for the surface template you are using (for the specific hemisphere of the files you are comparing). 
+	a. If you are using the standard fsaverage template in brainSurfer with 164k vertices, you have this already in: ./brains/lh.sphere and ./brains/rh.sphere
+	
+	b. If you are using the standard HCP template in brainSurfer with 32k vertices, you have this already in: ./scripts/HCP/resample_fsaverage/fs_LR-deformed_to-fsaverage.L.sphere.32k_fs_LR.surf.gii and ./scripts/HCP/resample_fsaverage/fs_LR-deformed_to-fsaverage.R.sphere.32k_fs_LR.surf.gii
+	
+5. If you are performing a parcellation-based spin test you will need to also provide the atlas that both files you are comparing reflect
+6. Once the spin test runs, you can refer back to your results in a text log file within ./analysisResults
+
+## 27. Scripting
+If you feel comfortable using the GUI, you can also replicate all of the visualizations that it performs using the underlying functions that power brainSurfer. I have put together a live-code tutorial in ./scriptingExamples.mlx that can take you through the basics. All function documentation has been updated as well throughout the package so should hopefully be easier to use now.
+
+## 28. Dependencies <a name="scriptsDependencies"></a>
 This section will be update with more information soon, including how to use the scripts BrainSurfer calls on without the GUI (i.e., to make patches in matlab, etc). Note that some script-level documentation is currently outdated but will be updated to reflect changes since BrainSurfer v1 soon. 
 
 BrainSurfer has a number of dependencies that are packaged with it thanks to the generosity of the original authors (more on that shortly). To the extent of my knowledge, all of this software is free to modify and distribute, and the original licenses are provided along with the code. 

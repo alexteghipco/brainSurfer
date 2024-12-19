@@ -1,0 +1,39 @@
+{
+  "hemispheres": {
+    "left_hemisphere": [
+      "left",
+      "lh",
+      "_lh_",
+      ".l.",
+      "_l.",
+      "_l_"
+    ],
+    "right_hemisphere": [
+      "right",
+      "rh",
+      "_rh_",
+      ".r.",
+      "_r.",
+      "_r_"
+    ]
+  },
+  "path_to_workbench": "/your/path/here",
+  "camera_views": [
+    [
+      -90,
+      0
+    ],
+    [
+      90,
+      0
+    ],
+    [
+      0,
+      0
+    ],
+    [
+      180,
+      0
+    ]
+  ]
+}

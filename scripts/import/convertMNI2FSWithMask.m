@@ -1,28 +1,80 @@
 function [outFiles] = convertMNI2FSWithMask(inFile)
-% This function creates a mask of empty intensities in inFile and projects
-% it into surface space in order to threshold the surface based projection
-% of inFile.
+% Projects thresholded volumetric data into FreeSurfer fsaverage space.
 %
-% A problem for projecting your data into surface space is that it might
-% already be thresholded in volume space. Because projection requires
-% downsampling, some vertices will invariably map onto both voxels that are
-% below the threshold (i.e., empty in volume space) and above threshold.
-% This may result in vertices being assigned average intensities that are
-% below the actual threshold value that was used to constrain the data in
-% volume space.
+% This function resolves issues with projecting thresholded volumetric data into 
+% surface space by using binary masks to account for voxels excluded during 
+% thresholding. It calculates a surface mask to identify vertices associated 
+% predominantly with empty or non-empty voxels and projects only valid vertices 
+% into fsaverage space.
 %
-% To project thresholded data into surface space, this script takes inFile
-% and creates two masks, one of the empty voxels (i.e., zeros) and one of
-% voxels with some intensity. It projects both binary masks onto surface
-% space. In surface space, a value closer to 1 for each of these masks
-% represents vertices whose associated group of voxels is comprised of a
-% greater proportion of 1s. A new mask is constructed for all vertices
-% where more voxels are associated with the mask of empty voxels than the
-% mask of non-empty voxels. Finally, the script projects the original data
-% in inFile into surface space and removes all vertices that are in this
-% mask. 
+% **Syntax**
+% -------
+%   outFiles = convertMNI2FSWithMask(inFile)
 %
-% Alex Teghipco // ateghipc@uci.edu // 10/23/18
+% **Description**
+% ---------
+%   outFiles = convertMNI2FSWithMask(inFile) creates binary masks from `inFile`, 
+%   one for empty voxels and another for non-empty voxels, and projects them 
+%   into surface space. The function calculates a new surface mask to exclude 
+%   vertices associated with predominantly empty voxels. The thresholded data is 
+%   then projected to fsaverage space, producing output files for the left and 
+%   right hemispheres.
+%
+% **Inputs**
+% ------
+%   inFile   - (String) Path to the input volumetric file in NIfTI format.
+%              - Must be in MNI152 volumetric space.
+%
+% **Outputs**
+% -------
+%   outFiles - (Cell Array) Paths to the surface-masked output files.
+%              - outFiles{1}: Masked data for the left hemisphere.
+%              - outFiles{2}: Masked data for the right hemisphere.
+%
+% **Features**
+% ---------
+%   1. **Binary Mask Generation**:
+%      - Creates two binary masks from `inFile`:
+%        * Empty voxels (values = 0).
+%        * Non-empty voxels (values ≠ 0).
+%
+%   2. **Surface Mapping**:
+%      - Projects the binary masks and the original data into FreeSurfer fsaverage 
+%        surface space for both hemispheres using `convertMNI2FS`.
+%
+%   3. **Thresholded Surface Masking**:
+%      - Compares the empty and non-empty voxel masks in surface space to construct
+%        a new mask. Vertices associated with predominantly empty voxels are excluded.
+%
+%   4. **Output Files**:
+%      - Produces surface-masked files for the left and right hemispheres.
+%
+% **Examples**
+% -------
+%   **Example 1: Project Thresholded Data to Surface Space**
+%   % Convert a volumetric file into fsaverage space with thresholding
+%   inFile = '/path/to/thresholded_data.nii.gz';
+%   outFiles = convertMNI2FSWithMask(inFile);
+%
+% **Notes**
+% -----
+%   - **Dependencies**:
+%     * Requires external functions: `convertMNI2FS`, `load_nifti`, `save_nifti`.
+%   - **Masking Logic**:
+%     * Vertices are retained if the proportion of non-empty voxels is greater 
+%       than the proportion of empty voxels associated with that vertex.
+%   - **Intermediate Files**:
+%     * Binary mask files are deleted after processing unless `verbose` is modified.
+%   - **Output Files**:
+%     * Surface-masked files are generated for both left and right hemispheres.
+%
+% **Author**
+% -------
+%   Alex Teghipco // alex.teghipco@uci.edu // Last Updated: 2018-10-23
+%
+% **See Also**
+% --------
+%   convertMNI2FS, load_nifti, save_nifti
 
 % defaults
 if ispc == 0

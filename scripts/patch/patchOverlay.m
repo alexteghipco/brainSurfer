@@ -1,121 +1,496 @@
 function [varargout] = patchOverlay(brainFig, allData, underlays, hemi, varargin)
-% This function will patch data onto an existing surface. It will
-% require you to pass in left and right hemisphere data
-% separately (either both, or only one) and specify the hemisphere on which to patch the data. There
-% are a number of optional arguments that may be passed as well. The
-% arguments will be processed in the
-% following order: i) if positive or negative values are set to 'off' they
-% will be removed from the passed in curvature data, ii) 'vls' will be
-% processed to scale, normalize, or convert data to percentiles,
-% iii) a threshold will be applied to the resulting data.
+% patchOverlay Patches scalar data onto an existing brain surface.
 %
-% Remaining optional arguments deal with the way in which data is plotted,
-% etc.
+% This function overlays scalar data (e.g., curvature, activation values) onto
+% an existing brain surface visualization. It supports overlaying data on the
+% left and/or right hemispheres, with extensive customization options for
+% data processing, visualization parameters, colormapping, smoothing, and
+% statistical thresholding.
 %
-% Mandatory arguments------------------------------------------------------ 
+% **Syntax**
+% ----------
+%   [overlay, colormapSG, ticksSG, dataCAll, dataTSAll, dataClust, transp, modCmap] = ...
+%       patchOverlay(brainFig, allData, underlays, hemi, 'Name', Value, ...)
 %
-% figID: handle to figure containing surface onto which we will patch
+% **Description**
+% -----------
+%   patchOverlay overlays scalar data onto a brain surface within a specified
+%   figure. The function handles data normalization, scaling, thresholding, and
+%   colormapping to create visually informative representations of the data.
+%   It supports both hemispheres ('lh' for left, 'rh' for right, or 'both') and
+%   allows for extensive customization through optional name-value pair arguments.
 %
-% underlays: a structure containing left and right surface patches (i.e.,
-% underlays.left and underlays.right; one of these can be empty)
+%   The function processes data in the following order:
+%     1. Removes positive/negative values based on 'pos' and 'neg' options.
+%     2. Applies scaling, normalization, or conversion to percentiles via the 'vls' option.
+%     3. Applies thresholding to the processed data.
 %
-% 'lh' and 'rh': Left and/or right hemisphere curvature data must be passed
-% in as well (as an argument pair; the name of the variable containing the
-% data does not matter)
+%   Additionally, the function can perform clustering, smoothing, and apply
+%   customized transparency based on auxiliary data.
 %
-% Outputs------------------------------------------------------------------ 
+% **Inputs**
+% -------
+%   brainFig  - (Figure Handle) Handle to the existing figure containing the brain
+%               surface onto which data will be overlaid.
 %
-% underlays: returns the updated patch information
+%   allData   - (Matrix) Scalar data to be patched onto the brain surface.
+%               - Dimensions: (nVertices x nDataSets)
+%               - Each column represents a separate data set to overlay.
 %
-% colormapSG: returns a structure containing the colormaps and the colorbar
+%   underlays - (Structure) Contains existing surface patches for the brain:
+%               - underlays.left  : Handle to the left hemisphere patch (can be empty).
+%               - underlays.right : Handle to the right hemisphere patch (can be empty).
 %
-% ticksSG: returns a structure containing information about where you should
-% put your ticks if you want to generate your own colorbar (colorbar in
-% colormapSG just contains a value for each bin in colormap).
+%   hemi      - (String) Specifies which hemisphere(s) to overlay data on.
+%               Options:
+%                 'lh'   - Left Hemisphere
+%                 'rh'   - Right Hemisphere
+%                 'both' - Both Hemispheres
 %
-% Optional arguments------------------------------------------------------- 
+% **Outputs**
+% --------
+%   The function can return up to eight outputs, depending on the user's request:
 %
-% 'pos': if set to 'off' positive values will be removed from curvature
-% data (deafult is 'on').
+%   1. overlay    - (Patch Object) Handle to the created overlay patch.
 %
-% 'neg': if set to 'off' negative values will be removed from curvature
-% data (deafult is 'on').
+%   2. colormapSG - (Structure) Contains colormap information:
+%                  - colormapSG.map      : Colormap used for the overlay.
+%                  - colormapSG.dataMap  : Data mapped to the colormap.
 %
-% 'vls' has various effects all of which normalize/scale/standardize the
-% curvature data (default is 'raw'):
-%   'raw': will patch raw values
-%   'prct': will convert values to percentiles
-%   'prctSep': will convert values to percentiles (separately for positive
-%       and negative values)
-%   'norm': will normalize values
-%   'normSep': will normalize positive and negative values separately
-%   'scl': will scale values between -1 and 1
-%   'sclSep': will scale values between -1 and 1 (separately for positive
-%       and negative values)
-%   'sclAbs': will scale values between 0 and 1
-%   'sclAbsSep': will scale values between 0 and 1 (separately for positive
-%       and negative values)
+%   3. ticksSG    - (Structure) Contains colorbar tick information:
+%                  - ticksSG.ticks  : Positions of the ticks.
+%                  - ticksSG.labels : Labels for the ticks.
 %
-% 'thresh': will remove data falling in the interval [a b] (deafult is [0 0]).
+%   4. dataCAll   - (Cell Array) Contains color data for each data set.
 %
-% 'colormap': an internal matlab colormap, or the name of any other
-%       colormap redistributed with brainSurfer: 'jet', parula, hsv, hot,
-%       cool, spring, summer, autumn, winter, gray, bone, copper, pink,
-%       lines, colorcube, prism, spectral, RdYlBu, RdGy, RdBu, PuOr, PRGn,
-%       PiYG, BrBG, YlOrRd, YlOrBr, YlGnBu, YlGn, Reds, RdPu, Purples,
-%       PuRd, PuBuGn, PuBu, OrRd, oranges, greys, greens, GnBu, BuPu, BuGn,
-%       blues, set3, set2, set1, pastel2, pastel1, paired, dark2, accent,
-%       inferno, plasma, vega10, vega20b, vega20c, viridis, thermal,
-%       haline, solar, ice, oxy, deep, dense, algae, matter, turbid, speed,
-%       amp, tempo, balance, delta, curl, phase, perceptually distinct
-%       (default is jet). 
-%       
-%       Colormap can also be an l x 3 matrix of colors specifying a custom
-%       colormap
+%   5. dataTSAll  - (Cell Array) Contains thresholded and scaled data for each data set.
 %
-% 'colorSpacing': determines how colors are spaced in between the limits. 
-%       'even': evenly spaced between limits (default)
-%       'center on zero': the midpoint of the colorbar is forced to be zero
-%       'center on threshold': the midpoint of the colorbar is forced to be
-%       the thresholds you've applied to your data
+%   6. dataClust  - (Cell Array) Contains cluster information if clustering was applied.
 %
-% 'colorBins': number of color bins in the colorbar (default: 1000)
-%   
-% 'colorSpecial': this option can assign colors in special ways: 
-%       'randomizeClusterColors': each cluster in data is assigned a random
-%       color on colorbar (default: 'none')
+%   7. transp     - (Structure) Contains transparency information:
+%                  - transp.vals      : Transparency values for each vertex.
+%                  - transp.map       : Transparency mapping based on colormap.
 %
-% 'invertColors': invert colormap (default: 'false')
+%   8. modCmap    - (Matrix) Modified colormap if alpha modulation was applied.
 %
-% 'limits': two numbers that represent the limits of the colormap (default
-%       is: [min(data) max(data)])
-% 'opacity': sets opactiy of the patch (default: 1)
+% **Name-Value Pair Arguments**
+% -----------------------------
+%   The following optional arguments can be specified as name-value pairs to
+%   customize the behavior of the function:
 %
-% 'binarize': this binarizes sulcal/gyral info into two colors
+%   'pos'            - (String) Controls inclusion of positive values.
+%                      Options:
+%                        'on'  - Include positive values (default).
+%                        'off' - Exclude positive values.
 %
-% 'inclZero': this determines if zeros will be patched (default: 'no')
+%   'neg'            - (String) Controls inclusion of negative values.
+%                      Options:
+%                        'on'  - Include negative values (default).
+%                        'off' - Exclude negative values.
 %
-% 'lights': this determines if we need to "fix" the lights
+%   'vls'            - (String) Normalization/scaling method for data.
+%                      Options:
+%                        'raw'       - Patch raw values (default).
+%                        'prct'      - Convert values to percentiles.
+%                        'prctSep'   - Convert positive and negative values to percentiles separately.
+%                        'norm'      - Normalize values.
+%                        'normSep'   - Normalize positive and negative values separately.
+%                        'scl'       - Scale values between -1 and 1.
+%                        'sclSep'    - Scale positive and negative values between -1 and 1 separately.
+%                        'sclAbs'    - Scale absolute values between 0 and 1.
+%                        'sclAbsSep' - Scale absolute positive and negative values between 0 and 1 separately.
 %
-% 'smoothSteps': number of times to repeat smoothing procedure (i.e.,
-% smoothness "kernel"; default: 0; i.e., no smoothing is performed)
+%   'thresh'         - (2-element Vector) Threshold interval [a b] to remove data.
+%                      - Data within [a, b] are set to zero.
+%                      - Default: [0 0] (no thresholding).
 %
-% 'smoothArea': this is the number of closest vertices in euclidean
-% distance that will be used to smooth each data point (default: 0)
+%   'colormap'       - (Matrix or String) Colormap to use for overlay.
+%                      - Options:
+%                          * MATLAB built-in colormap name (e.g., 'jet', 'parula', etc.).
+%                          * Custom colormap as an l x 3 RGB matrix.
+%                          * Lots of other colormaps as detailed in
+%                          colormapper.m
+%                      - Default: 'jet'.
 %
-% 'smoothThreshold': determines whether smoothing will only be applied to
-% vertices that meet the thresholds that have been applied to the data
-% (i.e., 'above') or to vertices below threshold. You might want to do the
-% latter to shrink your map (default: 'above').
-% 
-% 'smoothType': 'neighbors' or 'neighborhood' (default: 'neighbors').
+%   'colorSpacing'   - (String) Spacing method for colors between limits.
+%                      Options:
+%                        'even'               - Evenly spaced (default).
+%                        'center on zero'     - Midpoint of colorbar is zero.
+%                        'center on threshold'- Midpoint is the threshold applied to data.
 %
-% Call: 
-% [underlay, colormap, brain, data] = plotUnderlay(figID, underlays, 'lh', curv1)
-% [underlay, colormap, brain, data] = plotUnderlay(figID, underlays, 'lh', curv1, 'rh', curv2)
-% [underlay, colormap, brain, data] = plotUnderlay(figID, underlays, ,'lh', curv1, 'rh', curv2, 'pos','off','neg','off','vls','prct','thresh',[-2 2],)
-% [underlay, colormap, brain, data] = plotUnderlay(figID, underlays, ,'lh', curv1, 'rh', curv2, 'pos','off','neg','off','vls','scl','sclLims',[-1 1],'thresh',[-2 2],'pMap',pVals,'pThresh',0.05,'operation','pc','compKeep',1,'smoothSteps',2,'smoothArea',1,'smoothThreshold','above','smoothType','neighbors');
- 
+%   'colorBins'      - (Integer) Number of color bins in the colorbar.
+%                      - Determines the granularity of the colormap.
+%                      - Default: 1000.
+%
+%   'colorSpecial'   - (String) Special color assignment method.
+%                      Options:
+%                        'none'                   - Default (no special assignment).
+%                        'randomizeClusterColors' - Assign random colors to each data cluster.
+%                      - Default: 'none'.
+%
+%   'invertColors'   - (String) Invert the colormap.
+%                      Options:
+%                        'true'  - Invert colormap.
+%                        'false' - Do not invert (default).
+%
+%   'limits'         - (2-element Vector) Limits of the colormap [min max].
+%                      - Overrides automatic scaling based on data.
+%                      - Default: [min(allData(:)) max(allData(:))].
+%
+%   'opacity'        - (Scalar) Sets opacity of the patch.
+%                      - Range: [0, 1], where 0 is fully transparent and 1 is fully opaque.
+%                      - Default: 1.
+%
+%   'binarize'       - (String) Binarize sulcal/gyral information into two colors.
+%                      Options:
+%                        'none'      - No binarization (default).
+%                        'map'       - Binarize based on map values.
+%                        'clusters'  - Binarize based on clusters.
+%
+%   'inclZero'       - (String) Determine if zeros will be patched.
+%                      Options:
+%                        'on'  - Include zeros in the patch (default).
+%                        'off' - Exclude zeros from the patch.
+%
+%   'lights'         - (String | n x 2 Array) Lighting configuration.
+%                      - 'off' : Disables lighting.
+%                      - [azimuth elevation] pairs to specify custom lighting angles.
+%                      - Default: Uses existing lighting settings in the figure.
+%
+%   'smoothSteps'    - (Integer) Number of smoothing iterations.
+%                      - Determines how many times the smoothing procedure is applied.
+%                      - Default: 0 (no smoothing).
+%
+%   'smoothArea'     - (Integer) Number of closest vertices used for smoothing.
+%                      - Defines the neighborhood for each vertex during smoothing.
+%                      - Default: 0 (no smoothing).
+%
+%   'smoothThreshold'- (String) Apply smoothing based on threshold.
+%                      Options:
+%                        'above' - Apply smoothing to vertices above the threshold (default).
+%                        'below' - Apply smoothing to vertices below the threshold.
+%
+%   'smoothType'     - (String) Type of smoothing.
+%                      Options:
+%                        'neighbors'    - Use immediate neighbors for smoothing (default).
+%                        'neighborhood' - Use a broader neighborhood based on 'smoothArea'.
+%
+%   'clusterThresh'  - (Integer) Minimum cluster size to retain.
+%                      - Clusters smaller than this threshold are removed.
+%                      - Default: 0 (no clustering thresholding).
+%
+%   'pMap'           - (Matrix) P-value map for statistical thresholding.
+%                      - Same dimensions as 'allData'.
+%                      - Used in conjunction with 'pThresh' to mask data.
+%                      - Default: zeros(size(allData)).
+%
+%   'pThresh'        - (Scalar) P-value threshold for statistical masking.
+%                      - Data with p-values below this threshold are retained.
+%                      - Default: 1 (no masking).
+%
+%   'operation'      - (String) Operation for handling multiple data sets.
+%                      - Options:
+%                          * 'false' - No special operation (default).
+%                          * Other operations as defined by the function's implementation.
+%                      - Default: 'false'.
+%
+%   'compKeep'       - (Integer) Number of principal components to keep (if applicable).
+%                      - Default: 1.
+%
+%   'colormapLims'   - (Vector) Limits for scaling the colormap.
+%                      - Overrides 'limits' if specified.
+%                      - Default: [].
+%
+%   'modData'        - (Matrix) Data for alpha modulation.
+%                      - Same dimensions as 'allData'.
+%                      - Controls transparency based on auxiliary data.
+%                      - Default: [].
+%
+%   'modCmap'        - (Matrix) Custom colormap for modulation.
+%                      - Used in conjunction with 'modData'.
+%                      - Default: [].
+%
+%   'multiCmap'      - (Matrix) Multi-dimensional colormap.
+%                      - Facilitates complex colormap mappings for multiple data sets.
+%                      - Default: [].
+%
+%   'absMod'         - (String) Apply absolute modulation.
+%                      Options:
+%                        'On'  - Apply absolute value before modulation (default).
+%                        'Off' - Do not apply absolute value.
+%
+%   'incZeroMod'     - (String) Include zeros in modulation.
+%                      Options:
+%                        'On'  - Include zeros (default).
+%                        'Off' - Exclude zeros.
+%
+%   'minAlphaMod'    - (Scalar) Minimum alpha value for modulation.
+%                      - Range: [0, 1].
+%                      - Default: 0.
+%
+%   'maxAlphaMod'    - (Scalar) Maximum alpha value for modulation.
+%                      - Range: [0, 1].
+%                      - Default: 1.
+%
+%   'alphaModLims'   - (Vector) Limits for alpha modulation scaling.
+%                      - Specifies the range of 'modData' for scaling alpha.
+%                      - Default: [] (auto-scaled based on 'modData').
+%
+%   'scndCbarAxis'   - (String) Secondary colorbar axis setting.
+%                      Options:
+%                        'same' - Use the same axis as the primary colorbar (default).
+%                        'different' - Use a different axis for the secondary colorbar.
+%                      - Additional options may be implemented in future updates.
+%
+%   'multiCmapTicks' - (Matrix) Ticks for multi-dimensional colorbar.
+%                      - Aligns ticks across multiple colormaps.
+%                      - Default: [].
+%
+%   'multiCbData'    - (Matrix) Data for multi-dimensional colorbar.
+%                      - Facilitates complex data mappings.
+%                      - Default: [].
+%
+%   'sclLims'        - (Vector) Scaling limits for data normalization.
+%                      - Specifies the range for scaling data values.
+%                      - Default: [0 1].
+%
+%   'smoothToAssign' - (String) Determines the assignment method after smoothing.
+%                      Options:
+%                        'all'      - Assign to all relevant vertices (default).
+%                        'specific' - Assign based on specific criteria.
+%                      - Default: 'all'.
+%
+%   'UI'             - (UI Handle) Handle to a user interface for displaying progress.
+%                      - Enables progress dialogs during long operations.
+%                      - Default: [] (no UI).
+%
+%   'outline'        - (String) Outlining method for clusters.
+%                      Options:
+%                        'none'  - No outlining (default).
+%                        'roi'   - Outline based on regions of interest
+%                                   (whole integers)
+%                        'bins'  - Outline based on color bins.
+%                        'map'   - Outline the entire map.
+%
+%   'grow'           - (Integer) Number of vertices to grow or shrink clusters.
+%                      - Positive values grow clusters; negative values shrink.
+%                      - Default: 0 (no growth/shrinkage).
+%
+%   'clusterOrder'   - (String) Order in which clusters are processed.
+%                      Options:
+%                        'random'     - Randomize cluster processing order (default).
+%                        'sequential' - Process clusters sequentially.
+%
+%   'growVal'        - (String) Value assignment method during cluster growth.
+%                      Options:
+%                        'edge' - Assign edge values during growth (default).
+%                        'mean' - Assign mean values during growth.
+%
+%   'priorClusters'  - (Cell Array) Predefined clusters to use instead of computing new clusters.
+%                      - Each cell contains indices of vertices belonging to a cluster.
+%                      - Default: [] (compute clusters based on data).
+%
+% **Outputs (Detailed)**
+% ---------------------
+%   1. overlay    - Handle to the created overlay patch. This patch represents the
+%                 visualized data on the specified hemisphere(s) within the
+%                 provided figure.
+%
+%   2. colormapSG - Structure containing colormap information:
+%                  - colormapSG.map      : The RGB colormap used for the overlay.
+%                  - colormapSG.dataMap  : Numerical data mapped to the colormap bins.
+%
+%   3. ticksSG    - Structure containing colorbar tick information:
+%                  - ticksSG.ticks  : Numeric positions of ticks on the colorbar.
+%                  - ticksSG.labels : String labels corresponding to the ticks.
+%
+%   4. dataCAll   - Cell array where each cell contains the color data for a specific
+%                 data set. Useful for handling multiple overlays.
+%
+%   5. dataTSAll  - Cell array where each cell contains the thresholded and scaled
+%                 data corresponding to each data set.
+%
+%   6. dataClust  - Cell array containing cluster information if clustering was applied.
+%                 Each cell corresponds to a data set and contains indices of vertices
+%                 belonging to clusters.
+%
+%   7. transp     - Structure containing transparency information:
+%                  - transp.vals      : Vector of transparency values for each vertex.
+%                  - transp.map       : Mapping of data values to transparency levels.
+%
+%   8. modCmap    - Modified colormap matrix if alpha modulation was applied.
+%                 Facilitates advanced transparency effects based on auxiliary data.
+%
+% **Function Workflow**
+% --------------------
+%   1. **Input Validation**:
+%      - Ensures mandatory inputs (`brainFig`, `allData`, `underlays`, `hemi`) are provided.
+%      - Validates the number of optional arguments.
+%
+%   2. **Argument Parsing**:
+%      - Parses and validates name-value pair arguments, setting defaults where necessary.
+%      - Handles multi-dimensional data by ensuring options are cell arrays matching data dimensions.
+%
+%   3. **Data Preprocessing**:
+%      - Transposes `allData` and `pMap` if necessary to match vertex count.
+%      - Handles NaN and Inf values by setting them to zero or the maximum finite value.
+%
+%   4. **Thresholding**:
+%      - Applies positive/negative value filtering based on 'pos' and 'neg' options.
+%      - Applies scaling, normalization, or percentile conversion based on 'vls'.
+%      - Applies thresholding to remove data within the specified interval.
+%
+%   5. **Clustering (Optional)**:
+%      - Identifies and retains clusters based on `clusterThresh`.
+%      - Supports ROI-based clustering and bin-based outlines.
+%
+%   6. **Boundary Processing (Optional)**:
+%      - Generates cluster boundaries if outlining or map growing/shrinking is specified.
+%
+%   7. **Smoothing (Optional)**:
+%      - Applies vertex-based smoothing based on `smoothSteps`, `smoothArea`, and `smoothType`.
+%
+%   8. **Binarization (Optional)**:
+%      - Converts data to binary values based on the 'binarize' option.
+%
+%   9. **Colormap Mapping**:
+%      - Maps processed data to the specified colormap, handling multi-dimensional mappings if necessary.
+%
+%   10. **Alpha Modulation (Optional)**:
+%       - Adjusts transparency based on `modData` and related parameters.
+%
+%   11. **Patch Creation**:
+%       - Creates the overlay patch within the specified figure, applying vertex and face data,
+%         color data, and transparency settings.
+%
+%   12. **Output Structuring**:
+%       - Assigns outputs based on the processed data and visualization settings.
+%
+% **Error Handling**
+% -----------------
+%   The function includes several error checks to ensure robust operation:
+%
+%   - **Missing Arguments**:
+%     - Throws an error if any of the mandatory inputs (`brainFig`, `allData`, `underlays`, `hemi`) are missing.
+%     ```matlab
+%     error('You are missing a mandatory argument: brainFig, allData, underlays, or hemi.');
+%     ```
+%
+%   - **Excessive Arguments**:
+%     - Throws an error if more optional arguments are provided than expected.
+%     ```matlab
+%     error('You have supplied too many arguments. Check the name-value pair inputs.');
+%     ```
+%
+%   - **Invalid Parameter Names**:
+%     - Throws an error if an unrecognized parameter name is provided.
+%     ```matlab
+%     error('%s is not a recognized parameter name', inpName);
+%     ```
+%
+%   - **Dimension Mismatch**:
+%     - Throws an error if optional parameters do not match the dimensions of `allData`.
+%     ```matlab
+%     error('%s has too many inputs for the parameter name', flds{i});
+%     ```
+%
+%   - **Data Integrity**:
+%     - Handles NaN and Inf values gracefully by setting them to zero or the maximum finite value.
+%
+% **Examples**
+% --------
+%   Below are several examples demonstrating how to use the `patchOverlay` function
+%   in various scenarios.
+%
+%   **Example 1: Basic Overlay on Left Hemisphere**
+%   ```matlab
+%   brainFig = figure;
+%   load('underlays.mat'); % Assume this loads underlays.left and underlays.right
+%
+%   % Prepare your data
+%   curvatureData = randn(10000, 1); % Example data for left hemisphere
+%
+%   % Patch the data onto the left hemisphere
+%   [overlay, cmapSG, ticksSG] = patchOverlay(brainFig, curvatureData, underlays, 'lh');
+%   ```
+%
+%   **Example 2: Overlay on Both Hemispheres with Percentile Scaling and Thresholding**
+%   ```matlab
+%   % Prepare your data for both hemispheres
+%   curvatureData = randn(20000, 1); % Example data for both hemispheres
+%
+%   % Patch the data onto both hemispheres with percentile scaling and thresholding
+%   [overlay, cmapSG, ticksSG] = patchOverlay(brainFig, curvatureData, underlays, 'both', ...
+%       'vls', 'prct', 'thresh', [-2 2]);
+%   ```
+%
+%   **Example 3: Overlay with Custom Colormap and Inverted Colors**
+%   ```matlab
+%   % Define a custom colormap (e.g., parula) and invert it
+%   customCmap = parula(256);
+%
+%   % Patch the data onto the right hemisphere with custom colormap and inverted colors
+%   [overlay, cmapSG, ticksSG] = patchOverlay(brainFig, curvatureData, underlays, 'rh', ...
+%       'colormap', customCmap, 'invertColors', 'true');
+%   ```
+%
+%   **Example 4: Overlay with Smoothing and Opacity Adjustment**
+%   ```matlab
+%   [overlay, cmapSG, ticksSG] = patchOverlay(brainFig, curvatureData, underlays, 'lh', ...
+%       'smoothSteps', 2, 'smoothArea', 1, 'opacity', 0.8);
+%   ```
+%
+%   **Example 5: Overlay with Statistical Thresholding and Clustering**
+%   ```matlab
+%   pValues = rand(10000, 1);        % Example p-values
+%   % Patch the data with p-value thresholding and cluster size filtering
+%   [overlay, cmapSG, ticksSG, ~, ~, dataClust] = patchOverlay(brainFig, curvatureData, underlays, 'lh', ...
+%       'pMap', pValues, 'pThresh', 0.05, 'clusterThresh', 10);
+%   ```
+%
+%   **Example 6: Overlay with Alpha Modulation Based on Auxiliary Data**
+%   ```matlab
+%   auxData = rand(10000, 1);         % Auxiliary data for alpha modulation
+%   [overlay, cmapSG, ticksSG, ~, ~, ~, transp, modCmap] = patchOverlay(brainFig, curvatureData, underlays, 'lh', ...
+%       'modData', auxData, 'absMod', 'On', 'minAlphaMod', 0.2, 'maxAlphaMod', 0.8);
+%   ```
+%
+%   **Example 7: Advanced Usage with Multiple Colormaps and Custom Tick Data**
+%   ```matlab
+%   % Prepare multiple data sets
+%   dataSet1 = randn(10000, 1);
+%   dataSet2 = randn(10000, 1);
+%
+%   % Define a multi-dimensional colormap
+%   multiCmap = rand(256, 256, 3); % Example multi-dimensional colormap
+%
+%   % Define custom ticks for each dimension
+%   multiCmapTicks = [linspace(min(dataSet1), max(dataSet1), 10)', linspace(min(dataSet2), max(dataSet2), 10)'];
+%
+%   % Patch both data sets with the multi-dimensional colormap
+%   [overlay, cmapSG, ticksSG] = patchOverlay(brainFig, [dataSet1 dataSet2], underlays, 'both', ...
+%       'multiCmap', multiCmap, 'multiCmapTicks', multiCmapTicks);
+%   ```
+%
+% **Notes**
+% -----
+%   - **Data Alignment**: Ensure that the number of vertices in `allData` matches the number of vertices in the specified hemisphere(s) within `underlays`.
+%   - **Handling NaN and Inf**: The function automatically replaces NaN values with zero and Inf values with the maximum finite value in their respective data sets to prevent visualization issues.
+%   - **Clustering and Thresholding**: When applying `clusterThresh`, only clusters larger than or equal to the specified threshold are retained. This is useful for highlighting significant regions while suppressing noise.
+%   - **Smoothing**: The `smoothSteps` and `smoothArea` parameters allow for iterative smoothing of the data, which can help in creating more visually coherent maps by averaging over neighboring vertices.
+%   - **Colormap Customization**: Users can specify any MATLAB-supported colormap or provide a custom RGB matrix. The `invertColors` option allows for reversing the colormap, which can be useful for emphasizing different data aspects.
+%   - **Alpha Modulation**: The `modData` parameter enables dynamic transparency based on auxiliary data, allowing for multi-layered visualizations where transparency conveys additional information.
+%   - **Multi-Dimensional Colormaps**: When working with multiple data sets, `multiCmap`, `multiCmapTicks`, and `multiCbData` facilitate complex color mappings across different dimensions of data.
+%   - **Lighting Configuration**: The `'lights'` option allows users to customize lighting in the visualization. Setting it to `'off'` disables lighting, while providing `[azimuth elevation]` pairs enables custom lighting angles.
+%
+% **Author**
+% -------
+%   Alex Teghipco // alex.teghipco@uci.edu // Last Updated: 2024-12-01
+%
+% **See Also**
+% --------
+%   plotUnderlay, colormapper, smoothVertData, getClusters, getClusterBoundary, growMap
+
 % Defaults
 options = struct('vls','raw','thresh',[0 0],'pos','on','neg','on','operation','false','sclLims',[0 1],'compKeep',1,'smoothSteps', 0, 'smoothArea', 0, 'smoothToAssign','all','smoothThreshold', 'above', 'smoothType', 'neighbors','colormap','jet','colorSpacing','even','colorBins',1000,'colorSpecial','none','invertColors','false','limits',[],'binarize','none','inclZero','off','opacity',1,'UI',[],'clusterThresh',0,'pMap',zeros(size(allData)),'pThresh',1,'outline','none','grow',0,'clusterOrder','random','growVal','edge','priorClusters',[],'modData',[],'modCmap',[],'multiCmap',[],'absMod','On','incZeroMod','Off','minAlphaMod',0,'maxAlphaMod',1,'alphaModLims',[],'scndCbarAxis','same','multiCmapTicks',[],'multiCbData',[]);
 optionNames = fieldnames(options);
@@ -502,23 +877,65 @@ end
 
 % generate multidimensional colormap data if it's missing...
 if length(dataTS) > 1  
+    % if isempty(options.multiCmap)
+    %     for di = 1:length(dataTS)
+    %         cmap(:,:,di) = colormap{di}.map;
+    %     end
+    %     cust = customColorMapInterpBars(cmap,size(cmap,1),options.scndCbarAxis);
+    %     options.multiCmap = flipud(cust);
+    % end
     if isempty(options.multiCmap)
         for di = 1:length(dataTS)
             cmap(:,:,di) = colormap{di}.map;
         end
         cust = customColorMapInterpBars(cmap,size(cmap,1),options.scndCbarAxis);
+        
+        % Debug output
+        % fprintf('MultiCmap size: [%d, %d, %d]\n', size(cust));
+        % figure;
+        % subplot(1,2,1);
+        % imagesc(squeeze(cust(:,:,1)));
+        % title('Red Channel');
+        % subplot(1,2,2);
+        % imagesc(cust(:,:,2));
+        % title('Green Channel');
+        % colorbar;
+        
         options.multiCmap = flipud(cust);
     end
+
+
+    % if isempty(options.multiCmapTicks)
+    %     for di = 1:length(dataTS)
+    %         options.multiCmapTicks(:,di) = ticks{di}.labels;
+    %     end
+    % end
     if isempty(options.multiCmapTicks)
-        for di = 1:length(dataTS)
-            options.multiCmapTicks(:,di) = ticks{di}.labels;
+        % Get number of ticks for each dimension
+        numTicks1 = length(ticks{1}.labels);
+        numTicks2 = length(ticks{2}.labels);
+
+        % Create matrix with max number of ticks
+        maxTicks = max(numTicks1, numTicks2);
+        options.multiCmapTicks = zeros(maxTicks, 2);
+
+        % Fill in ticks, padding with NaN if needed
+        options.multiCmapTicks(1:numTicks1, 1) = ticks{1}.labels;
+        options.multiCmapTicks(1:numTicks2, 2) = ticks{2}.labels;
+
+        % If dimensions are different, pad shorter one with last value
+        if numTicks1 < maxTicks
+            options.multiCmapTicks(numTicks1+1:end, 1) = options.multiCmapTicks(numTicks1, 1);
+        end
+        if numTicks2 < maxTicks
+            options.multiCmapTicks(numTicks2+1:end, 2) = options.multiCmapTicks(numTicks2, 2);
         end
     end
-    if isempty(options.multiCbData)
-         for di = 1:length(dataTS)
-            options.multiCbData(:,di) = colormap{di}.dataMap;
-        end
-    end
+    % if isempty(options.multiCbData)
+    %      for di = 1:length(dataTS)
+    %         options.multiCbData(:,di) = colormap{di}.dataMap;
+    %     end
+    % end
     
     % now map data onto this new colormap...
     for di = 1:length(dataTS)
@@ -540,11 +957,27 @@ if length(dataTS) > 1
         m2 = [ma(:,2); ma(:,2); ma(:,2)];
         m3 = ones([sz,1]);
         m3 = [m3; m3+1; m3+2];
-        
-        ind = sub2ind([size(options.multiCmap)],m,m2,m3);
+
+        try
+            ind = sub2ind([size(options.multiCmap)],m,m2,m3);
+        catch
+            m = min(m, size(options.multiCbData,1)-1); % Clamp to max size
+            m2 = min(m2, size(options.multiCbData,2)-1); % Clamp to max size
+            ind = sub2ind([size(options.multiCmap)],m,m2,m3);
+        end
+
         cData{1} = options.multiCmap(ind);
         cData{1} = reshape(cData{1},[sz,3]);
         cData{1} = squeeze(cData{1});
+        % sz = length(ma);
+        % m = ma(:,1);
+        % m2 = ma(:,2);
+        % cData{1} = zeros(sz,3);
+        % 
+        % for k = 1:3
+        %     ind = sub2ind(size(options.multiCmap), m, m2, k*ones(sz,1));
+        %     cData{1}(:,k) = options.multiCmap(ind);
+        % end
     elseif length(dataTS) == 3
         sz = length(ma);
         m = [ma(:,1); ma(:,1); ma(:,1)];
